@@ -31,6 +31,6 @@ This will build the app, ready for production. The build files can be found in t
 To learn more about A-Block, take a look at the following resources:
 
 - [A-Block Documentation](https://a-block.io/docs) - learn about Ablock.js features.
-- [A-Block API](https://a-block.io/api) - interact with A-Block network using API calls.
+- [A-Block API](https://a-block.io/docs/api/overview) - interact with A-Block network using API calls.
 
 You can check out [the A-Block GitHub repository](https://github.com/ABlockOfficial) - your feedback and contributions are welcome!
