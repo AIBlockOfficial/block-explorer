@@ -1,5 +1,5 @@
 "use client"
-import React from "react"
+import React, { useEffect } from "react"
 import { Card, Typography } from "@material-tailwind/react"
 import { fira } from '@/app/styles/fonts'
 import Link from "next/link"
@@ -14,12 +14,26 @@ const tabs = ['Overview', 'Transactions']
 const fields = ['Block Hash', 'Previous Hash', 'Block Number', 'Block Status', 'Timestamp', 'Merkle Root Hash', 'Unicorn Seed', 'Unicorn Witness', 'Byte Size', 'Version']
 
 export default function Page({ params }: { params: { id: string } }) {
+  const [num, _setNum] = React.useState(params.id);
   const [activeTab, setActiveTab] = React.useState(tabs[0])
 
   const txTable: ITable = {
     headers: ["Transaction Hash", "Block Num.", "Type", "Status", "Address", "Age"],
     rows: txData
   }
+
+  /// The block information is being pulled here
+  useEffect(() => {
+    fetch(`/api/blocks`, {
+      method: 'POST',
+      body: JSON.stringify([num]),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }).then(response => {
+      console.log(response);
+    });
+  });
 
   return (
     <>

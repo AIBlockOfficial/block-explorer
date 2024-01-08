@@ -1,5 +1,5 @@
 "use client"
-import React from "react"
+import React, { useEffect } from "react"
 import Link from "next/link"
 import { ITable } from "@/app/constants"
 import { Card, Typography } from "@material-tailwind/react"
@@ -12,12 +12,25 @@ const tabs = ['Overview', 'Inputs']
 const fields = ['Transaction Hash', 'Previous Hash', 'Block Number', 'Transaction Type', 'Transaction Status', 'Sender Address', 'Timestamp']
 
 export default function Page({ params }: { params: { id: string } }) {
+  const [id, _setId] = React.useState(params.id);
   const [activeTab, setActiveTab] = React.useState(tabs[0])
 
   const txTable: ITable = {
     headers: ["Transaction Hash", "Block Num.", "Type", "Status", "Address", "Age"],
     rows: txData
   }
+
+  /// The transaction information is being pulled here
+  useEffect(() => {
+    fetch(`/api/tx/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }).then(response => {
+      console.log(response);
+    });
+  });
 
   return (
     <>
