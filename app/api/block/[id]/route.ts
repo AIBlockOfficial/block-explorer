@@ -3,9 +3,7 @@ const chain = require('../../chainFetch');
 
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
     try {
-      const item = await chain.fetchItem(params.id);
-      console.log(item);
-  
+      const item = await chain.fetchBlocks(params.id);  
       return NextResponse.json(item);
     } catch (error) {
       return NextResponse.json(

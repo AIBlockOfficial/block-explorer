@@ -1,9 +1,11 @@
 "use client"
 import React from "react"
 import Table from '@/app/ui/table'
-import { ITable } from "../constants"
+import { ITable } from "@/app/interfaces"
 import { Typography } from "@material-tailwind/react"
 import txData from '@/app/data/txs.json'
+
+/** TODO */
 
 export default function Page() {
   const txTable: ITable = {

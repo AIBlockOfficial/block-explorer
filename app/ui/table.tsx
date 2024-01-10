@@ -1,7 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
-import { shorten_hash } from '@/app/utils/format'
-import { ITable, IBlockRow, ITxRow } from '@/app/constants'
+import { shortenHash } from '@/app/utils/format'
+import { ITable, IBlockRow, ITxRow } from '@/app/interfaces'
 import { Card, Typography } from '@material-tailwind/react'
 import { Square2StackIcon } from '@heroicons/react/24/outline'
 import { fira } from '@/app/styles/fonts'
@@ -36,13 +36,13 @@ function BlockTable({ rows, short = false }: { rows: IBlockRow[], short?: boolea
         result.push(
             <tr key={index} className={`${index == rows.length - 1 ? '' : 'border-b border-b-gray-200'}`}>
                 <td className={row_spacing}>
-                    <Typography as={Link} href={`/block/${number}`}  variant='small' className={`text-blue-900 text-xs ${fira.className}`}>
+                    <Typography as={Link} href={`/block/${number}`} variant='small' className={`text-blue-900 text-xs ${fira.className}`}>
                         {number}
                     </Typography>
                 </td>
                 <td className={`${row_spacing} flex flex-row`}>
                     <Typography as={Link} href={`/block/${blockHash}`} variant='small' className={`text-blue-900 text-xs ${fira.className} hover:underline`}>
-                        {shorten_hash(blockHash)}
+                        {shortenHash(blockHash)}
                     </Typography>
                     <Square2StackIcon className='text-blue-900 h-4 w-4 hover:cursor-pointer' onClick={() => console.log('copy to clipboard')} />
                 </td>
@@ -76,7 +76,7 @@ function TxTable({ rows, short = false }: { rows: ITxRow[], short?: boolean }) {
             <tr key={index} className={`${index == rows.length - 1 ? '' : 'border-b border-b-gray-200'}`}>
                 <td className={`${row_spacing} flex flex-row`}>
                     <Typography as={Link} href={`/transaction/${txHash}`} variant='small' className={`text-blue-900 text-xs ${fira.className} hover:underline`}>
-                        {shorten_hash(txHash)}
+                        {shortenHash(txHash)}
                     </Typography>
                     <Square2StackIcon className='h-4 w-4 text-blue-900 hover:cursor-pointer' />
                 </td>
@@ -100,7 +100,7 @@ function TxTable({ rows, short = false }: { rows: ITxRow[], short?: boolean }) {
                 {!short &&
                     <td className={`${row_spacing} flex flex-row`}>
                         <Typography as='a' href='#' variant='small' className={`text-blue-900 text-xs ${fira.className} hover:underline`}>
-                            {shorten_hash(address)}
+                            {shortenHash(address)}
                         </Typography>
                         <Square2StackIcon className='h-4 w-4 text-blue-900 hover:cursor-pointer' />
                     </td>
@@ -117,10 +117,14 @@ function TxTable({ rows, short = false }: { rows: ITxRow[], short?: boolean }) {
 }
 
 function isBlockTable(object: any): object is IBlockRow {
+    if (object == undefined)
+        return false
     return 'blockHash' in object
 }
 
 function isTxTable(object: any): object is ITxRow {
+    if (object == undefined)
+        return false
     return 'txHash' in object
 }
 

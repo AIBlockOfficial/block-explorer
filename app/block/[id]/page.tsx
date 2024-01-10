@@ -1,39 +1,59 @@
 "use client"
-import React, { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Card, Typography } from "@material-tailwind/react"
 import { fira } from '@/app/styles/fonts'
 import Link from "next/link"
 import { InformationCircleIcon } from "@heroicons/react/24/outline"
 import Table from "@/app/ui/table"
-import { ITable } from "@/app/constants"
+import { ITable } from "@/app/interfaces"
 import blockData from '@/app/data/blocks.json'
 import txData from '@/app/data/txs.json'
+import { isHash, isNum } from "@/app/utils/format"
 
 
 const tabs = ['Overview', 'Transactions']
 const fields = ['Block Hash', 'Previous Hash', 'Block Number', 'Block Status', 'Timestamp', 'Merkle Root Hash', 'Unicorn Seed', 'Unicorn Witness', 'Byte Size', 'Version']
 
 export default function Page({ params }: { params: { id: string } }) {
-  const [num, _setNum] = React.useState(params.id);
-  const [activeTab, setActiveTab] = React.useState(tabs[0])
+  const [activeTab, setActiveTab] = useState(tabs[0])
+  const [blockData, setBlocksData] = useState(undefined);
+  const [blockTxs, setBlockTxs] = useState([])
 
   const txTable: ITable = {
     headers: ["Transaction Hash", "Block Num.", "Type", "Status", "Address", "Age"],
-    rows: txData
+    rows: blockTxs
   }
 
   /// The block information is being pulled here
   useEffect(() => {
-    fetch(`/api/blocks`, {
-      method: 'POST',
-      body: JSON.stringify([num]),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }).then(response => {
-      console.log(response);
-    });
-  });
+    if (isHash(params.id)) { // Check if num or hash isHash()
+      console.log('isHash')
+      fetch(`/api/item/${params.id}`, { // is Hash
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }).then(async response => {
+        const data = await response.json()
+
+      })
+    } else if (isNum(params.id)) { // is Num
+      console.log('isNum')
+      fetch(`/api/blocks`, {
+        method: 'POST',
+        body: JSON.stringify([params.id]),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }).then(async response => {
+        const data = await response.json()
+        console.log(data);
+      })
+    } else {
+      console.log('isNone')
+    }
+  }
+  );
 
   return (
     <>

@@ -1,18 +1,16 @@
-const STORAGE_URL = 'https://storage.a-block.net';
-const MEMPOOL_URL = 'https://compute.a-block.net';
-
-
+import { STORAGE_URL } from "../constants";
+import { IAPIRoute } from "../interfaces";
 
 /**
  * Generates an alphanumeric string of a 32 byte length
  */
 function generateRandomString() {
-    return [...Array(32)].map(i=>(~~(Math.random()*36)).toString(36)).join('');
+    return [...Array(32)].map(i => (~~(Math.random() * 36)).toString(36)).join('');
 }
 
 /** Fetches a block/s by their numbers */
 export function fetchBlocks(blockNumbers: number[]) {
-    return fetch(`${STORAGE_URL}/block_by_num`, {
+    return fetch(`${STORAGE_URL}${IAPIRoute.BlockByNum}`, {
         method: 'POST',
         body: JSON.stringify(blockNumbers),
         headers: {
@@ -20,8 +18,29 @@ export function fetchBlocks(blockNumbers: number[]) {
             'x-cache-id': generateRandomString(),
             'x-nonce': '0'
         }
-    }).then(response => response.json())
-    .catch(error => console.log("Error:", error));
+    }).then((response) => {
+        if (response.status == 200)
+            return Promise.resolve(response.json())
+        else
+            return Promise.reject({ reason: response.statusText, status: response.status, route: IAPIRoute.BlockByNum })
+    })
+}
+
+/** Fetches a block/s by their numbers */
+export function fetchLatest() {
+    return fetch(`${STORAGE_URL}${IAPIRoute.LatestBlock}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-cache-id': generateRandomString(),
+            'x-nonce': '0'
+        }
+    }).then((response) => {
+        if (response.status == 200)
+            return Promise.resolve(response.json())
+        else
+            return Promise.reject({ reason: response.statusText, status: response.status, route: IAPIRoute.LatestBlock })
+    });
 }
 
 /**
@@ -31,24 +50,20 @@ export function fetchBlocks(blockNumbers: number[]) {
  * @param id {string} - id of the block or transaction to fetch
  * @returns 
  */
-export function fetchItem(id: string) {
-    console.log({
+export function fetchItem(hash: string) {
+    return fetch(`${STORAGE_URL}${IAPIRoute.BlockchainEntry}`, {
         method: 'POST',
-        body: id,
+        body: JSON.stringify(hash),
         headers: {
             'Content-Type': 'application/json',
             'x-cache-id': generateRandomString(),
             'x-nonce': '0'
         }
+    }).then((response) => {
+        console.log(response.status, response.statusText)
+        if (response.status == 200)
+            return Promise.resolve(response.json())
+        else
+            return Promise.reject({ reason: response.statusText, status: response.status, route: IAPIRoute.BlockchainEntry })
     });
-    return fetch(`${STORAGE_URL}/blockchain_entry`, {
-        method: 'POST',
-        body: id,
-        headers: {
-            'Content-Type': 'application/json',
-            'x-cache-id': generateRandomString(),
-            'x-nonce': '0'
-        }
-    }).then(response => response.json())
-    .catch(error => console.log("Error:", error));
 }
