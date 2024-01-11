@@ -152,10 +152,6 @@ function LoadingTable({ rows, cols }: { rows: number, cols: number }) {
  * Table component for displaying blocks and transactions
  */
 export default function Table({ table, short }: { table: ITable, short?: boolean }) {
-
-    console.log(table, table.headers.length, table.rows.length)
-    if (short) // Short table
-        table.rows = table.rows.slice(0, 6)
     return (
         <Card className='min-h-fit w-full shadow-xl rounded-sm border border-gray-300 mt-2'>
             <table className='w-full min-w-max table-auto text-left rounded-sm'>

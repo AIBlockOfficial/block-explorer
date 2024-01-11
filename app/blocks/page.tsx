@@ -30,7 +30,6 @@ export default function Page() {
       },
     }).then(async response => {
       const data = await response.json()
-      console.log(data)
       if (reversed)
         setLatest(data.content ? data.content.block.header.b_num : 0) // Set latest block. If error set latest to 0 (won't load any blocks)
       else

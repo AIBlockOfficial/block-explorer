@@ -5,6 +5,7 @@ import { MagnifyingGlassCircleIcon } from '@heroicons/react/24/outline'
 export default function Searchbar() {
     return (
         <Input
+            disabled
             label="Search"
             icon={<MagnifyingGlassCircleIcon onClick={() => console.log('search')} className="hidden lg:block text-gray-500 hover:text-gray-900 hover:cursor-pointer active:w-4 active:h-4 active:rounded-lg active:text-gray-500" />}
             placeholder="Search"

@@ -9,7 +9,6 @@ import { ListBulletIcon } from "@heroicons/react/24/outline"
 import { ITable, IBlockRow, ITxRow } from '@/app/interfaces'
 import { getRange, formatBlockTableRows } from "@/app/utils/format"
 import { BLOCK_HEADERS_SHORT, BLOCK_PER_PAGE_SHORT } from '@/app/constants'
-import TxData from '@/app/data/txs.json'
 
 const TxTable: ITable = {
   headers: ["TxHash", "Type", "Status", "Age"],
