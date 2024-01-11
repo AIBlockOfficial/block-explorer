@@ -54,8 +54,8 @@ export default function Page() {
     <>
       <div className="flex p-4 justify-evenly flex-wrap">
         <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Blocks'} value={latestBlockNum ? latestBlockNum : undefined} icon={<CubeIcon className='card-icons' />} href={'#'} /></div>
-        <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Transactions'} value={latestBlockNum ? 61471565 : undefined} icon={<ArrowsRightLeftIcon className='card-icons' />} href={'#'} /></div>
-        <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Addresses'} value={latestBlockNum ? 42000891 : undefined} icon={<ListBulletIcon className='card-icons' />} href={'#'} /></div>
+        <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Transactions'} value={latestBlockNum ? undefined : undefined} icon={<ArrowsRightLeftIcon className='card-icons' />} href={'#'} /></div>
+        <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Addresses'} value={latestBlockNum ? undefined : undefined} icon={<ListBulletIcon className='card-icons' />} href={'#'} /></div>
       </div>
       <div className="flex p-4 justify-evenly flex-wrap">
         <div className='p-2 md:w-1/2 sm:w-full'>

@@ -128,10 +128,32 @@ function isTxTable(object: any): object is ITxRow {
     return 'txHash' in object
 }
 
+function LoadingTable({ rows, cols }: { rows: number, cols: number }) {
+    let result: JSX.Element[] = []
+    for (let i = 0; i < rows; i++) {
+        let line: JSX.Element[] = []
+        for (let j = 0; j < cols; j++) {
+            line.push(
+                <td key={j} className={row_spacing}>
+                    <div className="h-5 mx-1 rounded bg-gray-200 animate-pulse"></div>
+                </td>)
+        }
+        let a = (
+            <tr key={i} className={`${i == rows - 1 ? '' : 'border-b border-b-gray-200'}`}>
+                {...line}
+            </tr>
+        )
+        result.push(a)
+    }
+    return result
+}
+
 /**
  * Table component for displaying blocks and transactions
  */
 export default function Table({ table, short }: { table: ITable, short?: boolean }) {
+
+    console.log(table, table.headers.length, table.rows.length)
     if (short) // Short table
         table.rows = table.rows.slice(0, 6)
     return (
@@ -148,6 +170,9 @@ export default function Table({ table, short }: { table: ITable, short?: boolean
                     }
                     {isTxTable(table.rows[0]) &&
                         <TxTable rows={table.rows as ITxRow[]} short={short} />
+                    }
+                    {table.rows.length < 1 &&
+                        <LoadingTable rows={6} cols={table.headers.length} />
                     }
                 </tbody>
             </table>

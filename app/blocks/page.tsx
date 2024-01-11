@@ -82,7 +82,7 @@ export default function Page() {
         <Typography variant="lead" className="">Blocks</Typography>
         <Typography variant="small" className="text-gray-600">Blocks on the A-Block blockchain</Typography>
       </div>
-      <Button className="w-fit h-fit" onClick={() => { setReversed(!reversed); setExpandCounter(0) }}>Reverse</Button>
+      <Button className="w-fit h-fit" onClick={() => { setReversed(!reversed); setExpandCounter(0) }}>Order</Button>
 
       <Table table={{ headers: BLOCK_HEADERS, rows: blocksData }} />
     </>
