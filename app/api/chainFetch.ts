@@ -60,7 +60,6 @@ export function fetchItem(hash: string) {
             'x-nonce': '0'
         }
     }).then((response) => {
-        console.log(response.status, response.statusText)
         if (response.status == 200)
             return Promise.resolve(response.json())
         else

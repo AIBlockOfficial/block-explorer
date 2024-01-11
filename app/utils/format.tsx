@@ -1,4 +1,4 @@
-import { IBlockRow } from '@/app/interfaces'
+import { IBlockRow, ITxRow } from '@/app/interfaces'
 
 /**
  * Gets all numbers from the start value to the end value, inclusive
@@ -22,14 +22,29 @@ export function displayBigNumbers(number: number) {
 export function formatBlockTableRows(blocks: any, reversed: boolean) {
     const result: IBlockRow[] = [];
     blocks.forEach((block: any) => {
-        // console.log(block)
         result.push({
             number: block[1].block.header.b_num,
             blockHash: block[0],
             status: 'Unknown',
             nbTx: block[1].block.transactions.length,
-            age: 'Na',
+            age: 'n/a',
         } as IBlockRow)
+    });
+
+    return reversed ? result.reverse() : result
+}
+
+export function formatTxTableRows(txs: any, reversed: boolean) {
+    const result: ITxRow[] = [];
+    txs.forEach((tx: any) => {
+        result.push({
+            txHash: tx[0],
+            blockNum: '',
+            type: 'Unknown',
+            status: 'Unknown',
+            address: 'n/a',
+            age: 'n/a',
+        } as ITxRow)
     });
 
     return reversed ? result.reverse() : result
@@ -37,8 +52,6 @@ export function formatBlockTableRows(blocks: any, reversed: boolean) {
 
 export function isHash(value: string) {
     const regex = /^[a-fA-F0-9]{64,65}$/;
-    console.log(regex.test(value))
-    console.log('len', value.length)
     return regex.test(value)
 }
 

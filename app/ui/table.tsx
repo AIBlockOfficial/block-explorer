@@ -76,7 +76,7 @@ function TxTable({ rows, short = false }: { rows: ITxRow[], short?: boolean }) {
             <tr key={index} className={`${index == rows.length - 1 ? '' : 'border-b border-b-gray-200'}`}>
                 <td className={`${row_spacing} flex flex-row`}>
                     <Typography as={Link} href={`/transaction/${txHash}`} variant='small' className={`text-blue-900 text-xs ${fira.className} hover:underline`}>
-                        {shortenHash(txHash)}
+                        {txHash.length > 10 ? shortenHash(txHash) : txHash}
                     </Typography>
                     <Square2StackIcon className='h-4 w-4 text-blue-900 hover:cursor-pointer' />
                 </td>
@@ -132,7 +132,7 @@ function isTxTable(object: any): object is ITxRow {
  * Table component for displaying blocks and transactions
  */
 export default function Table({ table, short }: { table: ITable, short?: boolean }) {
-    if (short) // Short table on home page
+    if (short) // Short table
         table.rows = table.rows.slice(0, 6)
     return (
         <Card className='min-h-fit w-full shadow-xl rounded-sm border border-gray-300 mt-2'>

@@ -5,11 +5,13 @@ export async function GET(_req: NextRequest, { params }: { params: { hash: strin
     try {
       const item = await chain.fetchItem(params.hash);  
       return NextResponse.json(item);
-    } catch (error) {
+    } catch (error: any) {
       return NextResponse.json(
-        { error: "Failed to get item" },
         {
-          status: 500,
+          ...error
+        },
+        {
+          status: error.status,
         }
       );
     }

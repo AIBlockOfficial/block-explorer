@@ -9,6 +9,7 @@ import { ListBulletIcon } from "@heroicons/react/24/outline"
 import { ITable, IBlockRow, ITxRow } from '@/app/interfaces'
 import { getRange, formatBlockTableRows } from "@/app/utils/format"
 import { BLOCK_HEADERS_SHORT, BLOCK_PER_PAGE_SHORT } from '@/app/constants'
+import TxData from '@/app/data/txs.json'
 
 const TxTable: ITable = {
   headers: ["TxHash", "Type", "Status", "Age"],
@@ -29,8 +30,6 @@ export default function Page() {
       },
     }).then(async response => {
       const data = await response.json()
-      console.log(data)
-
       setLatest(data.content ? data.content.block.header.b_num : 0) // Set latest block. If error set latest to 0 (won't load any blocks)
     });
   }, []);
