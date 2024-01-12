@@ -95,7 +95,7 @@ export default function Navbar() {
                         return (
                           <Link
                             key={item.name}
-                            href={item.href}
+                            href={'#'}
                             onClick={() => setCurrent(item.href)}
                             className={' text-gray-400 rounded-md px-3 py-2 text-sm font-medium cursor-default'}
                             aria-current={current == item.href ? 'page' : undefined}
