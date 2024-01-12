@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from "react"
 import Table from '@/app/ui/table'
 import { Typography } from "@material-tailwind/react"
-import { getRange, formatBlockTableRows } from "../utils"
-import { BLOCK_HEADERS, BLOCKS_PER_PAGE as BLOCKS_PER_CHUNK } from "../constants"
+import { getRange, formatBlockTableRows, formatBlockData } from "../utils"
+import { BLOCK_HEADERS, BLOCKS_PER_CHUNK as BLOCKS_PER_CHUNK } from "../constants"
 import { IBlockRow } from "@/app/interfaces"
 import { Button } from "@/app/ui/button"
 import useScrollPosition from "../hooks/useScrollPosition"
@@ -21,7 +21,7 @@ export default function Page() {
     }
   }, [scroll])
 
-  // Executed on component mount
+  // Executed on component mount and when reversed state is changes
   useEffect(() => {
     fetch(`api/latestBlock`, {
       method: 'GET',
@@ -37,7 +37,7 @@ export default function Page() {
     });
   }, [reversed]);
 
-  // Executed after setting latestBlock
+  // Executed after latestBlock state is changed
   useEffect(() => {
     if (latestBlockNum) {
       fetch(`/api/blocks`, {
@@ -51,12 +51,13 @@ export default function Page() {
         },
       }).then(async response => {
         const data = await response.json();
-        console.log(data.content)
-        setBlocksData(data.content ? formatBlockTableRows(data.content, reversed) : []) // Set blocks. If error, set latest to empty array
+        const blocks = data.content.map((rawBlock: any)=> formatBlockData(rawBlock)) // Format raw block to app interface
+        setBlocksData(data.content ? formatBlockTableRows(blocks, reversed) : []) // Set blocks. If error, set latest to empty array
       });
     }
   }, [latestBlockNum])
 
+  // Expand table items by BLOCKS_PER_CHUNK (triggers when scroll is at a certain height on page)
   async function expand() {
     if (latestBlockNum)
       fetch(`/api/blocks`, {
@@ -71,14 +72,11 @@ export default function Page() {
       }).then(async response => {
         const data = await response.json();
         let existing = blocksData;
-        setBlocksData(data.content ? [...existing, ...formatBlockTableRows(data.content, reversed)] : []) // Set blocks. If error, set latest to empty array
+        const blocks = data.content.map((rawBlock: any)=> formatBlockData(rawBlock)) // Format raw block to app interface
+        setBlocksData(blocks ? [...existing, ...formatBlockTableRows(blocks, reversed)] : []) // Set blocks. If error, set latest to empty array
       });
     setExpandCounter(expandCounter + 1)
   }
-
-  useEffect(()=> {
-    console.log(blocksData)
-  }, [blocksData])
 
   return (
     <>

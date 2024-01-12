@@ -1,24 +1,50 @@
 /** ------------ DATA FORMAT ------------ */
-import { Block, BlockInfo, IBlockRow, ITxRow } from '@/app/interfaces'
-import { getUnicornSeed,  getUnicornWitness} from '@/app/utils'
+import { Block, BlockData, BlockResult, IBlockRow, ITxRow } from '@/app/interfaces'
+// import { getUnicornSeed,  getUnicornWitness} from '@/app/utils'
+
+/**
+ * Format raw block data to Block interface
+ * @param block raw block
+ * @returns 
+ */
+export const formatBlockData = (block: BlockResult): Block => {
+    const blockData = (block[1] as BlockData).block 
+    return {
+        hash: block[0] as string,
+        bNum: blockData.header.b_num,
+        previousHash: blockData.header.previous_hash,
+        seed: blockData.header.seed_value,
+        version: blockData.header.version,
+        bits: blockData.header.bits,
+        miningTxHashNonces: {
+          hash: blockData.header.nonce_and_mining_tx_hash[1] as string,
+          nonce: blockData.header.nonce_and_mining_tx_hash[0] as number[],
+        },
+        merkleRootHash: {
+          merkleRootHash: blockData.header.txs_merkle_root_and_hash[1],
+          txsHash: blockData.header.txs_merkle_root_and_hash[0],
+        },
+        transactions: blockData.transactions,
+      }
+}
+  
 /**
  * Format table row for block
- * @param blocks Raw format
+ * @param blocks
  * @param reversed 
  * @returns Array of block rows
  */
-export function formatBlockTableRows(blocks: any, reversed: boolean): IBlockRow[] {
-    const result: IBlockRow[] = [];
-    blocks.forEach((block: any) => {
+export function formatBlockTableRows(blocks: Block[], reversed: boolean): IBlockRow[] {
+    const result: IBlockRow[] = []
+    blocks.forEach((block: Block) => {
         result.push({
-            number: block[1].block.header.b_num,
-            blockHash: block[0],
+            number: block.bNum.toString(),
+            blockHash: block.hash,
             status: 'Unknown',
-            nbTx: block[1].block.transactions.length,
+            nbTx: block.transactions.length.toString(),
             age: 'n/a',
         } as IBlockRow)
-    });
-
+    })
     return reversed ? result.reverse() : result
 }
 
@@ -29,7 +55,7 @@ export function formatBlockTableRows(blocks: any, reversed: boolean): IBlockRow[
  * @returns Array of transaction rows
  */
 export function formatTxTableRows(txs: any, reversed: boolean): ITxRow[] {
-    const result: ITxRow[] = [];
+    const result: ITxRow[] = []
     txs.forEach((tx: any) => {
         result.push({
             txHash: tx[0],
@@ -39,24 +65,23 @@ export function formatTxTableRows(txs: any, reversed: boolean): ITxRow[] {
             address: 'n/a',
             age: 'n/a',
         } as ITxRow)
-    });
-
+    })
     return reversed ? result.reverse() : result
 }
 
-export const formatToBlockInfo = (data: any): BlockInfo => {
-    const block: Block = data.block;
+//   export const formatToBlockInfo = (data: any): BlockInfo => {
+//     const block: Block = data.block
   
-    const blockInfo: BlockInfo = {
-      bNum: block.bNum,
-      hash: data.hash,
-      merkleRootHash: block.merkleRootHash.merkleRootHash || "N/A",
-      previousHash: block.previousHash || "N/A",
-      version: block.version,
-      byteSize: `${new TextEncoder().encode(JSON.stringify(block)).length} bytes`,
-      nbTransactions: block.transactions.length,
-      unicornSeed: getUnicornSeed(block.seed) || "N/A",
-      unicornWitness: getUnicornWitness(block.seed) || "N/A",
-    };
-    return blockInfo;
-  };
+//     const blockInfo: BlockInfo = {
+//       bNum: block.bNum,
+//       hash: data.hash,
+//       merkleRootHash: block.merkleRootHash.merkleRootHash || "N/A",
+//       previousHash: block.previousHash || "N/A",
+//       version: block.version,
+//       byteSize: `${new TextEncoder().encode(JSON.stringify(block)).length} bytes`,
+//       nbTransactions: block.transactions.length,
+//       unicornSeed: getUnicornSeed(block.seed) || "N/A",
+//       unicornWitness: getUnicornWitness(block.seed) || "N/A",
+//     }
+//     return blockInfo
+//   }

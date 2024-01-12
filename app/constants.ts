@@ -5,7 +5,7 @@ export const MEMPOOL_URL = 'https://compute.a-block.net'
 /** BLOCKS */
 export const BLOCK_HEADERS = ["Number", "Block Hash", "Status", "Nb of Tx", "Age"]
 export const BLOCK_HEADERS_SHORT = ["Number", "Block Hash", "Status", "Age"]
-export const BLOCKS_PER_PAGE = 20;
+export const BLOCKS_PER_CHUNK = 20;
 export const BLOCK_PER_PAGE_SHORT = 6;
 
 /** TRANSACTIONS */
