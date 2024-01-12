@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react"
 import Table from '@/app/ui/table'
 import { Typography } from "@material-tailwind/react"
 import { getRange, formatBlockTableRows } from "../utils/format"
-import { BLOCK_HEADERS, BLOCKS_PER_PAGE } from "../constants"
+import { BLOCK_HEADERS, BLOCKS_PER_PAGE as BLOCKS_PER_CHUNK } from "../constants"
 import { IBlockRow } from "@/app/interfaces"
 import { Button } from "@/app/ui/button"
 import useScrollPosition from "../utils/useScrollPosition"
@@ -15,9 +15,9 @@ export default function Page() {
   const [blocksData, setBlocksData] = useState<IBlockRow[]>([]); // Blocks data list
   const scroll = useScrollPosition() // Scroll position hook
 
-  useEffect(() => {
+  useEffect(() => { // Auto expand feature. Can be improved but works well for now.
     if (scroll > (window.innerHeight / 2) * expandCounter) {
-      Expand()
+      expand()
     }
   }, [scroll])
 
@@ -33,7 +33,7 @@ export default function Page() {
       if (reversed)
         setLatest(data.content ? data.content.block.header.b_num : 0) // Set latest block. If error set latest to 0 (won't load any blocks)
       else
-        setLatest(BLOCKS_PER_PAGE)
+        setLatest(BLOCKS_PER_CHUNK)
     });
   }, [reversed]);
 
@@ -43,7 +43,7 @@ export default function Page() {
       fetch(`/api/blocks`, {
         method: 'POST',
         body: reversed ?
-          JSON.stringify(getRange((latestBlockNum - BLOCKS_PER_PAGE) >= 0 ? latestBlockNum - BLOCKS_PER_PAGE : 0, latestBlockNum))
+          JSON.stringify(getRange((latestBlockNum - BLOCKS_PER_CHUNK) >= 0 ? latestBlockNum - BLOCKS_PER_CHUNK : 0, latestBlockNum))
           :
           JSON.stringify(getRange(0, latestBlockNum)),
         headers: {
@@ -51,19 +51,20 @@ export default function Page() {
         },
       }).then(async response => {
         const data = await response.json();
+        console.log(data.content)
         setBlocksData(data.content ? formatBlockTableRows(data.content, reversed) : []) // Set blocks. If error, set latest to empty array
       });
     }
   }, [latestBlockNum])
 
-  async function Expand() {
+  async function expand() {
     if (latestBlockNum)
       fetch(`/api/blocks`, {
         method: 'POST',
         body: reversed ?
-          JSON.stringify(getRange((latestBlockNum - BLOCKS_PER_PAGE * expandCounter) - BLOCKS_PER_PAGE >= 0 ? (latestBlockNum - BLOCKS_PER_PAGE * expandCounter) - BLOCKS_PER_PAGE : 0, (latestBlockNum - BLOCKS_PER_PAGE * expandCounter) - 1))
+          JSON.stringify(getRange((latestBlockNum - BLOCKS_PER_CHUNK * expandCounter) - BLOCKS_PER_CHUNK >= 0 ? (latestBlockNum - BLOCKS_PER_CHUNK * expandCounter) - BLOCKS_PER_CHUNK : 0, (latestBlockNum - BLOCKS_PER_CHUNK * expandCounter) - 1))
           :
-          JSON.stringify(getRange(0 + BLOCKS_PER_PAGE * expandCounter, latestBlockNum + BLOCKS_PER_PAGE * expandCounter)),
+          JSON.stringify(getRange(0 + BLOCKS_PER_CHUNK * expandCounter, latestBlockNum + BLOCKS_PER_CHUNK * expandCounter)),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -74,6 +75,10 @@ export default function Page() {
       });
     setExpandCounter(expandCounter + 1)
   }
+
+  useEffect(()=> {
+    console.log(blocksData)
+  }, [blocksData])
 
   return (
     <>

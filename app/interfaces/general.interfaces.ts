@@ -128,29 +128,16 @@ export interface OutputValueV2 {
 /* -------------------------------------------------------------------------- */
 /*                             Network Fetch Data                             */
 /* -------------------------------------------------------------------------- */
-export interface BlockDataWrapperV0_1 {
-    block: BlockDataV0_1;
-    mining_tx_hash_and_nonces: (number[] | string)[];
-}
 
-export interface BlockDataV0_1 {
-    header: {
-        version: number;
-        bits: number;
-        nonce: number[];
-        b_num: number;
-        seed_value: number[];
-        previous_hash: string | null;
-        merkle_root_hash: string;
-    };
-    transactions: string[];
-}
+export type BlockResult = (string | BlockDataV2)[]
+
+export type NonceMiningTx = (number[] | string)[]
 
 export interface BlockDataV2 {
     header: {
         version: number;
         bits: number;
-        nonce_and_mining_tx_hash: (number[] | string)[];
+        nonce_and_mining_tx_hash: NonceMiningTx;
         b_num: number;
         seed_value: number[];
         previous_hash: string;
@@ -254,3 +241,22 @@ export type IAssetItem = {
 export type IAssetToken = {
     Token: number;
 };
+
+/** Legacy structure, should not be necessary but keeping it for now */
+export interface BlockDataWrapperV0_1 {
+    block: BlockDataV0_1;
+    mining_tx_hash_and_nonces: NonceMiningTx;
+}
+
+export interface BlockDataV0_1 {
+    header: {
+        version: number;
+        bits: number;
+        nonce: number[];
+        b_num: number;
+        seed_value: number[];
+        previous_hash: string | null;
+        merkle_root_hash: string;
+    };
+    transactions: string[];
+}
