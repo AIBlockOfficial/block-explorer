@@ -5,7 +5,7 @@ import { fira, ibm } from '@/app/styles/fonts'
 import Link from "next/link"
 import { InformationCircleIcon } from "@heroicons/react/24/outline"
 import Table from "@/app/ui/table"
-import { isHash, isNum, formatTxTableRows } from "@/app/utils/format"
+import { isHash, isNum, formatTxTableRows } from "@/app/utils"
 import { IErrorInternal, ITxRow } from "@/app/interfaces"
 
 const tabs = ['Overview', 'Transactions']

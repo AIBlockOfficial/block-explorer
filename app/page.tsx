@@ -7,7 +7,7 @@ import { CubeIcon } from "@heroicons/react/24/outline"
 import { ArrowsRightLeftIcon } from "@heroicons/react/24/outline"
 import { ListBulletIcon } from "@heroicons/react/24/outline"
 import { ITable, IBlockRow, ITxRow } from '@/app/interfaces'
-import { getRange, formatBlockTableRows } from "@/app/utils/format"
+import { getRange, formatBlockTableRows } from "@/app/utils"
 import { BLOCK_HEADERS_SHORT, BLOCK_PER_PAGE_SHORT } from '@/app/constants'
 
 const TxTable: ITable = {

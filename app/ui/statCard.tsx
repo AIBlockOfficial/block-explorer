@@ -1,5 +1,5 @@
 import React from 'react'
-import { formatNumber } from '@/app/utils/format'
+import { formatNumber } from '@/app/utils'
 import { Card, Typography } from "@material-tailwind/react"
 import { ibm } from '../styles/fonts'
 

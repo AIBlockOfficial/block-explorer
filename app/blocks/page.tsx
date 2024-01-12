@@ -2,11 +2,11 @@
 import React, { useEffect, useState } from "react"
 import Table from '@/app/ui/table'
 import { Typography } from "@material-tailwind/react"
-import { getRange, formatBlockTableRows } from "../utils/format"
+import { getRange, formatBlockTableRows } from "../utils"
 import { BLOCK_HEADERS, BLOCKS_PER_PAGE as BLOCKS_PER_CHUNK } from "../constants"
 import { IBlockRow } from "@/app/interfaces"
 import { Button } from "@/app/ui/button"
-import useScrollPosition from "../utils/useScrollPosition"
+import useScrollPosition from "../hooks/useScrollPosition"
 
 export default function Page() {
   const [reversed, setReversed] = useState<boolean>(true); // Revers table order

@@ -1,6 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
-import { shortenHash } from '@/app/utils/format'
+import { shortenHash } from '@/app/utils'
 import { ITable, IBlockRow, ITxRow } from '@/app/interfaces'
 import { Card, Typography } from '@material-tailwind/react'
 import { Square2StackIcon } from '@heroicons/react/24/outline'
