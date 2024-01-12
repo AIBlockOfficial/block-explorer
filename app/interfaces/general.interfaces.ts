@@ -130,7 +130,7 @@ export interface OutputValueV2 {
 /*                             Network Fetch Data                             */
 /* -------------------------------------------------------------------------- */
 
-export type BlockResult = (string | BlockData)[]
+export type BlockResult = (string | BlockData)[] // when fetching block_by_num or latestBlock, the hash is returned seperate from main object
 
 export type NonceMiningTx = (number[] | string)[]
 
@@ -152,6 +152,10 @@ export interface BlockData {
 
 export interface BlockItem {
     Block: BlockData
+}
+
+export interface TransactionItem {
+    Transaction: TransactionData
 }
 
 export interface TransactionData {

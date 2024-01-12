@@ -1,4 +1,7 @@
 /** ------------ DISPLAY FORMAT ------------ */
+
+import { Transaction } from "@/app/interfaces";
+
 /**
  * Gets all numbers from the start value to the end value, inclusive
  * 
@@ -48,25 +51,25 @@ export const formatAddressForDisplay = (address: string, nbChar: number) => {
     }
 };
 
-//   export const formatAmount = (tx: Transaction, aggregated: boolean) => {
-//     let result = 0;
-//     if (tx.outputs.length > 1) {
-//       if (tx.outputs[0].value.hasOwnProperty("Token")) {
-//         if (!aggregated)
-//           result = (tx.outputs[0].value as { Token: number }).Token;
-//         else
-//           result = tx.outputs.reduce(
-//             (acc: number, o: any) => acc + o.value.Token,
-//             0
-//           );
-//       }
-//     } else if (tx.outputs.length != 0) {
-//       if (tx.outputs[0].value.hasOwnProperty("Token")) {
-//         result += (tx.outputs[0].value as { Token: number }).Token;
-//       }
-//     }
-//     return formatNumber((result / 25200).toFixed(2));
-//   };
+  export const formatAmount = (tx: Transaction, aggregated: boolean) => {
+    let result = 0;
+    if (tx.outputs.length > 1) {
+      if (tx.outputs[0].value.hasOwnProperty("Token")) {
+        if (!aggregated)
+          result = (tx.outputs[0].value as { Token: number }).Token;
+        else
+          result = tx.outputs.reduce(
+            (acc: number, o: any) => acc + o.value.Token,
+            0
+          );
+      }
+    } else if (tx.outputs.length != 0) {
+      if (tx.outputs[0].value.hasOwnProperty("Token")) {
+        result += (tx.outputs[0].value as { Token: number }).Token;
+      }
+    }
+    return formatNumber((result / 25200).toFixed(2));
+  };
 
 /**
  * Get unicorn seed from raw unicorn value

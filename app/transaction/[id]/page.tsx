@@ -1,19 +1,22 @@
 "use client"
-import React, { useEffect } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
-import { ITable } from "@/app/interfaces"
+import { ITable, Transaction, TransactionInfo, TransactionItem } from "@/app/interfaces"
 import { Card, Typography } from "@material-tailwind/react"
 import { InformationCircleIcon } from "@heroicons/react/24/outline"
 import { fira } from '@/app/styles/fonts'
 import txData from '@/app/data/txs.json'
+import { formatTxData, isHash } from "@/app/utils"
+import { TXS_FIELDS } from "@/app/constants"
 
 
 const tabs = ['Overview', 'Inputs']
-const fields = ['Transaction Hash', 'Previous Hash', 'Block Number', 'Transaction Type', 'Transaction Status', 'Sender Address', 'Timestamp']
 
 export default function Page({ params }: { params: { id: string } }) {
-  const id = params.id;
-  const [activeTab, setActiveTab] = React.useState(tabs[0])
+  const [activeTab, setActiveTab] = useState(tabs[0])
+  const [TxInfo, setTxInfo] = useState<TransactionInfo | undefined | any>(undefined);
+  const [TxInputs, setTxInputs] = useState<any>([])
+  const [found, setFound] = useState<boolean | undefined>(undefined)
 
   const txTable: ITable = {
     headers: ["Transaction Hash", "Block Num.", "Type", "Status", "Address", "Age"],
@@ -22,21 +25,33 @@ export default function Page({ params }: { params: { id: string } }) {
 
   /// The transaction information is being pulled here
   useEffect(() => {
-    fetch(`/api/item/${id}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }).then(response => {
-      console.log(response);
-    });
-  });
+    if (isHash(params.id)) { // is a hash
+      fetch(`/api/item/${params.id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }).then(async response => {
+        if (response.status == 200) {
+          const data = await response.json()
+          const transaction: Transaction = formatTxData((data.content as TransactionItem).Transaction)
+          console.log('TX', transaction)
+          setTxInfo(transaction);
+          // const txInfo: TransactionInfo = formatToTxInfo(transaction);
+          // setTxInfo(txInfo)
+          setFound(true)
+        } else {
+          setFound(false)
+        }
+      })
+    }
+  }, [])
 
   return (
     <>
       <Card className="mt-6 w-full border border-gray-300 min-w-fit">
         <div className="mb-2 pt-4 pl-5">
-          <Typography variant="lead" className="">Transaction</Typography>
+          <Typography variant="lead" className="">Transaction (WIP)</Typography>
           <Typography variant="small" className="text-gray-600">A transaction on the A-Block blockchain</Typography>
         </div>
         <div className="w-full h-12 pl-2 bg-transparent flex align-bottom justify-start">
@@ -49,12 +64,14 @@ export default function Page({ params }: { params: { id: string } }) {
           })}
         </div>
         <div className={`${activeTab == tabs[0] ? 'block' : 'hidden'} w-full h-auto`}>
-          <Card className='min-h-fit w-full border-gray-300'>
-            <table className='w-full min-w-max table-auto text-left rounded-sm'>
+          <Card className='min-h-fit w-full border-gray-300 p-4'>
+            <>{JSON.stringify(TxInfo)}</>
+
+            {/* <table className='w-full min-w-max table-auto text-left rounded-sm'>
               <tbody>
                 <List />
               </tbody>
-            </table>
+            </table> */}
           </Card>
         </div>
 
@@ -69,7 +86,7 @@ export default function Page({ params }: { params: { id: string } }) {
 function List() {
   const data = Object.values(txData[0])
   let result: JSX.Element[] = []
-  fields.map((field, index) => {
+  TXS_FIELDS.map((field, index) => {
     result.push(
       <tr key={index} className="border">
         <td className="pl-6 py-4 w-1/3">
@@ -80,7 +97,7 @@ function List() {
         </td>
         <td className="pl-4 py-4 w-2/3">
           <Typography as={Link} href={`/block/${'number'}`} variant='small' className={`text-blue-900 text-xs ${fira.className}`}>
-            {data[index] ?? ''}
+            {'n/a'}
           </Typography>
         </td>
       </tr>

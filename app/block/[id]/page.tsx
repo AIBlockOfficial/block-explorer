@@ -28,7 +28,6 @@ export default function Page({ params }: { params: { id: string } }) {
       }).then(async response => {
         if (response.status == 200) {
           const data = await response.json()
-          console.log(data.content)
           setBlockTxIds((data.content as BlockItem).Block.block.transactions)
           const block: Block = formatBlockData([params.id, data.content.Block] as BlockResult)
           handleFoundBlock(block)
