@@ -6,6 +6,14 @@ export enum Networks {
     Mainnet = 'Mainnet'
 }
 
+export interface Network {
+    name: string;
+    displayName: string;
+    chainId: number;
+    sIp: string;
+    sPort: number;
+}
+
 export enum IAPIRoute {
     /* --------------------------- Storage Network Routes --------------------------- */
     LatestBlock = '/latest_block',
