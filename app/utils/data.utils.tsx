@@ -1,6 +1,6 @@
 /** ------------ DATA FORMAT ------------ */
-import { Block, BlockData, BlockResult, IBlockRow, ITxRow } from '@/app/interfaces'
-// import { getUnicornSeed,  getUnicornWitness} from '@/app/utils'
+import { Block, BlockData, BlockInfo, BlockResult, IBlockRow, ITxRow } from '@/app/interfaces'
+import { getUnicornSeed,  getUnicornWitness} from '@/app/utils'
 
 /**
  * Format raw block data to Block interface
@@ -69,19 +69,18 @@ export function formatTxTableRows(txs: any, reversed: boolean): ITxRow[] {
     return reversed ? result.reverse() : result
 }
 
-//   export const formatToBlockInfo = (data: any): BlockInfo => {
-//     const block: Block = data.block
-  
-//     const blockInfo: BlockInfo = {
-//       bNum: block.bNum,
-//       hash: data.hash,
-//       merkleRootHash: block.merkleRootHash.merkleRootHash || "N/A",
-//       previousHash: block.previousHash || "N/A",
-//       version: block.version,
-//       byteSize: `${new TextEncoder().encode(JSON.stringify(block)).length} bytes`,
-//       nbTransactions: block.transactions.length,
-//       unicornSeed: getUnicornSeed(block.seed) || "N/A",
-//       unicornWitness: getUnicornWitness(block.seed) || "N/A",
-//     }
-//     return blockInfo
-//   }
+  export const formatToBlockInfo = (block: Block): BlockInfo => {
+    // console.log('INFO', block)
+    const blockInfo: BlockInfo = {
+      bNum: block.bNum,
+      hash: block.hash,
+      merkleRootHash: block.merkleRootHash.merkleRootHash || "n/a",
+      previousHash: block.previousHash || "n/a",
+      version: block.version,
+      byteSize: `${new TextEncoder().encode(JSON.stringify(block)).length} bytes`,
+      nbTransactions: block.transactions.length,
+      unicornSeed: getUnicornSeed(block.seed) || "n/a",
+      unicornWitness: getUnicornWitness(block.seed) || "n/a",
+    }
+    return blockInfo
+  }

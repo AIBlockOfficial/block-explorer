@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react"
 import Table from '@/app/ui/table'
 import { Typography } from "@material-tailwind/react"
 import { getRange, formatBlockTableRows, formatBlockData } from "../utils"
-import { BLOCK_HEADERS, BLOCKS_PER_CHUNK as BLOCKS_PER_CHUNK } from "../constants"
+import { BLOCK_TABLE_HEADERS, BLOCKS_PER_CHUNK as BLOCKS_PER_CHUNK } from "../constants"
 import { IBlockRow } from "@/app/interfaces"
 import { Button } from "@/app/ui/button"
 import useScrollPosition from "../hooks/useScrollPosition"
@@ -86,7 +86,7 @@ export default function Page() {
       </div>
       <Button className="w-fit h-fit" onClick={() => { setReversed(!reversed); setExpandCounter(0) }}>Order</Button>
 
-      <Table table={{ headers: BLOCK_HEADERS, rows: blocksData }} />
+      <Table table={{ headers: BLOCK_TABLE_HEADERS, rows: blocksData }} />
     </>
   )
 }

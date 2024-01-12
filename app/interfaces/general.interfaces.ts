@@ -150,6 +150,10 @@ export interface BlockData {
     }
 }
 
+export interface BlockItem {
+    Block: BlockData
+}
+
 export interface TransactionData {
     druid_info: null
     inputs: InputData[]

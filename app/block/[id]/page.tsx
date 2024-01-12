@@ -1,27 +1,26 @@
 "use client"
 import { useEffect, useState } from "react"
 import { Card, Typography } from "@material-tailwind/react"
-import { fira, ibm } from '@/app/styles/fonts'
+import { fira } from '@/app/styles/fonts'
 import Link from "next/link"
 import { InformationCircleIcon } from "@heroicons/react/24/outline"
 import Table from "@/app/ui/table"
-import { isHash, isNum, formatTxTableRows } from "@/app/utils"
-import { IErrorInternal, ITxRow } from "@/app/interfaces"
+import { isHash, isNum, formatTxTableRows, formatBlockData, formatToBlockInfo } from "@/app/utils"
+import { Block, BlockData, BlockInfo, BlockItem, BlockResult, IErrorInternal, ITxRow } from "@/app/interfaces"
+import { BLOCK_FIELDS } from "@/app/constants"
 
 const tabs = ['Overview', 'Transactions']
-const fields = ['Block Hash', 'Previous Hash', 'Block Number', 'Block Status', 'Timestamp', 'Merkle Root Hash', 'Unicorn Seed', 'Unicorn Witness', 'Byte Size', 'Version']
 
 export default function Page({ params }: { params: { id: string } }) {
   const [activeTab, setActiveTab] = useState(tabs[0])
-  const [blockData, setBlockData] = useState(undefined);
-  const [blockTxIds, setBlockTxIds] = useState([])
+  const [blockInfo, setBlockInfo] = useState<BlockInfo | undefined>(undefined);
+  const [blockTxIds, setBlockTxIds] = useState<string[]>([])
   const [found, setFound] = useState<boolean | undefined>(undefined)
-  const [blockHash, setBlockHash] = useState(params.id)
 
   /// The block information is being pulled here
   useEffect(() => {
-    if (isHash(params.id)) { // Is a hash
-      fetch(`/api/item/${params.id}`, { // Is a hash
+    if (isHash(params.id)) { // is a hash
+      fetch(`/api/item/${params.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -29,12 +28,15 @@ export default function Page({ params }: { params: { id: string } }) {
       }).then(async response => {
         if (response.status == 200) {
           const data = await response.json()
-          handleFoundBlock(data.content.Block.block)
+          console.log(data.content)
+          setBlockTxIds((data.content as BlockItem).Block.block.transactions)
+          const block: Block = formatBlockData([params.id, data.content.Block] as BlockResult)
+          handleFoundBlock(block)
         } else {
           setFound(false)
         }
       })
-    } else if (isNum(params.id)) { // Is a number
+    } else if (isNum(params.id)) { // is a number
       fetch(`/api/blocks`, {
         method: 'POST',
         body: JSON.stringify([params.id]),
@@ -45,13 +47,14 @@ export default function Page({ params }: { params: { id: string } }) {
         if (response.status == 200) {
           const data = await response.json()
           // if a bnum that doesn't exist is used, the result is successful and returns an empty value.
-          if (data.content[0][0]) {
-            setBlockHash(data.content[0][0])
-            handleFoundBlock(data.content[0][1].block)
+          if (data.content[0][0] as BlockResult) {
+            setBlockTxIds((data.content[0][1] as BlockData).block.transactions)
+            const block: Block = formatBlockData(data.content[0] as BlockResult)
+            handleFoundBlock(block)
           } else {
             setFound(false)
           }
-        } else {
+        } else { // did not pass format verification, therfore should not exist on chain
           setFound(false)
         }
       })
@@ -60,9 +63,9 @@ export default function Page({ params }: { params: { id: string } }) {
     }
   }, []);
 
-  const handleFoundBlock = (block: any) => {
-    setBlockData(block.header)
-    setBlockTxIds(block.transactions)
+  const handleFoundBlock = (block: Block) => {
+    const blockInfo = formatToBlockInfo(block);
+    setBlockInfo(blockInfo)
     setFound(true)
   }
 
@@ -81,18 +84,18 @@ export default function Page({ params }: { params: { id: string } }) {
               {tabs[0]}
             </div>
             {/** Transactions */}
-            <div onClick={() => { if (blockData != undefined) setActiveTab(tabs[1]) }} className={`${activeTab == tabs[1] ? 'font-semibold border-b-2 border-gray-500' : ''} w-auto mx-2 px-2 pt-4 text-xs text-gray-600 border-gray-300 hover:border-b-2 hover:font-semibold hover:cursor-pointer flex flex-row align-middle justify-center `}>
-              {tabs[1]} {blockData != undefined && <div className="w-6 h-4 ml-2 bg-gray-300 rounded-t-xl rounded-b-xl"><p className={`w-fit ml-auto mr-auto font-semibold text-xs ${fira.className}`}>{blockTxIds.length}</p></div>}
+            <div onClick={() => { if (blockInfo != undefined) setActiveTab(tabs[1]) }} className={`${activeTab == tabs[1] ? 'font-semibold border-b-2 border-gray-500' : ''} w-auto mx-2 px-2 pt-4 text-xs text-gray-600 border-gray-300 hover:border-b-2 hover:font-semibold hover:cursor-pointer flex flex-row align-middle justify-center `}>
+              {tabs[1]} {blockInfo != undefined && <div className="w-6 h-4 ml-2 bg-gray-300 rounded-t-xl rounded-b-xl"><p className={`w-fit ml-auto mr-auto font-semibold text-xs ${fira.className}`}>{blockTxIds.length}</p></div>}
             </div>
           </div>
           {/** TAB BODIES */}
           <div className={`${activeTab == tabs[0] ? 'block' : 'hidden'} w-full h-auto`}>{/** Overview */}
             <Card className='min-h-fit w-full border-gray-300'>
-              <List blockData={blockData} blockHash={blockHash} />
+              <List blockInfo={blockInfo} />
             </Card>
           </div >
           <div className={`${activeTab == tabs[1] ? 'block' : 'hidden'} w-full h-auto`}>{/** Transactions */}
-            {blockTxIds.length > 0 && blockData != undefined &&
+            {blockTxIds.length > 0 && blockInfo != undefined &&
               <BlockTxs blockTxIds={blockTxIds} activeTab={activeTab} />
             }{blockTxIds.length == 0 &&
               <div className="ml-auto mr-auto p-4 font-thin border-t border-gray-200 shadow-xl bg-white">
@@ -142,7 +145,7 @@ function BlockTxs({ blockTxIds, activeTab }: any) {
   )
 }
 
-function List({ blockData, blockHash }: any) {
+function List({ blockInfo }: { blockInfo: BlockInfo | undefined }) {
   return (
     <table className='w-full min-w-max table-auto text-left rounded-sm'>
       <tbody>{/** Block Hash */}
@@ -150,13 +153,13 @@ function List({ blockData, blockHash }: any) {
           <td className="pl-6 py-4 w-1/3">
             <Typography variant='small' className={`font-body flex flex-row align-middle justify-start text-gray-600`}>
               <InformationCircleIcon className="h-4 w-4 mr-1 mt-0.5 text-gray-600 hover:cursor-help" />
-              {fields[0]}
+              {BLOCK_FIELDS[0]}
             </Typography>
           </td>
           <td className="pl-4 py-4 w-2/3">
-            {blockData != undefined ?
+            {blockInfo != undefined ?
               <Typography as={Link} href={'#'} variant='small' className={`w-fit text-blue-900 text-xs ${fira.className}`}>
-                {blockHash}
+                {blockInfo.hash}
               </Typography>
               :
               <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
@@ -167,13 +170,13 @@ function List({ blockData, blockHash }: any) {
           <td className="pl-6 py-4 w-1/3">
             <Typography variant='small' className={`font-body flex flex-row align-middle justify-start text-gray-600`}>
               <InformationCircleIcon className="h-4 w-4 mr-1 mt-0.5 text-gray-600 hover:cursor-help" />
-              {fields[1]}
+              {BLOCK_FIELDS[1]}
             </Typography>
           </td>
           <td className="pl-4 py-4 w-2/3">
-            {blockData != undefined ?
+            {blockInfo != undefined ?
               <Typography as={Link} href={'#'} variant='small' className={`w-fit text-blue-900 text-xs ${fira.className}`}>
-                {blockData.previous_hash == null ? 'n/a' : blockData.previous_hash}
+                {blockInfo.previousHash}
               </Typography>
               :
               <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
@@ -184,13 +187,13 @@ function List({ blockData, blockHash }: any) {
           <td className="pl-6 py-4 w-1/3">
             <Typography variant='small' className={`font-body flex flex-row align-middle justify-start text-gray-600`}>
               <InformationCircleIcon className="h-4 w-4 mr-1 mt-0.5 text-gray-600 hover:cursor-help" />
-              {fields[2]}
+              {BLOCK_FIELDS[2]}
             </Typography>
           </td>
           <td className="pl-4 py-4 w-2/3">
-            {blockData != undefined ?
+            {blockInfo != undefined ?
               <Typography as={Link} href={'#'} variant='small' className={`w-fit text-blue-900 text-xs ${fira.className}`}>
-                {blockData.b_num}
+                {blockInfo.bNum}
               </Typography>
               :
               <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
@@ -201,11 +204,11 @@ function List({ blockData, blockHash }: any) {
           <td className="pl-6 py-4 w-1/3">
             <Typography variant='small' className={`font-body flex flex-row align-middle justify-start text-gray-600`}>
               <InformationCircleIcon className="h-4 w-4 mr-1 mt-0.5 text-gray-600 hover:cursor-help" />
-              {fields[3]}
+              {BLOCK_FIELDS[3]}
             </Typography>
           </td>
           <td className="pl-4 py-4 w-2/3">
-            {blockData != undefined ?
+            {blockInfo != undefined ?
               <Typography as={Link} href={'#'} variant='small' className={`w-fit text-blue-900 text-xs ${fira.className}`}>
                 {'UNKNOWN'}
               </Typography>
@@ -218,11 +221,11 @@ function List({ blockData, blockHash }: any) {
           <td className="pl-6 py-4 w-1/3">
             <Typography variant='small' className={`font-body flex flex-row align-middle justify-start text-gray-600`}>
               <InformationCircleIcon className="h-4 w-4 mr-1 mt-0.5 text-gray-600 hover:cursor-help" />
-              {fields[4]}
+              {BLOCK_FIELDS[4]}
             </Typography>
           </td>
           <td className="pl-4 py-4 w-2/3">
-            {blockData != undefined ?
+            {blockInfo != undefined ?
               <Typography as={Link} href={'#'} variant='small' className={`w-fit text-blue-900 text-xs ${fira.className}`}>
                 {'n/a'}
               </Typography>
@@ -235,13 +238,13 @@ function List({ blockData, blockHash }: any) {
           <td className="pl-6 py-4 w-1/3">
             <Typography variant='small' className={`font-body flex flex-row align-middle justify-start text-gray-600`}>
               <InformationCircleIcon className="h-4 w-4 mr-1 mt-0.5 text-gray-600 hover:cursor-help" />
-              {fields[5]}
+              {BLOCK_FIELDS[5]}
             </Typography>
           </td>
           <td className="pl-4 py-4 w-2/3">
-            {blockData != undefined ?
+            {blockInfo != undefined ?
               <Typography as={Link} href={'#'} variant='small' className={`w-fit text-blue-900 text-xs ${fira.className}`}>
-                {blockData.txs_merkle_root_and_hash[1]}
+                {blockInfo.merkleRootHash}
               </Typography>
               :
               <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
@@ -252,13 +255,13 @@ function List({ blockData, blockHash }: any) {
           <td className="pl-6 py-4 w-1/3">
             <Typography variant='small' className={`font-body flex flex-row align-middle justify-start text-gray-600`}>
               <InformationCircleIcon className="h-4 w-4 mr-1 mt-0.5 text-gray-600 hover:cursor-help" />
-              {fields[6]}
+              {BLOCK_FIELDS[6]}
             </Typography>
           </td>
           <td className="pl-4 py-4 w-2/3">
-            {blockData != undefined ?
+            {blockInfo != undefined ?
               <Typography as={Link} href={'#'} variant='small' className={`w-fit text-blue-900 text-xs ${fira.className}`}>
-                {`${blockData.seed_value[0]}${blockData.seed_value[1]}${blockData.seed_value[2]}${blockData.seed_value[3]}${blockData.seed_value[4]}...`} {/** Create format function in utils */}
+                {blockInfo.unicornSeed}
               </Typography>
               :
               <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
@@ -269,13 +272,13 @@ function List({ blockData, blockHash }: any) {
           <td className="pl-6 py-4 w-1/3">
             <Typography variant='small' className={`font-body flex flex-row align-middle justify-start text-gray-600`}>
               <InformationCircleIcon className="h-4 w-4 mr-1 mt-0.5 text-gray-600 hover:cursor-help" />
-              {fields[9]}
+              {BLOCK_FIELDS[7]}
             </Typography>
           </td>
           <td className="pl-4 py-4 w-2/3">
-            {blockData != undefined ?
+            {blockInfo != undefined ?
               <Typography as={Link} href={'#'} variant='small' className={`w-fit text-blue-900 text-xs ${fira.className}`}>
-                {`${blockData.seed_value[100]}${blockData.seed_value[101]}${blockData.seed_value[102]}${blockData.seed_value[103]}${blockData.seed_value[104]}...`} {/** Create format function in utils */}
+                {blockInfo.unicornWitness}
               </Typography>
               :
               <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
@@ -286,13 +289,13 @@ function List({ blockData, blockHash }: any) {
           <td className="pl-6 py-4 w-1/3">
             <Typography variant='small' className={`font-body flex flex-row align-middle justify-start text-gray-600`}>
               <InformationCircleIcon className="h-4 w-4 mr-1 mt-0.5 text-gray-600 hover:cursor-help" />
-              {fields[7]}
+              {BLOCK_FIELDS[8]}
             </Typography>
           </td>
           <td className="pl-4 py-4 w-2/3">
-            {blockData != undefined ?
+            {blockInfo != undefined ?
               <Typography as={Link} href={'#'} variant='small' className={`w-fit text-blue-900 text-xs ${fira.className}`}>
-                {blockData.bits}
+                {blockInfo.byteSize}
               </Typography>
               :
               <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
@@ -303,13 +306,13 @@ function List({ blockData, blockHash }: any) {
           <td className="pl-6 py-4 w-1/3">
             <Typography variant='small' className={`font-body flex flex-row align-middle justify-start text-gray-600`}>
               <InformationCircleIcon className="h-4 w-4 mr-1 mt-0.5 text-gray-600 hover:cursor-help" />
-              {fields[8]}
+              {BLOCK_FIELDS[9]}
             </Typography>
           </td>
           <td className="pl-4 py-4 w-2/3">
-            {blockData != undefined ?
+            {blockInfo != undefined ?
               <Typography as={Link} href={'#'} variant='small' className={`w-fit text-blue-900 text-xs ${fira.className}`}>
-                {blockData.version}
+                {blockInfo.version}
               </Typography>
               :
               <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
