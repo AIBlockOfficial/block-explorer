@@ -1,4 +1,9 @@
-/** WIP, some of these structures are outdatted */
+/** WIP, some of these structures are unfinished */
+/** General interface are divided into three types : 
+ *  Data    : Raw data retrieved from API calls
+ *  Regular : Similar to raw data, but serves as a bridge between raw data and display data 
+ *  Info    : Formatted data ready to be displayed on front-end
+ */
 /* -------------------------------------------------------------------------- */
 /*                             Display Structures                             */
 /* -------------------------------------------------------------------------- */
@@ -7,12 +12,17 @@ export enum ItemType {
     Transaction,
 }
 
-export interface ITable {
-    headers: string[]
-    rows: IBlockRow[] | ITxRow[]
+export enum OutputType {
+    Token = 'Token',
+    Item = 'Item'
 }
 
-export interface IBlockRow {
+export interface ITable {
+    headers: string[]
+    rows: BlockRow[] | TxRow[]
+}
+
+export interface BlockRow {
     number: string,
     blockHash: string,
     status: string,
@@ -20,7 +30,7 @@ export interface IBlockRow {
     age: string,
 }
 
-export interface ITxRow {
+export interface TxRow {
     txHash: string,
     blockNum: string,
     type: string,
@@ -31,43 +41,55 @@ export interface ITxRow {
 
 export interface BlockInfo {
     hash: string
-    bNum: number
+    bNum: string
     timestamp?: string
     merkleRootHash: string
     previousHash: string
-    version: number
+    version: string
     byteSize: string
-    nbTransactions: number
-    unicornSeed: string // these are bigints, better as strings
-    unicornWitness: string // these are bigints, better as strings 
+    nbTransactions: string
+    unicornSeed: string
+    unicornWitness: string
 }
 
 export interface TransactionInfo {
-    inputs: {
-        previousOutHash: string
-        scriptSig: string
-    }[]
-    outputs: TokenInfo[] | ReceiptInfo[]
+    hash: string,
+    bHash: string,
+    bNum: string,
+    type: string,
+    timpestamp: string,
+    inputs: InputInfo[]
+    outputs: TokenInfo[] | ItemInfo[]
 }
 
 export interface InputInfo {
     previousOutHash: string
-    scriptSig: string
+    scriptSig: StackInfo
+}
+
+export interface StackInfo {
+    op?: string
+    num?: string
+    bytes?: string
+    signature?: string[]
+    pubKey?: string[]
 }
 
 export interface TokenInfo {
+    type: OutputType
     address: string
     tokens: string
     fractionatedTokens: string
-    lockTime: number
+    lockTime: string
 }
 
-export interface ReceiptInfo {
+export interface ItemInfo {
+    type: OutputType
     address: string
-    receipts: number
-    lockTime: number
+    items: string
+    lockTime: string
     genesisTransactionHash: string
-    metadata: any
+    metadata: string
 }
 
 /* -------------------------------------------------------------------------- */
@@ -92,6 +114,7 @@ export interface Block {
 }
 
 export interface Transaction {
+    hash: string
     druidInfo: null
     inputs: Input[]
     outputs: Output[]
@@ -115,12 +138,12 @@ export interface Output {
     scriptPubKey: string
     value:
     | { Token: number }
-    | { Receipt: number }
-    | { Token: OutputValueV2 }
-    | { Receipt: OutputValueV2 }
+    | { Item: number }
+    | { Token: OutputValue }
+    | { Item: OutputValue }
 }
 
-export interface OutputValueV2 {
+export interface OutputValue {
     amount: number
     drs_tx_hash: string | null
     metadata: string | null
@@ -129,7 +152,9 @@ export interface OutputValueV2 {
 /* -------------------------------------------------------------------------- */
 /*                             Network Fetch Data                             */
 /* -------------------------------------------------------------------------- */
-
+/**
+ *  Network Fetched data is the raw format of blockchain items when retrieved through the API.
+ */
 export type BlockResult = (string | BlockData)[] // when fetching block_by_num or latestBlock, the hash is returned seperate from main object
 
 export type NonceMiningTx = (number[] | string)[]
@@ -180,7 +205,7 @@ export interface OutputData {
     drs_tx_hash: string | null
     locktime: number
     script_public_key: string
-    value: { Token: number } | { Receipt: number }
+    value: { Token: number } | { Item: number }
 }
 
 export interface StackData {
@@ -189,67 +214,4 @@ export interface StackData {
     Bytes?: string
     Signature?: number[]
     PubKey?: number[]
-}
-
-// Transaction
-export type ITransaction = {
-    inputs: ITxIn[]
-    outputs: ITxOut[]
-    version: number
-    druid_info: IDdeValues | null
-}
-
-// Transaction input
-export type ITxIn = {
-    previous_out: IOutPoint | null
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    script_signature: any | null
-}
-
-// OutPoint
-export type IOutPoint = {
-    t_hash: string
-    n: number
-}
-
-// Transaction Output
-export type ITxOut = {
-    value: IAssetToken | IAssetItem
-    locktime: number
-    drs_block_hash: string | null
-    script_public_key: string | null
-}
-
-// Dual-double-entry data
-export type IDdeValues = {
-    druid: string
-    participants: number
-    expectations: IDruidExpectation[]
-}
-
-// Dual-double-entry expectation
-export type IDruidExpectation = {
-    from: string
-    to: string
-    asset: IAssetToken | IAssetItem
-}
-
-// DDE/DRUID droplet value as stored on mempool node
-export type IDruidDroplet = {
-    participants: number
-    tx: { [key: string]: ITransaction }
-}
-
-// Item asset type
-export type IAssetItem = {
-    Item: {
-        amount: number
-        drs_tx_hash: string
-        metadata: string | null
-    }
-}
-
-// Token asset type
-export type IAssetToken = {
-    Token: number
 }

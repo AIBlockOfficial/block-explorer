@@ -1,14 +1,14 @@
 "use client"
 import React from "react"
 import Table from '@/app/ui/table'
-import { ITable } from "@/app/interfaces"
+import { Table } from "@/app/interfaces"
 import { Typography } from "@material-tailwind/react"
 import txData from '@/app/data/txs.json'
 
 /** TODO */
 
 export default function Page() {
-  const txTable: ITable = {
+  const txTable: Table = {
     headers: ["Transaction Hash", "Block Num.", "Type", "Status", "Address", "Age"],
     rows: txData
   }

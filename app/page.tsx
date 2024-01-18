@@ -6,7 +6,7 @@ import StatCard from '@/app/ui/statCard'
 import { CubeIcon } from "@heroicons/react/24/outline"
 import { ArrowsRightLeftIcon } from "@heroicons/react/24/outline"
 import { ListBulletIcon } from "@heroicons/react/24/outline"
-import { ITable, IBlockRow, ITxRow } from '@/app/interfaces'
+import { ITable, BlockRow, TxRow } from '@/app/interfaces'
 import { getRange, formatBlockTableRows, formatBlockData } from "@/app/utils"
 import { BLOCK_TABLE_HEADERS_SHORT, BLOCK_PER_PAGE_SHORT } from '@/app/constants'
 
@@ -17,7 +17,7 @@ const TxTable: ITable = {
 
 export default function Page() {
   const [latestBlockNum, setLatest] = useState();
-  const [blocksData, setBlocksData] = useState<IBlockRow[]>([]);
+  const [blocksData, setBlocksData] = useState<BlockRow[]>([]);
   // const [txsData, setTxsData] = useState<ITxRow[]>([]); /** TODO */
 
   // Executed on component mount
@@ -53,7 +53,7 @@ export default function Page() {
   return (
     <>
       <div className="flex p-4 justify-evenly flex-wrap">
-        <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Blocks'} value={latestBlockNum ? latestBlockNum : undefined} icon={<CubeIcon className='card-icons' />} href={'#'} /></div>
+        <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Blocks'} value={latestBlockNum ? latestBlockNum + 1 : undefined} icon={<CubeIcon className='card-icons' />} href={'#'} /></div>
         <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Transactions'} value={latestBlockNum ? undefined : undefined} icon={<ArrowsRightLeftIcon className='card-icons' />} href={'#'} /></div>
         <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Addresses'} value={latestBlockNum ? undefined : undefined} icon={<ListBulletIcon className='card-icons' />} href={'#'} /></div>
       </div>

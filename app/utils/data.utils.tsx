@@ -1,6 +1,6 @@
 /** ------------ DATA FORMAT ------------ */
-import { Block, BlockData, BlockInfo, BlockResult, IBlockRow, ITxRow, InputData, OutputData, Transaction, TransactionData, TransactionInfo } from '@/app/interfaces'
-import { getUnicornSeed, getUnicornWitness } from '@/app/utils'
+import { Block, BlockData, BlockInfo, BlockResult, BlockRow, TxRow, InputData, OutputData, Transaction, TransactionData, TransactionInfo, StackInfo, StackData, Input, Output, TokenInfo, ItemInfo, OutputType } from '@/app/interfaces'
+import { formatAmount, getUnicornSeed, getUnicornWitness } from '@/app/utils'
 
 /** ------------ BLOCKS ------------ */
 /**
@@ -31,13 +31,13 @@ export const formatBlockData = (block: BlockResult): Block => {
 
 export const formatToBlockInfo = (block: Block): BlockInfo => {
   const blockInfo: BlockInfo = {
-    bNum: block.bNum,
+    bNum: block.bNum.toString(),
     hash: block.hash,
     merkleRootHash: block.merkleRootHash.merkleRootHash || "n/a",
     previousHash: block.previousHash || "n/a",
-    version: block.version,
+    version: block.version.toString(),
     byteSize: `${new TextEncoder().encode(JSON.stringify(block)).length} bytes`,
-    nbTransactions: block.transactions.length,
+    nbTransactions: block.transactions.length.toString(),
     unicornSeed: getUnicornSeed(block.seed) || "n/a",
     unicornWitness: getUnicornWitness(block.seed) || "n/a",
   }
@@ -50,8 +50,8 @@ export const formatToBlockInfo = (block: Block): BlockInfo => {
  * @param reversed 
  * @returns Array of block rows
  */
-export const formatBlockTableRows = (blocks: Block[], reversed: boolean): IBlockRow[] => {
-  const result: IBlockRow[] = []
+export const formatBlockTableRows = (blocks: Block[], reversed: boolean): BlockRow[] => {
+  const result: BlockRow[] = []
   blocks.forEach((block: Block) => {
     result.push({
       number: block.bNum.toString(),
@@ -59,15 +59,16 @@ export const formatBlockTableRows = (blocks: Block[], reversed: boolean): IBlock
       status: 'Unknown',
       nbTx: block.transactions.length.toString(),
       age: 'n/a',
-    } as IBlockRow)
+    } as BlockRow)
   })
   return reversed ? result.reverse() : result
 }
 
 /** ------------ TRANSACTIONS ------------ */
 
-export const formatTxData = (data: TransactionData): Transaction => {
+export const formatTxData = (data: TransactionData, hash: string): Transaction => {
   return {
+    hash: hash,
     druidInfo: data.druid_info,
     inputs: data.inputs.map((input: InputData) => {
       return {
@@ -93,15 +94,46 @@ export const formatTxData = (data: TransactionData): Transaction => {
   };
 }
 
-// export const formatToTxInfo = (transaction: Transaction): TransactionInfo => {
-//   const transactionInfo: TransactionInfo = {
-//     inputs: transaction.inputs.map((input)=> {
-//       return {previousOutHash: input.previousOut?.tHash, }
-//     })
-//     outputs: 
-//   }
-//   return transactionInfo
-// }
+export const formatToTxInfo = (transaction: Transaction): TransactionInfo => {
+  const type = transaction.outputs[0].value.hasOwnProperty('Token') ? OutputType.Token : OutputType.Item
+  return {
+    hash: transaction.hash,
+    bHash: 'n/a',
+    bNum: 'n/a',
+    type: type.toString(),
+    timpestamp: 'n/a',
+    inputs: transaction.inputs.map((input: Input) => {
+      return {
+        previousOutHash: input.previousOut ? input.previousOut.tHash : 'n/a',
+        scriptSig: {
+          op: input.scriptSig.stack[0].Op,
+          num: input.scriptSig.stack[0].Num?.toString(),
+          bytes: input.scriptSig.stack[0].Bytes,
+          signature: input.scriptSig.stack[0].Signature?.map((s) => s.toString()),
+          pubKey: input.scriptSig.stack[0].PubKey?.map((k) => k.toString()),
+        }
+      }
+    }),
+    // outputs: []
+    outputs: type == OutputType.Token ? transaction.outputs.map((output: Output) => {
+      return {
+        address: output.scriptPubKey,
+        tokens: formatAmount(transaction, true),
+        fractionatedTokens: (output.value as { Token: number }).Token.toString(),
+        lockTime: output.locktime.toString(),
+      } as TokenInfo
+    })
+      : transaction.outputs.map((output: Output) => {
+        return {
+          address: output.scriptPubKey,
+          items: (output.value as { Item: number }).Item.toString(),
+          lockTime: output.locktime.toString(),
+          genesisTransactionHash: 'n/a',
+          metadata: 'n/a'
+        } as ItemInfo
+      })
+  }
+}
 
 /**
  * Format table row for transaction
@@ -109,8 +141,8 @@ export const formatTxData = (data: TransactionData): Transaction => {
  * @param reversed 
  * @returns Array of transaction rows
  */
-export const formatTxTableRows = (txs: any, reversed: boolean): ITxRow[] => {
-  const result: ITxRow[] = []
+export const formatTxTableRows = (txs: any, reversed: boolean): TxRow[] => {
+  const result: TxRow[] = []
   txs.forEach((tx: any) => {
     result.push({
       txHash: tx[0],
@@ -119,7 +151,7 @@ export const formatTxTableRows = (txs: any, reversed: boolean): ITxRow[] => {
       status: 'Unknown',
       address: 'n/a',
       age: 'n/a',
-    } as ITxRow)
+    } as TxRow)
   })
   return reversed ? result.reverse() : result
 }

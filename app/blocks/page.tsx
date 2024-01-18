@@ -4,7 +4,7 @@ import Table from '@/app/ui/table'
 import { Typography } from "@material-tailwind/react"
 import { getRange, formatBlockTableRows, formatBlockData } from "../utils"
 import { BLOCK_TABLE_HEADERS, BLOCKS_PER_CHUNK as BLOCKS_PER_CHUNK } from "../constants"
-import { IBlockRow } from "@/app/interfaces"
+import { BlockRow } from "@/app/interfaces"
 import { Button } from "@/app/ui/button"
 import useScrollPosition from "../hooks/useScrollPosition"
 
@@ -12,7 +12,7 @@ export default function Page() {
   const [reversed, setReversed] = useState<boolean>(true); // Revers table order
   const [expandCounter, setExpandCounter] = useState<number>(0) // Auto expand table as page is scrolled
   const [latestBlockNum, setLatest] = useState<number>(); // Serves as end value for blocks fetch scope
-  const [blocksData, setBlocksData] = useState<IBlockRow[]>([]); // Blocks data list
+  const [blocksData, setBlocksData] = useState<BlockRow[]>([]); // Blocks data list
   const scroll = useScrollPosition() // Scroll position hook
 
   useEffect(() => { // Auto expand feature. Can be improved but works well for now.
@@ -51,6 +51,7 @@ export default function Page() {
         },
       }).then(async response => {
         const data = await response.json();
+        console.log('BLOCKS: ', data.content)
         const blocks = data.content.map((rawBlock: any)=> formatBlockData(rawBlock)) // Format raw block to app interface
         setBlocksData(data.content ? formatBlockTableRows(blocks, reversed) : []) // Set blocks. If error, set latest to empty array
       });

@@ -12,4 +12,6 @@ export const BLOCK_PER_PAGE_SHORT = 6;
 /** TRANSACTIONS */
 export const TXS_TABLE_HEADERS = ["Transaction Hash", "Block Num.", "Type", "Status", "Address", "Age"]
 export const TXS_TABLE_HEADERS_SHORT = ["TxHash", "Type", "Status", "Age"]
-export const TXS_FIELDS = ['Transaction Hash', 'Previous Hash', 'Block Number', 'Transaction Type', 'Transaction Status', 'Sender Address', 'Timestamp']
+export const TXS_FIELDS = ['Transaction Hash', 'Block Hash', 'Block Number', 'Transaction Type', 'Timestamp']
+export const TXS_IN_FIELDS = ['Previous Out', 'Script Sig']
+export const TXS_OUT_FIELDS = ['Address', 'Tokens', 'Fractionated Tokens', 'Locktime']

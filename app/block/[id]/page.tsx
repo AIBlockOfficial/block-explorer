@@ -6,8 +6,9 @@ import Link from "next/link"
 import { InformationCircleIcon } from "@heroicons/react/24/outline"
 import Table from "@/app/ui/table"
 import { isHash, isNum, formatTxTableRows, formatBlockData, formatToBlockInfo } from "@/app/utils"
-import { Block, BlockData, BlockInfo, BlockItem, BlockResult, IErrorInternal, ITxRow } from "@/app/interfaces"
+import { Block, BlockData, BlockInfo, BlockItem, BlockResult, IErrorInternal, TxRow } from "@/app/interfaces"
 import { BLOCK_FIELDS } from "@/app/constants"
+import ErrorBlock from "@/app/ui/errorBlock"
 
 const tabs = ['Overview', 'Transactions']
 
@@ -70,7 +71,7 @@ export default function Page({ params }: { params: { id: string } }) {
 
   return (
     <>
-      {found != false &&
+      {found &&
         <Card className="mt-6 w-full border border-gray-300 min-w-fit">
           <div className="mb-2 pt-4 pl-5">
             <Typography variant="lead" className="">Block</Typography>
@@ -83,7 +84,7 @@ export default function Page({ params }: { params: { id: string } }) {
               {tabs[0]}
             </div>
             {/** Transactions */}
-            <div onClick={() => { if (blockInfo != undefined) setActiveTab(tabs[1]) }} className={`${activeTab == tabs[1] ? 'font-semibold border-b-2 border-gray-500' : ''} w-auto mx-2 px-2 pt-4 text-xs text-gray-600 border-gray-300 hover:border-b-2 hover:font-semibold hover:cursor-pointer flex flex-row align-middle justify-center `}>
+            <div onClick={() => { if (blockInfo != undefined) setActiveTab(tabs[1]) }} className={`${activeTab == tabs[1] ? 'font-semibold border-b-2 border-gray-500' : ''} w-auto mx-2 px-2 pt-4 text-xs text-gray-600 border-gray-300 hover:border-b-2 hover:font-semibold hover:cursor-pointer flex flex-row align-middle justify-center`}>
               {tabs[1]} {blockInfo != undefined && <div className="w-6 h-4 ml-2 bg-gray-300 rounded-t-xl rounded-b-xl"><p className={`w-fit ml-auto mr-auto font-semibold text-xs ${fira.className}`}>{blockTxIds.length}</p></div>}
             </div>
           </div>
@@ -105,16 +106,14 @@ export default function Page({ params }: { params: { id: string } }) {
         </Card >
       } {
         found == false &&
-        <div className="ml-auto mr-auto mt-40 p-4 font-thin border border-gray-200 shadow-xl bg-white rounded-md">
-          <Typography variant='paragraph' className='font-thin text-gray-800 '>Error: {IErrorInternal.BlockNotFound}</Typography>
-        </div>
+        <ErrorBlock msg={IErrorInternal.BlockNotFound} />
       }
     </>
   )
 }
 
 function BlockTxs({ blockTxIds, activeTab }: any) {
-  const [blockTxs, setBlockTxs] = useState<ITxRow[]>([])
+  const [blockTxs, setBlockTxs] = useState<TxRow[]>([])
 
   useEffect(() => {
     if (blockTxs.length < 1 && activeTab == tabs[1])
