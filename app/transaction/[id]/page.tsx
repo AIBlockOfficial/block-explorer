@@ -49,7 +49,7 @@ export default function Page({ params }: { params: { id: string } }) {
   }, [])
   return (
     <>
-      {found &&
+      {found == undefined || found ?
         <Card className="mt-6 w-full border border-gray-300 min-w-fit max-w-full">
           <div className="mb-2 pt-4 pl-5">
             <Typography variant="lead" className="">Transaction</Typography>
@@ -99,7 +99,7 @@ export default function Page({ params }: { params: { id: string } }) {
             </div>
           </div>
         </Card>
-      }{found == false &&
+      :
         <ErrorBlock msg={IErrorInternal.TxNotFound} />
       }
     </>
