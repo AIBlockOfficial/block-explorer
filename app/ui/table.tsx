@@ -135,7 +135,7 @@ function LoadingTable({ rows, cols }: { rows: number, cols: number }) {
         for (let j = 0; j < cols; j++) {
             line.push(
                 <td key={j} className={row_spacing}>
-                    <div className="h-5 mx-1 rounded bg-gray-200 animate-pulse"></div>
+                    <div className="h-5 mx-1 rounded bg-gray-200 animate-pulse "></div>
                 </td>)
         }
         let a = (

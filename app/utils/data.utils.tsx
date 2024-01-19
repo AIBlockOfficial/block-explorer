@@ -118,7 +118,7 @@ export const formatToTxInfo = (transaction: Transaction): TransactionInfo => {
     outputs: type == OutputType.Token ? transaction.outputs.map((output: Output) => {
       return {
         address: output.scriptPubKey,
-        tokens: formatAmount(transaction, true),
+        tokens: formatAmount(transaction, true) + ' ABC',
         fractionatedTokens: (output.value as { Token: number }).Token.toString(),
         lockTime: output.locktime.toString(),
       } as TokenInfo
@@ -147,8 +147,8 @@ export const formatTxTableRows = (txs: any, reversed: boolean): TxRow[] => {
     result.push({
       txHash: tx[0],
       blockNum: '',
-      type: 'Unknown',
-      status: 'Unknown',
+      type: 'Token',
+      status: 'Item',
       address: 'n/a',
       age: 'n/a',
     } as TxRow)

@@ -12,9 +12,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} antialiased overflow-auto`}>
+      <body className={`${inter.className} antialiased overflow-y-auto overflow-x-hidden`}>
         <Navbar />
-        <main className="flex h-auto min-h-[calc(100vh-64px)] overflow-hidden flex-col p-6 border">
+        <main className="flex h-auto min-h-[calc(100vh-64px)] overflow-y-hidden flex-col p-6 border overflow-x-auto">
           {children}
         </main>
       </body>

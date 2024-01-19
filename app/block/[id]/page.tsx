@@ -94,7 +94,8 @@ export default function Page({ params }: { params: { id: string } }) {
               <List blockInfo={blockInfo} />
             </Card>
           </div >
-          <div className={`${activeTab == tabs[1] ? 'block' : 'hidden'} w-full h-auto`}>{/** Transactions */}
+          {/** Transactions */}
+          <div className={`${activeTab == tabs[1] ? 'block' : 'hidden'} w-full h-auto pb-2`}>
             {blockTxIds.length > 0 && blockInfo != undefined &&
               <BlockTxs blockTxIds={blockTxIds} activeTab={activeTab} />
             }{blockTxIds.length == 0 &&
@@ -144,19 +145,27 @@ function BlockTxs({ blockTxIds, activeTab }: any) {
 }
 
 function List({ blockInfo }: { blockInfo: BlockInfo | undefined }) {
+  const col1 = 'pl-2 pr-1 w-5'
+  const col2 = 'py-4 w-64'
+  const col3 = 'pl-4 py-4 w-fit'
+  const helpIcon = 'h-4 w-4 text-gray-600 hover:cursor-help'
+
   return (
-    <table className='w-full min-w-max table-auto text-left rounded-sm'>
-      <tbody>{/** Block Hash */}
-        <tr className="border">
-          <td className="pl-6 py-4 w-1/3">
-            <Typography variant='small' className={`font-body flex flex-row align-middle justify-start text-gray-600`}>
-              <InformationCircleIcon className="h-4 w-4 mr-1 mt-0.5 text-gray-600 hover:cursor-help" />
+    <table className='w-full min-w-fit table-auto text-left rounded-sm'>
+      <tbody>
+        {/** Block Hash */}
+        <tr className="border-b border-t">
+          <td className={`${col1}`}>
+            <InformationCircleIcon className={helpIcon} />
+          </td>
+          <td className={`${col2}`}>
+            <Typography variant='small' className={`font-body text-gray-600`}>
               {BLOCK_FIELDS[0]}
             </Typography>
           </td>
-          <td className="pl-4 py-4 w-2/3">
+          <td className={`${col3}`}>
             {blockInfo != undefined ?
-              <Typography as={Link} href={'#'} variant='small' className={`w-fit text-blue-900 text-xs ${fira.className}`}>
+              <Typography as={Link} href={`/block/${blockInfo.hash}`} target="_blank" variant='small' className={`w-fit text-blue-900 ${fira.className} hover:underline`}>
                 {blockInfo.hash}
               </Typography>
               :
@@ -164,67 +173,61 @@ function List({ blockInfo }: { blockInfo: BlockInfo | undefined }) {
           </td>
         </tr>
         {/** Previous Hash */}
-        <tr className="border">
-          <td className="pl-6 py-4 w-1/3">
-            <Typography variant='small' className={`font-body flex flex-row align-middle justify-start text-gray-600`}>
-              <InformationCircleIcon className="h-4 w-4 mr-1 mt-0.5 text-gray-600 hover:cursor-help" />
+        <tr className="border-b border-t">
+          <td className={`${col1}`}>
+            <InformationCircleIcon className={helpIcon} />
+          </td>
+          <td className={`${col2}`}>
+            <Typography variant='small' className={`font-body text-gray-600`}>
               {BLOCK_FIELDS[1]}
             </Typography>
           </td>
-          <td className="pl-4 py-4 w-2/3">
-            {blockInfo != undefined ?
-              <Typography as={Link} href={'#'} variant='small' className={`w-fit text-blue-900 text-xs ${fira.className}`}>
+          <td className={`${col3}`}>
+            {blockInfo != undefined && blockInfo.previousHash != 'n/a' &&
+              <Typography as={Link} href={`/block/${blockInfo.previousHash}`} variant='small' className={`w-fit text-blue-900 hover:underline ${fira.className}`}>
                 {blockInfo.previousHash}
               </Typography>
-              :
-              <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
+            }{blockInfo != undefined && blockInfo.previousHash == 'n/a' &&
+              <Typography variant='paragraph' className={`w-fit text-gray-800`}>
+                {blockInfo.previousHash}
+              </Typography>
+            }{blockInfo == undefined &&
+              <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>
+            }
           </td>
         </tr>
         {/** Block Number */}
-        <tr className="border">
-          <td className="pl-6 py-4 w-1/3">
-            <Typography variant='small' className={`font-body flex flex-row align-middle justify-start text-gray-600`}>
-              <InformationCircleIcon className="h-4 w-4 mr-1 mt-0.5 text-gray-600 hover:cursor-help" />
+        <tr className="border-b border-t">
+          <td className={`${col1}`}>
+            <InformationCircleIcon className={helpIcon} />
+          </td>
+          <td className={`${col2}`}>
+            <Typography variant='small' className={`font-body  text-gray-600`}>
               {BLOCK_FIELDS[2]}
             </Typography>
           </td>
-          <td className="pl-4 py-4 w-2/3">
+          <td className={`${col3}`}>
             {blockInfo != undefined ?
-              <Typography as={Link} href={'#'} variant='small' className={`w-fit text-blue-900 text-xs ${fira.className}`}>
+              <Typography as={Link} href={`/block/${blockInfo.bNum}`} target="_blank" variant='paragraph' className={`w-fit text-blue-900 ${fira.className} hover:underline`}>
                 {blockInfo.bNum}
               </Typography>
               :
               <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
           </td>
         </tr>
-        {/** Block Status */}
-        <tr className="border">
-          <td className="pl-6 py-4 w-1/3">
-            <Typography variant='small' className={`font-body flex flex-row align-middle justify-start text-gray-600`}>
-              <InformationCircleIcon className="h-4 w-4 mr-1 mt-0.5 text-gray-600 hover:cursor-help" />
+        {/** Timestamp*/}
+        <tr className="border-b border-t">
+          <td className={`${col1}`}>
+            <InformationCircleIcon className={helpIcon} />
+          </td>
+          <td className={`${col2}`}>
+            <Typography variant='small' className={`font-body  text-gray-600`}>
               {BLOCK_FIELDS[3]}
             </Typography>
           </td>
-          <td className="pl-4 py-4 w-2/3">
+          <td className={`${col3}`}>
             {blockInfo != undefined ?
-              <Typography as={Link} href={'#'} variant='small' className={`w-fit text-blue-900 text-xs ${fira.className}`}>
-                {'UNKNOWN'}
-              </Typography>
-              :
-              <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
-          </td>
-        </tr>
-        {/** Timestamp*/}
-        <tr className="border">
-          <td className="pl-6 py-4 w-1/3">
-            <Typography variant='small' className={`font-body flex flex-row align-middle justify-start text-gray-600`}>
-              <InformationCircleIcon className="h-4 w-4 mr-1 mt-0.5 text-gray-600 hover:cursor-help" />
-              {BLOCK_FIELDS[4]}
-            </Typography>
-          </td>
-          <td className="pl-4 py-4 w-2/3">
-            {blockInfo != undefined ?
-              <Typography as={Link} href={'#'} variant='small' className={`w-fit text-blue-900 text-xs ${fira.className}`}>
+              <Typography variant='paragraph' className={`w-fit text-gray-800`}>
                 {'n/a'}
               </Typography>
               :
@@ -232,16 +235,18 @@ function List({ blockInfo }: { blockInfo: BlockInfo | undefined }) {
           </td>
         </tr>
         {/** Merkle Root Hash */}
-        <tr className="border">
-          <td className="pl-6 py-4 w-1/3">
-            <Typography variant='small' className={`font-body flex flex-row align-middle justify-start text-gray-600`}>
-              <InformationCircleIcon className="h-4 w-4 mr-1 mt-0.5 text-gray-600 hover:cursor-help" />
-              {BLOCK_FIELDS[5]}
+        <tr className="border-b border-t">
+          <td className={`${col1}`}>
+            <InformationCircleIcon className={helpIcon} />
+          </td>
+          <td className={`${col2}`}>
+            <Typography variant='small' className={`font-body  text-gray-600`}>
+              {BLOCK_FIELDS[4]}
             </Typography>
           </td>
-          <td className="pl-4 py-4 w-2/3">
+          <td className={`${col3}`}>
             {blockInfo != undefined ?
-              <Typography as={Link} href={'#'} variant='small' className={`w-fit text-blue-900 text-xs ${fira.className}`}>
+              <Typography variant='small' className={`w-fit text-gray-800 ${fira.className}`}>
                 {blockInfo.merkleRootHash}
               </Typography>
               :
@@ -249,16 +254,18 @@ function List({ blockInfo }: { blockInfo: BlockInfo | undefined }) {
           </td>
         </tr>
         {/** Unicorn Seed */}
-        <tr className="border">
-          <td className="pl-6 py-4 w-1/3">
-            <Typography variant='small' className={`font-body flex flex-row align-middle justify-start text-gray-600`}>
-              <InformationCircleIcon className="h-4 w-4 mr-1 mt-0.5 text-gray-600 hover:cursor-help" />
-              {BLOCK_FIELDS[6]}
+        <tr className="border-b border-t">
+          <td className={`${col1}`}>
+            <InformationCircleIcon className={helpIcon} />
+          </td>
+          <td className={`${col2}`}>
+            <Typography variant='small' className={`font-body  text-gray-600`}>
+              {BLOCK_FIELDS[5]}
             </Typography>
           </td>
-          <td className="pl-4 py-4 w-2/3">
+          <td className={`${col3}`}>
             {blockInfo != undefined ?
-              <Typography as={Link} href={'#'} variant='small' className={`w-fit text-blue-900 text-xs ${fira.className}`}>
+              <Typography variant='small' className={`w-fit text-gray-800 ${fira.className}`}>
                 {blockInfo.unicornSeed}
               </Typography>
               :
@@ -266,16 +273,18 @@ function List({ blockInfo }: { blockInfo: BlockInfo | undefined }) {
           </td>
         </tr>
         {/** Unicorn Witness*/}
-        <tr className="border">
-          <td className="pl-6 py-4 w-1/3">
-            <Typography variant='small' className={`font-body flex flex-row align-middle justify-start text-gray-600`}>
-              <InformationCircleIcon className="h-4 w-4 mr-1 mt-0.5 text-gray-600 hover:cursor-help" />
-              {BLOCK_FIELDS[7]}
+        <tr className="border-b border-t">
+          <td className={`${col1}`}>
+            <InformationCircleIcon className={helpIcon} />
+          </td>
+          <td className={`${col2}`}>
+            <Typography variant='small' className={`font-body  text-gray-600`}>
+              {BLOCK_FIELDS[6]}
             </Typography>
           </td>
-          <td className="pl-4 py-4 w-2/3">
+          <td className={`${col3} pr-2`}>
             {blockInfo != undefined ?
-              <Typography as={Link} href={'#'} variant='small' className={`w-fit text-blue-900 text-xs ${fira.className}`}>
+              <Typography variant='small' className={`w-fit text-gray-800 ${fira.className}`}>
                 {blockInfo.unicornWitness}
               </Typography>
               :
@@ -283,33 +292,42 @@ function List({ blockInfo }: { blockInfo: BlockInfo | undefined }) {
           </td>
         </tr>
         {/** Byte Size */}
-        <tr className="border">
-          <td className="pl-6 py-4 w-1/3">
-            <Typography variant='small' className={`font-body flex flex-row align-middle justify-start text-gray-600`}>
-              <InformationCircleIcon className="h-4 w-4 mr-1 mt-0.5 text-gray-600 hover:cursor-help" />
-              {BLOCK_FIELDS[8]}
+        <tr className="border-b border-t">
+          <td className={`${col1}`}>
+            <InformationCircleIcon className={helpIcon} />
+          </td>
+          <td className={`${col2}`}>
+            <Typography variant='small' className={`font-body  text-gray-600`}>
+              {BLOCK_FIELDS[7]}
             </Typography>
           </td>
-          <td className="pl-4 py-4 w-2/3">
+          <td className={`${col3}`}>
             {blockInfo != undefined ?
-              <Typography as={Link} href={'#'} variant='small' className={`w-fit text-blue-900 text-xs ${fira.className}`}>
-                {blockInfo.byteSize}
-              </Typography>
+              <div className="flex align-middle">
+                <Typography variant='paragraph' className={`w-fit text-gray-800 ${fira.className}`}>
+                  {blockInfo.byteSize.split(' ')[0]}
+                </Typography>
+                <Typography variant='paragraph' className={`w-fit text-gray-800 pl-1`}>
+                  {blockInfo.byteSize.split(' ')[1]}
+                </Typography>
+              </div>
               :
               <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
           </td>
         </tr>
         {/** Version */}
-        <tr className="border">
-          <td className="pl-6 py-4 w-1/3">
-            <Typography variant='small' className={`font-body flex flex-row align-middle justify-start text-gray-600`}>
-              <InformationCircleIcon className="h-4 w-4 mr-1 mt-0.5 text-gray-600 hover:cursor-help" />
-              {BLOCK_FIELDS[9]}
+        <tr className="border-t">
+          <td className={`${col1}`}>
+            <InformationCircleIcon className={helpIcon} />
+          </td>
+          <td className={`${col2}`}>
+            <Typography variant='small' className={`font-body  text-gray-600`}>
+              {BLOCK_FIELDS[8]}
             </Typography>
           </td>
-          <td className="pl-4 py-4 w-2/3">
+          <td className={`${col3}`}>
             {blockInfo != undefined ?
-              <Typography as={Link} href={'#'} variant='small' className={`w-fit text-blue-900 text-xs ${fira.className}`}>
+              <Typography variant='paragraph' className={`w-fit text-gray-800 ${fira.className}`}>
                 {blockInfo.version}
               </Typography>
               :

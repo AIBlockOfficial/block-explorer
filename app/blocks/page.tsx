@@ -23,6 +23,7 @@ export default function Page() {
 
   // Executed on component mount and when reversed state is changes
   useEffect(() => {
+    console.log('change')
     fetch(`api/latestBlock`, {
       method: 'GET',
       headers: {
@@ -33,7 +34,7 @@ export default function Page() {
       if (reversed)
         setLatest(data.content ? data.content.block.header.b_num : 0) // Set latest block. If error set latest to 0 (won't load any blocks)
       else
-        setLatest(BLOCKS_PER_CHUNK)
+        setLatest(data.content.block.header.b_num < BLOCKS_PER_CHUNK ? data.content.block.header.b_num : BLOCKS_PER_CHUNK )
     });
   }, [reversed]);
 
@@ -60,7 +61,7 @@ export default function Page() {
 
   // Expand table items by BLOCKS_PER_CHUNK (triggers when scroll is at a certain height on page)
   async function expand() {
-    if (latestBlockNum)
+    if (latestBlockNum){
       fetch(`/api/blocks`, {
         method: 'POST',
         body: reversed ?
@@ -76,7 +77,7 @@ export default function Page() {
         const blocks = data.content.map((rawBlock: any)=> formatBlockData(rawBlock)) // Format raw block to app interface
         setBlocksData(blocks ? [...existing, ...formatBlockTableRows(blocks, reversed)] : []) // Set blocks. If error, set latest to empty array
       });
-    setExpandCounter(expandCounter + 1)
+    setExpandCounter(expandCounter + 1)}
   }
 
   return (
