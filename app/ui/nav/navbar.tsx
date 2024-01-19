@@ -14,14 +14,15 @@ interface NavItems {
   name: string,
   href: string,
   items?: { name: string, href: string }[]
+  disabled?: boolean
 }
 
 const navigation: NavItems[] = [
   { name: 'Home', href: '/' },
   { name: 'Blocks', href: '/blocks' },
-  { name: 'Transactions', href: '/transactions' },
+  { name: 'Transactions', href: '/transactions', disabled: true },
   {
-    name: 'Statistics', href: '/statistics', items: [
+    name: 'Statistics', href: '/statistics', disabled: true ,items: [
       { name: 'Rich List & Supply', href: '/stats' },
       { name: 'Live Nodes', href: '/nodes' },
       { name: 'Developer Docs', href: '/docs' },
@@ -39,7 +40,7 @@ export default function Navbar() {
 
   useEffect(() => {
     setCurrent(pathname)
-  },[pathname])
+  }, [pathname])
 
   return (
     <Disclosure as="nav" className="bg-gray-200 shadow-xl">
@@ -73,7 +74,7 @@ export default function Navbar() {
                 <div className="hidden sm:ml-6 sm:block">
                   <div className="flex space-x-4">
                     {navigation.map((item) => {
-                      if (!item.hasOwnProperty('items'))
+                      if (!item.hasOwnProperty('items') && !item.disabled)
                         return (
                           <Link
                             key={item.name}
@@ -84,12 +85,24 @@ export default function Navbar() {
                               'rounded-md px-3 py-2 text-sm font-medium'
                             )}
                             aria-current={current == item.href ? 'page' : undefined}
+
                           >
                             {item.name}
                           </Link>)
-                      else
+                      else if (!item.disabled)
                         return item.items ? <Dropdown key={item.name} name={item.name} items={item.items} /> : []
+                      else if (item.disabled)
+                        return (
+                          <Link
+                            key={item.name}
+                            href={'#'}
+                            onClick={() => setCurrent(item.href)}
+                            className={' text-gray-400 rounded-md px-3 py-2 text-sm font-medium cursor-default'}
+                            aria-current={current == item.href ? 'page' : undefined}
 
+                          >
+                            {item.name}
+                          </Link>)
                     })}
                   </div>
                 </div>
