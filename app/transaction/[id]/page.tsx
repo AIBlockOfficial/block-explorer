@@ -2,11 +2,11 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import ErrorBlock from '@/app/ui/errorBlock'
-import { IErrorInternal, InputInfo, ItemInfo, ItemType, OutputType, TokenInfo, Transaction, TransactionInfo, TransactionItem } from "@/app/interfaces"
+import { IErrorInternal, InputDisplay, ItemDisplay, ItemType, OutputType, TokenDisplay, TransactionDisplay, TransactionItem } from "@/app/interfaces"
 import { Card, Typography } from "@material-tailwind/react"
 import { InformationCircleIcon } from "@heroicons/react/24/outline"
 import { fira } from '@/app/styles/fonts'
-import { formatToTxInfo, formatTxData, isGenesisTx, isHash } from "@/app/utils"
+import { formatToTxDisplay, isGenesisTx, isHash } from "@/app/utils"
 import { TXS_FIELDS, TXS_IN_FIELDS, TXS_OUT_FIELDS } from "@/app/constants"
 import { CountBadge } from "@/app/ui/countBadge"
 
@@ -19,7 +19,7 @@ const helpIcon = 'h-4 w-4 text-gray-600 hover:cursor-help'
 export default function Page({ params }: { params: { id: string } }) {
   const [activeTab, setActiveTab] = useState(tabs[0])
   const [rawData, setRawData] = useState<string | undefined>(undefined)
-  const [txInfo, setTxInfo] = useState<TransactionInfo | undefined>(undefined);
+  const [txDisplay, setTxDisplay] = useState<TransactionDisplay | undefined>(undefined);
   const [found, setFound] = useState<boolean | undefined>(undefined)
 
   /// The transaction information is being pulled here
@@ -34,10 +34,8 @@ export default function Page({ params }: { params: { id: string } }) {
         if (response.status == 200) {
           const data = await response.json()
           setRawData(data.content)
-          // WIP, not really necessary for now but should be usefull later
-          const transaction: Transaction = formatTxData((data.content as TransactionItem).Transaction, params.id)
-          const transactionInfo: TransactionInfo = formatToTxInfo(transaction);
-          setTxInfo(transactionInfo)
+          const transactionInfo: TransactionDisplay = formatToTxDisplay((data.content as TransactionItem).Transaction, params.id);
+          setTxDisplay(transactionInfo)
           setFound(true)
         } else {
           setFound(false)
@@ -58,14 +56,13 @@ export default function Page({ params }: { params: { id: string } }) {
           {/** TABS */}
           <div className="w-full h-12 pl-2 bg-transparent flex align-bottom justify-start">
             {tabs.map((tab, index) => {
-              console.log(tab, tabs[1])
               return (
                 <div key={index} onClick={() => setActiveTab(tab)} className={`${activeTab == tab ? 'font-semibold border-b-2 border-gray-500' : ''} w-auto mx-2 px-2 pt-4 text-xs text-gray-600 border-gray-300 hover:border-b-2 hover:font-semibold hover:cursor-pointer flex flex-row align-middle justify-center`}>
                   {tab}
-                  {txInfo != undefined &&
+                  {txDisplay != undefined &&
                     <>
-                      {tab == tabs[1] ? <CountBadge count={txInfo?.inputs.length.toString()} /> : ''}
-                      {tab == tabs[2] ? <CountBadge count={txInfo?.outputs.length.toString()} /> : ''}
+                      {tab == tabs[1] ? <CountBadge count={txDisplay?.inputs.length.toString()} /> : ''}
+                      {tab == tabs[2] ? <CountBadge count={txDisplay?.outputs.length.toString()} /> : ''}
                     </>
                   }
                 </div>
@@ -74,20 +71,20 @@ export default function Page({ params }: { params: { id: string } }) {
           </div>
           <div className={`${activeTab == tabs[0] ? 'block' : 'hidden'} w-full h-auto`}>
             <Card className='min-h-fit w-full border-gray-300'>
-              <List txInfo={txInfo} />
+              <List txInfo={txDisplay} />
             </Card>
           </div>
           <div className={`${activeTab == tabs[1] ? 'block' : 'hidden'} w-full h-auto`}>
             <div className="px-4 pb-4">
-              <Inputs txInputs={txInfo ? txInfo.inputs : []} />
+              <Inputs txInputs={txDisplay ? txDisplay.inputs : []} />
             </div>
           </div>
           <div className={`${activeTab == tabs[2] ? 'block' : 'hidden'} w-full h-auto`}>
-            {txInfo && txInfo.outputs.length > 0 &&
+            {txDisplay && txDisplay.outputs.length > 0 &&
               <div className="px-4 pb-4">
-                {txInfo.type == OutputType.Token &&
-                  <TokenOutputs txOutputs={txInfo.outputs as TokenInfo[]} />
-                }{txInfo.type == OutputType.Item &&
+                {txDisplay.type == OutputType.Token &&
+                  <TokenOutputs txOutputs={txDisplay.outputs as TokenDisplay[]} />
+                }{txDisplay.type == OutputType.Item &&
                   <>n/a</>
                 }
               </div>
@@ -99,20 +96,20 @@ export default function Page({ params }: { params: { id: string } }) {
             </div>
           </div>
         </Card>
-      :
+        :
         <ErrorBlock msg={IErrorInternal.TxNotFound} />
       }
     </>
   )
 }
 
-function Inputs({ txInputs }: { txInputs: InputInfo[] }) {
+function Inputs({ txInputs }: { txInputs: InputDisplay[] }) {
   return (
     txInputs.map((input, index) => {
       return (
-        <div className="mt-2">
+        <div className="mt-2" key={index}>
           <Typography variant='small' className={`ml-2 ${fira.className}`}>{index + 1}:</Typography>
-          <table key={index} className='min-w-fit max-w-fit table-auto text-left rounded-sm'>
+          <table className='min-w-fit max-w-fit table-auto text-left rounded-sm'>
             <tbody>{/** Transaction Hash */}
               <tr className="border">
                 <td className={`${col1}`}>
@@ -157,14 +154,14 @@ function Inputs({ txInputs }: { txInputs: InputInfo[] }) {
   )
 }
 
-function TokenOutputs({ txOutputs }: { txOutputs: TokenInfo[] }) {
+function TokenOutputs({ txOutputs }: { txOutputs: TokenDisplay[] }) {
   if (txOutputs)
     return (
       txOutputs.map((output, index) => {
         return (
-          <div className="mt-2">
+          <div className="mt-2" key={index} >
             <Typography variant='small' className={`ml-2 ${fira.className}`}>{index + 1}:</Typography>
-            <table key={index} className='w-full min-w-fit table-auto text-left rounded-sm'>
+            <table className='w-full min-w-fit table-auto text-left rounded-sm'>
               <tbody>
                 {/** Address */}
                 <tr className="border">
@@ -193,10 +190,10 @@ function TokenOutputs({ txOutputs }: { txOutputs: TokenInfo[] }) {
                     </Typography>
                   </td>
                   <td className={`${col3}`}>
-                  <div className="flex align-middle">
-                    <Typography variant='small' className={`w-fit text-gray-800 ${fira.className}`}>
-                      {output.tokens}
-                    </Typography>
+                    <div className="flex align-middle">
+                      <Typography variant='small' className={`w-fit text-gray-800 ${fira.className}`}>
+                        {output.tokens}
+                      </Typography>
                     </div>
                   </td>
                 </tr>
@@ -241,7 +238,7 @@ function TokenOutputs({ txOutputs }: { txOutputs: TokenInfo[] }) {
   return []
 }
 
-function List({ txInfo }: { txInfo: TransactionInfo | undefined }) {
+function List({ txInfo }: { txInfo: TransactionDisplay | undefined }) {
   return (
     <table className='w-full min-w-fit table-auto text-left rounded-sm'>
       <tbody>{/** Transaction Hash */}

@@ -5,8 +5,8 @@ import { fira } from '@/app/styles/fonts'
 import Link from "next/link"
 import { InformationCircleIcon } from "@heroicons/react/24/outline"
 import Table from "@/app/ui/table"
-import { isHash, isNum, formatTxTableRows, formatBlockData, formatToBlockInfo } from "@/app/utils"
-import { Block, BlockData, BlockInfo, BlockItem, BlockResult, IErrorInternal, TxRow } from "@/app/interfaces"
+import { isHash, isNum, formatTxTableRows, formatToBlockDisplay } from "@/app/utils"
+import { BlockData, BlockDisplay, BlockItem, BlockResult, IErrorInternal, TxRow } from "@/app/interfaces"
 import { BLOCK_FIELDS } from "@/app/constants"
 import ErrorBlock from "@/app/ui/errorBlock"
 
@@ -14,13 +14,15 @@ const tabs = ['Overview', 'Transactions']
 
 export default function Page({ params }: { params: { id: string } }) {
   const [activeTab, setActiveTab] = useState(tabs[0])
-  const [blockInfo, setBlockInfo] = useState<BlockInfo | undefined>(undefined);
+  const [blockDisplay, setBlockDisplay] = useState<BlockDisplay | undefined>(undefined);
   const [blockTxIds, setBlockTxIds] = useState<string[]>([])
   const [found, setFound] = useState<boolean | undefined>(undefined)
 
   /// The block information is being pulled here
   useEffect(() => {
+    console.log('param ID: ',isHash(params.id))
     if (isHash(params.id)) { // is a hash
+      console.log('isHash')
       fetch(`/api/item/${params.id}`, {
         method: 'GET',
         headers: {
@@ -29,9 +31,11 @@ export default function Page({ params }: { params: { id: string } }) {
       }).then(async response => {
         if (response.status == 200) {
           const data = await response.json()
+          console.log(data)
           setBlockTxIds((data.content as BlockItem).Block.block.transactions)
-          const block: Block = formatBlockData([params.id, data.content.Block] as BlockResult)
-          handleFoundBlock(block)
+          const blockDisplay: BlockDisplay = formatToBlockDisplay([params.id, data.content.Block] as BlockResult)
+          setBlockDisplay(blockDisplay)
+          setFound(true)
         } else {
           setFound(false)
         }
@@ -49,8 +53,9 @@ export default function Page({ params }: { params: { id: string } }) {
           // if a bnum that doesn't exist is used, the result is successful and returns an empty value.
           if (data.content[0][0] as BlockResult) {
             setBlockTxIds((data.content[0][1] as BlockData).block.transactions)
-            const block: Block = formatBlockData(data.content[0] as BlockResult)
-            handleFoundBlock(block)
+            const blockDisplay = formatToBlockDisplay(data.content[0] as BlockResult);
+            setBlockDisplay(blockDisplay)
+            setFound(true)
           } else {
             setFound(false)
           }
@@ -62,12 +67,6 @@ export default function Page({ params }: { params: { id: string } }) {
       setFound(false)
     }
   }, []);
-
-  const handleFoundBlock = (block: Block) => {
-    const blockInfo = formatToBlockInfo(block);
-    setBlockInfo(blockInfo)
-    setFound(true)
-  }
 
   return (
     <>
@@ -84,19 +83,19 @@ export default function Page({ params }: { params: { id: string } }) {
               {tabs[0]}
             </div>
             {/** Transactions */}
-            <div onClick={() => { if (blockInfo != undefined) setActiveTab(tabs[1]) }} className={`${activeTab == tabs[1] ? 'font-semibold border-b-2 border-gray-500' : ''} w-auto mx-2 px-2 pt-4 text-xs text-gray-600 border-gray-300 hover:border-b-2 hover:font-semibold hover:cursor-pointer flex flex-row align-middle justify-center`}>
-              {tabs[1]} {blockInfo != undefined && <div className="w-6 h-4 ml-2 bg-gray-300 rounded-t-xl rounded-b-xl"><p className={`w-fit ml-auto mr-auto font-semibold text-xs ${fira.className}`}>{blockTxIds.length}</p></div>}
+            <div onClick={() => { if (blockDisplay != undefined) setActiveTab(tabs[1]) }} className={`${activeTab == tabs[1] ? 'font-semibold border-b-2 border-gray-500' : ''} w-auto mx-2 px-2 pt-4 text-xs text-gray-600 border-gray-300 hover:border-b-2 hover:font-semibold hover:cursor-pointer flex flex-row align-middle justify-center`}>
+              {tabs[1]} {blockDisplay != undefined && <div className="w-6 h-4 ml-2 bg-gray-300 rounded-t-xl rounded-b-xl"><p className={`w-fit ml-auto mr-auto font-semibold text-xs ${fira.className}`}>{blockTxIds.length}</p></div>}
             </div>
           </div>
           {/** TAB BODIES */}
           <div className={`${activeTab == tabs[0] ? 'block' : 'hidden'} w-full h-auto`}>{/** Overview */}
             <Card className='min-h-fit w-full border-gray-300'>
-              <List blockInfo={blockInfo} />
+              <List blockInfo={blockDisplay} />
             </Card>
           </div >
           {/** Transactions */}
           <div className={`${activeTab == tabs[1] ? 'block' : 'hidden'} w-full h-auto pb-2`}>
-            {blockTxIds.length > 0 && blockInfo != undefined &&
+            {blockTxIds.length > 0 && blockDisplay != undefined &&
               <BlockTxs blockTxIds={blockTxIds} activeTab={activeTab} />
             }{blockTxIds.length == 0 &&
               <div className="ml-auto mr-auto p-4 font-thin border-t border-gray-200 shadow-xl bg-white">
@@ -143,7 +142,7 @@ function BlockTxs({ blockTxIds, activeTab }: any) {
   )
 }
 
-function List({ blockInfo }: { blockInfo: BlockInfo | undefined }) {
+function List({ blockInfo }: { blockInfo: BlockDisplay | undefined }) {
   const col1 = 'pl-2 pr-1 w-5'
   const col2 = 'py-4 w-64'
   const col3 = 'pl-4 py-4 w-fit'

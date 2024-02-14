@@ -1,6 +1,6 @@
 /** ------------ DISPLAY FORMAT ------------ */
 
-import { Transaction } from "@/app/interfaces";
+import { TransactionData } from "@/app/interfaces";
 
 /**
  * Gets all numbers from the start value to the end value, inclusive
@@ -51,7 +51,7 @@ export const formatAddressForDisplay = (address: string, nbChar: number) => {
     }
 };
 
-  export const formatAmount = (tx: Transaction, aggregated: boolean) => {
+  export const formatAmount = (tx: TransactionData, aggregated: boolean) => {
     let result = 0;
     if (tx.outputs.length > 1) {
       if (tx.outputs[0].value.hasOwnProperty("Token")) {

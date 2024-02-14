@@ -1,136 +1,87 @@
 /** ------------ DATA FORMAT ------------ */
-import { Block, BlockData, BlockInfo, BlockResult, BlockRow, TxRow, InputData, OutputData, Transaction, TransactionData, TransactionInfo, StackInfo, StackData, Input, Output, TokenInfo, ItemInfo, OutputType } from '@/app/interfaces'
+import { BlockData, BlockDisplay, BlockResult, BlockRow, TxRow, InputData, OutputData, TransactionData, TransactionDisplay, StackDisplay, TokenDisplay, ItemDisplay, OutputType } from '@/app/interfaces'
 import { formatAmount, getUnicornSeed, getUnicornWitness } from '@/app/utils'
 
 /** ------------ BLOCKS ------------ */
 /**
- * Format raw block data to Block interface
+ * Format raw block data to Block display
  * @param block raw block
  * @returns 
  */
-export const formatBlockData = (block: BlockResult): Block => {
+export const formatToBlockDisplay = (block: BlockResult): BlockDisplay => {
   const blockData = (block[1] as BlockData).block
-  return {
-    hash: block[0] as string,
-    bNum: blockData.header.b_num,
-    previousHash: blockData.header.previous_hash,
-    seed: blockData.header.seed_value,
-    version: blockData.header.version,
-    bits: blockData.header.bits,
-    miningTxHashNonces: {
-      hash: blockData.header.nonce_and_mining_tx_hash[1] as string,
-      nonce: blockData.header.nonce_and_mining_tx_hash[0] as number[],
-    },
-    merkleRootHash: {
-      merkleRootHash: blockData.header.txs_merkle_root_and_hash[1],
-      txsHash: blockData.header.txs_merkle_root_and_hash[0],
-    },
-    transactions: blockData.transactions,
-  }
-}
 
-export const formatToBlockInfo = (block: Block): BlockInfo => {
-  const blockInfo: BlockInfo = {
-    bNum: block.bNum.toString(),
-    hash: block.hash,
-    merkleRootHash: block.merkleRootHash.merkleRootHash || "n/a",
-    previousHash: block.previousHash || "n/a",
-    version: block.version.toString(),
-    byteSize: `${new TextEncoder().encode(JSON.stringify(block)).length} bytes`,
-    nbTransactions: block.transactions.length.toString(),
-    unicornSeed: getUnicornSeed(block.seed) || "n/a",
-    unicornWitness: getUnicornWitness(block.seed) || "n/a",
+  const blockInfo: BlockDisplay = {
+    bNum: blockData.header.b_num.toString(),
+    hash: block[0] as string,
+    merkleRootHash: blockData.header.txs_merkle_root_and_hash[1] || "n/a",
+    previousHash: blockData.header.previous_hash || "n/a",
+    version: blockData.header.version.toString(),
+    byteSize: `${new TextEncoder().encode(JSON.stringify(blockData)).length} bytes`,
+    nbTransactions: blockData.transactions.length.toString(),
+    unicornSeed: getUnicornSeed(blockData.header.seed_value) || "n/a",
+    unicornWitness: getUnicornWitness(blockData.header.seed_value) || "n/a",
   }
   return blockInfo
 }
 
 /**
  * Format table row for block
- * @param blocks
+ * @param block
  * @param reversed 
  * @returns Array of block rows
  */
-export const formatBlockTableRows = (blocks: Block[], reversed: boolean): BlockRow[] => {
-  const result: BlockRow[] = []
-  blocks.forEach((block: Block) => {
-    result.push({
-      number: block.bNum.toString(),
-      blockHash: block.hash,
+export const formatBlockTableRow = (block: BlockResult): BlockRow => {
+    const blockData = (block[1] as BlockData).block
+    const blockRow = {
+      number: blockData.header.b_num.toString(),
+      blockHash: blockData.header.previous_hash,
       status: 'Unknown',
-      nbTx: block.transactions.length.toString(),
-      age: 'n/a',
-    } as BlockRow)
-  })
-  return reversed ? result.reverse() : result
+      nbTx: blockData.transactions.length.toString(),
+      age: blockData.header.timestamp.toString(), // Format timestamp
+    } as BlockRow
+  return blockRow
 }
+
 
 /** ------------ TRANSACTIONS ------------ */
 
-export const formatTxData = (data: TransactionData, hash: string): Transaction => {
-  return {
-    hash: hash,
-    druidInfo: data.druid_info,
-    inputs: data.inputs.map((input: InputData) => {
-      return {
-        previousOut: input.previous_out
-          ? {
-            num: input.previous_out.n,
-            tHash: input.previous_out.t_hash,
-          }
-          : null,
-        scriptSig: input.script_signature,
-      };
-    }),
-    outputs: data.outputs.map((output: OutputData) => {
-      return {
-        drsBHash: output.drs_block_hash,
-        drsTHash: output.drs_tx_hash,
-        locktime: output.locktime,
-        scriptPubKey: output.script_public_key,
-        value: output.value,
-      };
-    }),
-    version: data.version,
-  };
-}
-
-export const formatToTxInfo = (transaction: Transaction): TransactionInfo => {
+export const formatToTxDisplay = (transaction: TransactionData, hash: string): TransactionDisplay => {
   const type = transaction.outputs[0].value.hasOwnProperty('Token') ? OutputType.Token : OutputType.Item
   return {
-    hash: transaction.hash,
+    hash: hash,
     bHash: 'n/a',
     bNum: 'n/a',
     type: type.toString(),
     timpestamp: 'n/a',
-    inputs: transaction.inputs.map((input: Input) => {
+    inputs: transaction.inputs.map((input: InputData) => {
       return {
-        previousOutHash: input.previousOut ? input.previousOut.tHash : 'n/a',
+        previousOutHash: input.previous_out ? input.previous_out.t_hash : 'n/a',
         scriptSig: {
-          op: input.scriptSig.stack[0].Op,
-          num: input.scriptSig.stack[0].Num?.toString(),
-          bytes: input.scriptSig.stack[0].Bytes,
-          signature: input.scriptSig.stack[0].Signature?.map((s) => s.toString()),
-          pubKey: input.scriptSig.stack[0].PubKey?.map((k) => k.toString()),
-        }
+          op: input.script_signature.stack[0].Op,
+          num: input.script_signature.stack[0].Num?.toString(),
+          bytes: input.script_signature.stack[0].Bytes,
+          signature: input.script_signature.stack[0].Signature?.map((s:any) => s.toString()),
+          pubKey: input.script_signature.stack[0].PubKey?.map((k:any) => k.toString()),
+        } as StackDisplay
       }
     }),
-    // outputs: []
-    outputs: type == OutputType.Token ? transaction.outputs.map((output: Output) => {
-      return {
-        address: output.scriptPubKey,
+    outputs: type == OutputType.Token ? transaction.outputs.map((output: OutputData) => {
+      return { // Token
+        address: output.script_public_key,
         tokens: formatAmount(transaction, true) + ' ABC',
         fractionatedTokens: (output.value as { Token: number }).Token.toString(),
         lockTime: output.locktime.toString(),
-      } as TokenInfo
+      } as TokenDisplay
     })
-      : transaction.outputs.map((output: Output) => {
-        return {
-          address: output.scriptPubKey,
+      : transaction.outputs.map((output: OutputData) => {
+        return { // Item
+          address: output.script_public_key,
           items: (output.value as { Item: number }).Item.toString(),
           lockTime: output.locktime.toString(),
           genesisTransactionHash: 'n/a',
           metadata: 'n/a'
-        } as ItemInfo
+        } as ItemDisplay
       })
   }
 }

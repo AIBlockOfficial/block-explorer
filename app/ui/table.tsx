@@ -33,6 +33,7 @@ function Headers({ headers }: { headers: string[] }) {
 function BlockTable({ rows, short = false }: { rows: BlockRow[], short?: boolean }) {
     let result: JSX.Element[] = []
     rows.map(({ number, blockHash, status, nbTx, age }: BlockRow, index) => {
+        // console.log('blockrow: ',{ number, blockHash, status, nbTx, age })
         result.push(
             <tr key={index} className={`${index == rows.length - 1 ? '' : 'border-b border-b-gray-200'}`}>
                 <td className={row_spacing}>
