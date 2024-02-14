@@ -7,7 +7,7 @@ import { CubeIcon } from "@heroicons/react/24/outline"
 import { ArrowsRightLeftIcon } from "@heroicons/react/24/outline"
 import { ListBulletIcon } from "@heroicons/react/24/outline"
 import { ITable, BlockRow, TxRow } from '@/app/interfaces'
-import { getRange, formatBlockTableRows, formatBlockData } from "@/app/utils"
+import { getRange, formatBlockTableRow } from "@/app/utils"
 import { BLOCK_TABLE_HEADERS_SHORT, BLOCK_PER_PAGE_SHORT } from '@/app/constants'
 
 const TxTable: ITable = {
@@ -44,8 +44,8 @@ export default function Page() {
         },
       }).then(async response => {
         const data = await response.json();
-        const blocks = data.content.map((rawBlock: any) => formatBlockData(rawBlock)) // Format raw block to app interface
-        setBlocksData(data.content ? formatBlockTableRows(blocks, true) : []) // Set blocks. If error, set latest to empty array
+        const blocksRows: BlockRow[] = data.content.map((rawBlock: any)=> formatBlockTableRow(rawBlock)) // Format raw block to app interface
+        setBlocksData(blocksRows.reverse())
       });
     }
   }, [latestBlockNum])

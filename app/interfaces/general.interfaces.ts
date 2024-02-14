@@ -1,8 +1,7 @@
 /** WIP, some of these structures are unfinished */
 /** General interface are divided into three types : 
  *  Data    : Raw data retrieved from API calls
- *  Regular : Similar to raw data, but serves as a bridge between raw data and display data 
- *  Info    : Formatted data ready to be displayed on front-end
+ *  Display    : Formatted data ready to be displayed on front-end
  */
 /* -------------------------------------------------------------------------- */
 /*                             Display Structures                             */
@@ -39,7 +38,7 @@ export interface TxRow {
     age: string,
 }
 
-export interface BlockInfo {
+export interface BlockDisplay {
     hash: string
     bNum: string
     timestamp?: string
@@ -52,22 +51,22 @@ export interface BlockInfo {
     unicornWitness: string
 }
 
-export interface TransactionInfo {
+export interface TransactionDisplay {
     hash: string,
     bHash: string,
     bNum: string,
     type: string,
     timpestamp: string,
-    inputs: InputInfo[]
-    outputs: TokenInfo[] | ItemInfo[]
+    inputs: InputDisplay[]
+    outputs: TokenDisplay[] | ItemDisplay[]
 }
 
-export interface InputInfo {
+export interface InputDisplay {
     previousOutHash: string
-    scriptSig: StackInfo
+    scriptSig: StackDisplay
 }
 
-export interface StackInfo {
+export interface StackDisplay {
     op?: string
     num?: string
     bytes?: string
@@ -75,7 +74,7 @@ export interface StackInfo {
     pubKey?: string[]
 }
 
-export interface TokenInfo {
+export interface TokenDisplay {
     type: OutputType
     address: string
     tokens: string
@@ -83,70 +82,13 @@ export interface TokenInfo {
     lockTime: string
 }
 
-export interface ItemInfo {
+export interface ItemDisplay {
     type: OutputType
     address: string
     items: string
     lockTime: string
     genesisTransactionHash: string
     metadata: string
-}
-
-/* -------------------------------------------------------------------------- */
-/*                             Data Structures                                */
-/* -------------------------------------------------------------------------- */
-export interface Block {
-    hash: string
-    bNum: number
-    previousHash: string
-    seed: number[]
-    bits: number
-    version: number
-    miningTxHashNonces: {
-        hash: string
-        nonce: number[]
-    }
-    merkleRootHash: {
-        merkleRootHash: string
-        txsHash: string
-    }
-    transactions: string[]
-}
-
-export interface Transaction {
-    hash: string
-    druidInfo: null
-    inputs: Input[]
-    outputs: Output[]
-    version: number
-}
-
-export interface Input {
-    previousOut: {
-        num: number
-        tHash: string
-    } | null
-    scriptSig: {
-        stack: StackData[]
-    }
-}
-
-export interface Output {
-    drsBHash: string | null
-    drsTHash: string | null
-    locktime: number
-    scriptPubKey: string
-    value:
-    | { Token: number }
-    | { Item: number }
-    | { Token: OutputValue }
-    | { Item: OutputValue }
-}
-
-export interface OutputValue {
-    amount: number
-    drs_tx_hash: string | null
-    metadata: string | null
 }
 
 /* -------------------------------------------------------------------------- */
@@ -168,6 +110,7 @@ export interface BlockData {
             nonce_and_mining_tx_hash: NonceMiningTx
             b_num: number
             seed_value: number[]
+            timestamp: number
             previous_hash: string
             txs_merkle_root_and_hash: string[]
         }
