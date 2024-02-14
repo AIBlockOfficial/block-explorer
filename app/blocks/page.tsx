@@ -64,9 +64,6 @@ export default function Page() {
       }).then(async response => {
         const data = await response.json();
         const blocksRows: BlockRow[] = data.content.map((rawBlock: any) => formatBlockTableRow(rawBlock)) // Format raw block to app interface
-
-        console.log('HERE: ', blocksRows)
-
         setBlocksData(blocksRows.reverse())
       });
     }

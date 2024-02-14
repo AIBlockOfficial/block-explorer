@@ -20,9 +20,7 @@ export default function Page({ params }: { params: { id: string } }) {
 
   /// The block information is being pulled here
   useEffect(() => {
-    console.log('param ID: ',isHash(params.id))
     if (isHash(params.id)) { // is a hash
-      console.log('isHash')
       fetch(`/api/item/${params.id}`, {
         method: 'GET',
         headers: {
@@ -31,7 +29,6 @@ export default function Page({ params }: { params: { id: string } }) {
       }).then(async response => {
         if (response.status == 200) {
           const data = await response.json()
-          console.log(data)
           setBlockTxIds((data.content as BlockItem).Block.block.transactions)
           const blockDisplay: BlockDisplay = formatToBlockDisplay([params.id, data.content.Block] as BlockResult)
           setBlockDisplay(blockDisplay)
