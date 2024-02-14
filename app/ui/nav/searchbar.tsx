@@ -1,20 +1,28 @@
 'use client'
 import React, { useState, useEffect } from "react"
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { Input } from "@material-tailwind/react"
 import { MagnifyingGlassCircleIcon } from '@heroicons/react/24/outline'
 import { isGenesisTx, isHash, isNum } from "@/app/utils"
 
 export default function Searchbar() {
     const router = useRouter()
+    const pathname = usePathname()
     const [input, setInput] = useState<string>('')
     const [displayAlert, setDisplayAlert] = useState<boolean>(false)
 
     useEffect(() => {
-        console.log('display alert state: ', displayAlert)
-    }, [displayAlert])
+        setInput('')
+    }, [pathname])
+
+    const handleKeyDown = (e: any) => {
+        if (e.key == 'Enter') {
+            search()
+        }
+    }
 
     const search = () => {
+        setDisplayAlert(false)
         if (isHash(input)) {
             if (input[0] == 'b') // block hash
                 router.push(`/block/${input}`)
@@ -30,15 +38,9 @@ export default function Searchbar() {
         }
     }
 
-    const handleKeyDown = (e: any) => {
-        if (e.key == 'Enter') {
-            search()
-        }
-    }
-
     function Alert() {
         return (
-            <div className="bg-red-100 border border-red-400 text-red-700 w-[450px] px-4 py-3 rounded fixed left-5 bottom-5" role="alert">
+            <div className="bg-red-100 border border-red-400 text-red-700 w-[450px] px-4 py-3 rounded fixed left-5 bottom-5 z-50" role="alert">
                 <strong className="font-bold">Wrong format</strong>
                 <span className="block sm:inline px-2">Your input is not a hash or a number</span>
                 <span className="absolute top-0 right-0">
@@ -57,6 +59,7 @@ export default function Searchbar() {
                 label="Search"
                 icon={<MagnifyingGlassCircleIcon onClick={() => search()} className="hidden lg:block text-gray-500 hover:text-gray-900 hover:cursor-pointer active:w-4 active:h-4 active:rounded-lg active:text-gray-500" />}
                 placeholder="Search"
+                value={input}
                 className="hidden lg:block max-w-sm !border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:text-gray-500 focus:!border-gray-200 focus:!border-t-gray-200 focus:ring-gray-900/10"
                 labelProps={{
                     className: "hidden",
