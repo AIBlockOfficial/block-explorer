@@ -24,16 +24,14 @@ export interface ITable {
 export interface BlockRow {
     number: string,
     blockHash: string,
-    status: string,
     nbTx: string,
     age: string,
 }
 
 export interface TxRow {
     txHash: string,
-    blockNum: string,
+    blockHash: string,
     type: string,
-    status: string,
     address: string,
     age: string,
 }
@@ -89,6 +87,36 @@ export interface ItemDisplay {
     lockTime: string
     genesisTransactionHash: string
     metadata: string
+}
+
+/* -------------------------------------------------------------------------- */
+/*                     Replace Network Fetch Data                             */
+/* -------------------------------------------------------------------------- */
+
+export interface BlocksResult {
+    blocks: Block[],
+    pagination: Pagination,
+}
+
+export interface Block {
+    hash: string
+    num: number
+    previousHash: string
+    timestamp: string
+    version: number
+}
+
+export interface Transaction {
+    blockHash: string,
+    hash: string,
+    timestamp: string,
+    version: number
+}
+
+export interface Pagination {
+    limit: number,
+    offset: number,
+    total: number
 }
 
 /* -------------------------------------------------------------------------- */

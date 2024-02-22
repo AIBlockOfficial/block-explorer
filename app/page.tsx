@@ -6,51 +6,55 @@ import StatCard from '@/app/ui/statCard'
 import { CubeIcon } from "@heroicons/react/24/outline"
 import { ArrowsRightLeftIcon } from "@heroicons/react/24/outline"
 import { ListBulletIcon } from "@heroicons/react/24/outline"
-import { BlockRow } from '@/app/interfaces'
-import { getRange, formatBlockTableRow } from "@/app/utils"
+import { Block, BlockRow, Transaction, TxRow } from '@/app/interfaces'
+import { formatBlockTableRow, formatTxTableRow } from "@/app/utils"
 import { ITEMS_PER_PAGE_SHORT } from '@/app/constants'
 
 export default function Page() {
-  const [latestBlockNum, setLatest] = useState();
+  const [latestBlockNum, setLatestBlockNum] = useState<number>();
+  const [latestTxNum, setLatestTxNum] = useState<number>();
   const [blocksData, setBlocksData] = useState<BlockRow[]>([]);
-  // const [txsData, setTxsData] = useState<ITxRow[]>([]); /** TODO */
+  const [txsData, setTxsData] = useState<TxRow[]>([]); 
 
   // Executed on component mount
   useEffect(() => {
-    fetch(`api/latestBlock`, {
+    // Fetch blocks
+    fetch(`api/blocks?limit=${ITEMS_PER_PAGE_SHORT}&offset=0`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
     }).then(async response => {
       const data = await response.json()
-      setLatest(data.content ? data.content.block.header.b_num : 0) // Set latest block. If error set latest to 0 (won't load any blocks)
-    });
-  }, []);
-
-  // Executed after setting latestBlock
-  useEffect(() => {
-    if (latestBlockNum) {
-      fetch(`/api/blocks`, {
-        method: 'POST',
-        body: JSON.stringify(getRange((latestBlockNum - ITEMS_PER_PAGE_SHORT) >= 0 ? latestBlockNum - ITEMS_PER_PAGE_SHORT : 0, latestBlockNum)),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }).then(async response => {
-        const data = await response.json();
-        const blocksRows: BlockRow[] = data.content.map((rawBlock: any)=> formatBlockTableRow(rawBlock)) // Format raw block to app interface
-        setBlocksData(blocksRows.reverse())
-      });
-    }
-  }, [latestBlockNum])
+      if (data.content) {
+        setLatestBlockNum(data.content.pagination.total)
+        const blocksRows: BlockRow[] = await Promise.all(await data.content.blocks.map(async (block: Block) => await formatBlockTableRow(block))) // Currently used await because nb tx of each block is fetched
+        setBlocksData(blocksRows)
+      }
+    })
+    
+    // Fetch transactions
+    fetch(`api/transactions?limit=${ITEMS_PER_PAGE_SHORT}&offset=0`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }).then(async response => {
+      const data = await response.json()
+      if (data.content) {
+        setLatestTxNum(data.content.pagination.total)
+        const txRows: TxRow[] = await Promise.all(await data.content.transactions.map(async (tx: Transaction) => await formatTxTableRow(tx)))
+        setTxsData(txRows)
+      }
+    })
+  }, [])
 
   return (
     <>
       <div className="flex p-4 justify-evenly flex-wrap">
-        <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Blocks'} value={latestBlockNum ? latestBlockNum + 1 : undefined} icon={<CubeIcon className='card-icons' />} href={'/blocks'} /></div>
-        <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Transactions'} value={latestBlockNum ? undefined : undefined} icon={<ArrowsRightLeftIcon className='card-icons' />} href={'#'} /></div>
-        <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Addresses'} value={latestBlockNum ? undefined : undefined} icon={<ListBulletIcon className='card-icons' />} href={'#'} /></div>
+        <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Blocks'} value={latestBlockNum ? latestBlockNum : undefined} icon={<CubeIcon className='card-icons' />} href={'/blocks'} /></div>
+        <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Transactions'} value={latestTxNum ? latestTxNum : undefined} icon={<ArrowsRightLeftIcon className='card-icons' />} href={'#'} /></div>
+        {/* <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Addresses'} value={latestBlockNum ? undefined : undefined} icon={<ListBulletIcon className='card-icons' />} href={'#'} /></div> */}
       </div>
       <div className="flex p-4 justify-evenly flex-wrap">
         <div className='p-2 md:w-1/2 sm:w-full'>
@@ -65,7 +69,7 @@ export default function Page() {
             <p>Latest Transactions</p>
             <p className='text-xs leading-6 text-blue-900 hover:underline'><Link href={'/transactions'}>View all transactions {`->`}</Link></p>
           </div>
-          <Table type={TableType.tx} rows={[]} short={true} />
+          <Table type={TableType.tx} rows={txsData} short={true} />
         </div>
       </div>
     </>

@@ -63,7 +63,6 @@ export default function Page() {
         const data = await response.json();
         let existing = blocksData;
         const blocksRows: BlockRow[] = data.content.map((rawBlock: any) => formatBlockTableRow(rawBlock)) // Format raw block to app interface
-        console.log(blocksRows)
         setBlocksData([...existing, ...blocksRows.reverse()])
       });
       setExpandCounter(expandCounter + 1)

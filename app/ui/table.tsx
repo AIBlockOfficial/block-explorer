@@ -38,7 +38,7 @@ function Headers({ headers }: { headers: string[] }) {
 
 function BlockTable({ rows, short = false }: { rows: BlockRow[], short?: boolean }) {
     let result: JSX.Element[] = []
-    rows.map(({ number, blockHash, status, nbTx, age }: BlockRow, index) => {
+    rows.map(({ number, blockHash, nbTx, age }: BlockRow, index) => {
         result.push(
             <tr key={index} className={`${index == rows.length - 1 ? '' : 'border-b border-b-gray-200'}`}>
                 <td className={row_spacing}>
@@ -53,17 +53,10 @@ function BlockTable({ rows, short = false }: { rows: BlockRow[], short?: boolean
                     <Square2StackIcon className='text-blue-900 h-4 w-4 hover:cursor-pointer' onClick={() => null} />
                 </td>
                 <td className={row_spacing}>
-                    <Typography variant='small' className={`w-fit bg-green-200 text-green-900 text-center rounded-sm ${fira.className} px-1`}>
-                        {status.toUpperCase()}
+                    <Typography variant='small' className={`w-1/2 text-center`}>
+                        {nbTx}
                     </Typography>
                 </td>
-                {!short &&
-                    <td className={row_spacing}>
-                        <Typography variant='small' className={`text-gray-500`}>
-                            {nbTx}
-                        </Typography>
-                    </td>
-                }
                 <td className={row_spacing}>
                     <Typography variant='small' className={`text-gray-500`}>
                         {age}
@@ -77,30 +70,23 @@ function BlockTable({ rows, short = false }: { rows: BlockRow[], short?: boolean
 
 function TxTable({ rows, short = false }: { rows: TxRow[], short?: boolean }) {
     let result: JSX.Element[] = []
-    rows.map(({ txHash, blockNum, type, status, address, age }: TxRow, index) => {
+    rows.map(({ txHash, blockHash, type, address, age }: TxRow, index) => {
         result.push(
             <tr key={index} className={`${index == rows.length - 1 ? '' : 'border-b border-b-gray-200'}`}>
                 <td className={`${row_spacing} flex flex-row`}>
                     <Typography as={Link} href={`/transaction/${txHash}`} variant='small' className={`text-blue-900 text-xs ${fira.className} hover:underline`}>
-                        {txHash.length > 10 ? shortenHash(txHash) : txHash}
+                        {txHash.length > 6 ? shortenHash(txHash) : txHash}
                     </Typography>
                     <Square2StackIcon className='h-4 w-4 text-blue-900 hover:cursor-pointer' />
                 </td>
-                {!short &&
-                    <td className={`${row_spacing}`}>
-                        <Typography as={Link} href={`/block/${blockNum}`} variant='small' className={`text-blue-900 text-xs ${fira.className} hover:underline`}>
-                            {blockNum}
-                        </Typography>
-                    </td>
-                }
-                <td className={row_spacing}>
-                    <Typography variant='small' className={`w-fit bg-blue-200 text-blue-900 text-center rounded-sm ${fira.className} px-1`}>
-                        {type.toUpperCase()}
+                <td className={`${row_spacing}`}>
+                    <Typography as={Link} href={`/block/${blockHash}`} variant='small' className={`text-blue-900 text-xs ${fira.className} hover:underline`}>
+                        {shortenHash(blockHash)}
                     </Typography>
                 </td>
                 <td className={row_spacing}>
-                    <Typography variant='small' className={`w-fit bg-green-200 text-green-900 text-center rounded-sm ${fira.className} px-1`}>
-                        {status.toUpperCase()}
+                    <Typography variant='small' className={`w-fit ${type == 'token' ? 'bg-green-200 text-green-900' : ''} ${type == 'receipt' ? ' bg-blue-200 text-blue-900' : ''}  text-center rounded-sm ${fira.className} px-1`}>
+                        {type.toUpperCase()}
                     </Typography>
                 </td>
                 {!short &&
@@ -115,7 +101,7 @@ function TxTable({ rows, short = false }: { rows: TxRow[], short?: boolean }) {
                     <Typography variant='small' className={`text-gray-500`}>
                         {age}
                     </Typography>
-                </td> 
+                </td>
             </tr>
         )
     })
@@ -177,7 +163,7 @@ export default function Table({ rows, type, short }: { rows: BlockRow[] | TxRow[
                     }
 
                     {(rows.length < 1 && type == TableType.tx) &&
-                    <LoadingTable rows={short ? ITEMS_PER_PAGE_SHORT : ITEMS_PER_CHUNK} cols={short ? TXS_TABLE_HEADERS_SHORT.length : TXS_TABLE_HEADERS.length} />
+                        <LoadingTable rows={short ? ITEMS_PER_PAGE_SHORT : ITEMS_PER_CHUNK} cols={short ? TXS_TABLE_HEADERS_SHORT.length : TXS_TABLE_HEADERS.length} />
                     }
                 </tbody>
             </table>
