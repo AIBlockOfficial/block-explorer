@@ -20,7 +20,7 @@ interface NavItems {
 const navigation: NavItems[] = [
   { name: 'Home', href: '/' },
   { name: 'Blocks', href: '/blocks' },
-  { name: 'Transactions', href: '/transactions', disabled: true },
+  { name: 'Transactions', href: '/transactions'},
   {
     name: 'Statistics', href: '/statistics', disabled: true ,items: [
       { name: 'Rich List & Supply', href: '/stats' },

@@ -11,7 +11,7 @@ export const ITEMS_PER_CHUNK = 20;
 export const ITEMS_PER_PAGE_SHORT = 6;
 
 /** TRANSACTIONS */
-export const TXS_TABLE_HEADERS = ["Transaction Hash", "Block Num.", "Type", "Address", "Age"]
+export const TXS_TABLE_HEADERS = ["Transaction Hash", "Block Num.", "Type", "Age"]
 export const TXS_TABLE_HEADERS_SHORT = ["Tx Hash", "Block Hash", "Type", "Age"]
 export const TXS_FIELDS = ['Transaction Hash', 'Block Hash', 'Block Number', 'Transaction Type', 'Timestamp']
 export const TXS_IN_FIELDS = ['Previous Out', 'Script Sig']

@@ -53,7 +53,7 @@ export default function Page() {
     <>
       <div className="flex p-4 justify-evenly flex-wrap">
         <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Blocks'} value={latestBlockNum ? latestBlockNum : undefined} icon={<CubeIcon className='card-icons' />} href={'/blocks'} /></div>
-        <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Transactions'} value={latestTxNum ? latestTxNum : undefined} icon={<ArrowsRightLeftIcon className='card-icons' />} href={'#'} /></div>
+        <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Transactions'} value={latestTxNum ? latestTxNum : undefined} icon={<ArrowsRightLeftIcon className='card-icons' />} href={'/transactions'} /></div>
         {/* <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Addresses'} value={latestBlockNum ? undefined : undefined} icon={<ListBulletIcon className='card-icons' />} href={'#'} /></div> */}
       </div>
       <div className="flex p-4 justify-evenly flex-wrap">

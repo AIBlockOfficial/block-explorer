@@ -89,14 +89,6 @@ function TxTable({ rows, short = false }: { rows: TxRow[], short?: boolean }) {
                         {type.toUpperCase()}
                     </Typography>
                 </td>
-                {!short &&
-                    <td className={`${row_spacing} flex flex-row`}>
-                        <Typography as='a' href='#' variant='small' className={`text-blue-900 text-xs ${fira.className} hover:underline`}>
-                            {shortenHash(address)}
-                        </Typography>
-                        <Square2StackIcon className='h-4 w-4 text-blue-900 hover:cursor-pointer' />
-                    </td>
-                }
                 <td className={row_spacing}>
                     <Typography variant='small' className={`text-gray-500`}>
                         {age}
