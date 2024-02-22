@@ -3,8 +3,10 @@ const chain = require('../../chainFetch');
 
 export async function GET(_req: NextRequest, { params }: { params: { hash: string } }) {
     try {
-      const item = await chain.fetchItem(params.hash);  
-      return NextResponse.json(item);
+      console.log('?')
+      const transaction = await chain.transaction(params.hash); 
+      console.log('TX : ', transaction) 
+      return NextResponse.json({content: transaction});
     } catch (error: any) {
       return NextResponse.json(
         {

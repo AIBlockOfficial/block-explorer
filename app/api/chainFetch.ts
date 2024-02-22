@@ -1,68 +1,121 @@
-import { STORAGE_URL } from "../constants";
+import { EXP_BACKEND } from "../constants";
 import { IAPIRoute } from "../interfaces";
 
-/**
- * Generates an alphanumeric string of a 32 byte length
- */
-function generateRandomString() {
-    return [...Array(32)].map(i => (~~(Math.random() * 36)).toString(36)).join('');
-}
-
-/** Fetches a block/s by their numbers */
-export function fetchBlocks(blockNumbers: number[]) {
-    return fetch(`${STORAGE_URL}${IAPIRoute.BlockByNum}`, {
-        method: 'POST',
-        body: JSON.stringify(blockNumbers),
-        headers: {
-            'Content-Type': 'application/json',
-            'x-cache-id': generateRandomString(),
-            'x-nonce': '0'
-        }
-    }).then((response) => {
-        if (response.status == 200)
-            return Promise.resolve(response.json())
-        else
-            return Promise.reject({ reason: response.statusText, status: response.status, route: IAPIRoute.BlockByNum })
-    })
-}
-
-/** Fetches a block/s by their numbers */
-export function fetchLatest() {
-    return fetch(`${STORAGE_URL}${IAPIRoute.LatestBlock}`, {
+/** Fetches blocks count */
+export function blocksCount() {
+    return fetch(`${EXP_BACKEND}${IAPIRoute.BlocksCount}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            'x-cache-id': generateRandomString(),
-            'x-nonce': '0'
         }
     }).then((response) => {
         if (response.status == 200)
             return Promise.resolve(response.json())
         else
-            return Promise.reject({ reason: response.statusText, status: response.status, route: IAPIRoute.LatestBlock })
+            return Promise.reject({ reason: response.statusText, status: response.status, route: IAPIRoute.BlocksCount })
     });
 }
 
 /**
- * Fetches a block or transaction from the blockchain via a POST request containing 
- * the ID of the item to retrieve
+ * Fetches block from its hash or number
  * 
- * @param id {string} - id of the block or transaction to fetch
+ * @param id {string} - hash or number of the block to fetch
  * @returns 
  */
-export function fetchItem(hash: string) {
-    return fetch(`${STORAGE_URL}${IAPIRoute.BlockchainEntry}`, {
-        method: 'POST',
-        body: JSON.stringify(hash),
+export function block(id: string) {
+    return fetch(`${EXP_BACKEND}${IAPIRoute.Block}/${id}`, {
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            'x-cache-id': generateRandomString(),
-            'x-nonce': '0'
         }
     }).then((response) => {
         if (response.status == 200)
             return Promise.resolve(response.json())
         else
-            return Promise.reject({ reason: response.statusText, status: response.status, route: IAPIRoute.BlockchainEntry })
+            return Promise.reject({ reason: response.statusText, status: response.status, route: IAPIRoute.Block })
+    });
+}
+
+/**
+ *  Fetches a range of latetest blocks
+ * 
+ * @param limit {string}  - amount to fetch
+ * @param offset {string} - offset from latest block 
+ * @returns 
+ */
+export function blocks(limit: string, offset: string) {
+    return fetch(`${EXP_BACKEND}${IAPIRoute.Blocks}?limit=${limit}&offset=${offset}`,
+        {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        }).then((response) => {
+            if (response.status == 200)
+                return Promise.resolve(response.json())
+            else
+                return Promise.reject({ reason: response.statusText, status: response.status, route: IAPIRoute.Blocks })
+        })
+}
+
+/**
+ * Fetches block transactions from its hash or number
+ * 
+ * @param id {string} - hash or number of the block to fetch
+ * @returns 
+ */
+export function fetchBlockTxs(id: string) {
+    return fetch(`${EXP_BACKEND}${IAPIRoute.Block}/${id}/transactions`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    }).then((response) => {
+        if (response.status == 200)
+            return Promise.resolve(response.json())
+        else
+            return Promise.reject({ reason: response.statusText, status: response.status, route: IAPIRoute.Block })
+    });
+}
+
+/**
+ *  Fetches a range of latetest transactions
+ * 
+ * @param limit {string}  - amount to fetch
+ * @param offset {string} - offset from latest transaction 
+ * @returns 
+ */
+export function transactions(limit: string, offset: string) {
+    return fetch(`${EXP_BACKEND}${IAPIRoute.Transactions}?limit=${limit}&offset=${offset}`,
+        {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        }).then((response) => {
+            if (response.status == 200)
+                return Promise.resolve(response.json())
+            else
+                return Promise.reject({ reason: response.statusText, status: response.status, route: IAPIRoute.Transactions })
+        })
+}
+
+/**
+ * Fetches a transaction from its hash
+ * 
+ * @param hash {string} - hash of the transaction to fetch
+ * @returns 
+ */
+export function transaction(hash: string) {
+    return fetch(`${EXP_BACKEND}${IAPIRoute.Transaction}/${hash}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    }).then((response) => {
+        if (response.status == 200)
+            return Promise.resolve(response.json())
+        else
+            return Promise.reject({ reason: response.statusText, status: response.status, route: IAPIRoute.Transaction })
     });
 }
