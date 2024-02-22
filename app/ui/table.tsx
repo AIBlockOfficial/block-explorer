@@ -5,6 +5,12 @@ import { ITable, BlockRow, TxRow } from '@/app/interfaces'
 import { Card, Typography } from '@material-tailwind/react'
 import { Square2StackIcon } from '@heroicons/react/24/outline'
 import { fira } from '@/app/styles/fonts'
+import { BLOCK_TABLE_HEADERS, BLOCK_TABLE_HEADERS_SHORT, ITEMS_PER_CHUNK, ITEMS_PER_PAGE_SHORT, TXS_TABLE_HEADERS, TXS_TABLE_HEADERS_SHORT } from '@/app/constants'
+
+export enum TableType {
+    block = 'block',
+    tx = 'tx'
+}
 
 const row_spacing = `px-4 py-3`
 
@@ -109,23 +115,11 @@ function TxTable({ rows, short = false }: { rows: TxRow[], short?: boolean }) {
                     <Typography variant='small' className={`text-gray-500`}>
                         {age}
                     </Typography>
-                </td>
+                </td> 
             </tr>
         )
     })
     return result
-}
-
-function isBlockTable(object: any): object is BlockRow {
-    if (object == undefined)
-        return false
-    return 'blockHash' in object
-}
-
-function isTxTable(object: any): object is TxRow {
-    if (object == undefined)
-        return false
-    return 'txHash' in object
 }
 
 function LoadingTable({ rows, cols }: { rows: number, cols: number }) {
@@ -151,24 +145,39 @@ function LoadingTable({ rows, cols }: { rows: number, cols: number }) {
 /**
  * Table component for displaying blocks and transactions
  */
-export default function Table({ table, short }: { table: ITable, short?: boolean }) {
+export default function Table({ rows, type, short }: { rows: BlockRow[] | TxRow[], type: TableType, short?: boolean }) {
     return (
         <Card className='min-h-fit w-full shadow-xl rounded-sm border border-gray-300 mt-2'>
             <table className='w-full min-w-max table-auto text-left rounded-sm'>
                 <thead>
                     <tr>
-                        {<Headers headers={table.headers} />}
+                        {(type == TableType.block && short) &&
+                            <Headers headers={BLOCK_TABLE_HEADERS_SHORT} />
+                        }
+                        {(type == TableType.block && !short) &&
+                            <Headers headers={BLOCK_TABLE_HEADERS} />
+                        }
+                        {(type == TableType.tx && short) &&
+                            <Headers headers={TXS_TABLE_HEADERS_SHORT} />
+                        }
+                        {(type == TableType.tx && !short) &&
+                            <Headers headers={TXS_TABLE_HEADERS} />
+                        }
                     </tr>
                 </thead>
                 <tbody>
-                    {isBlockTable(table.rows[0]) &&
-                        <BlockTable rows={table.rows as BlockRow[]} short={short} />
+                    {type == TableType.block &&
+                        <BlockTable rows={rows as BlockRow[]} short={short} />
                     }
-                    {isTxTable(table.rows[0]) &&
-                        <TxTable rows={table.rows as TxRow[]} short={short} />
+                    {type == TableType.tx &&
+                        <TxTable rows={rows as TxRow[]} short={short} />
                     }
-                    {table.rows.length < 1 &&
-                        <LoadingTable rows={6} cols={table.headers.length} />
+                    {(rows.length < 1 && type == TableType.block) &&
+                        <LoadingTable rows={short ? ITEMS_PER_PAGE_SHORT : ITEMS_PER_CHUNK} cols={short ? BLOCK_TABLE_HEADERS_SHORT.length : BLOCK_TABLE_HEADERS.length} />
+                    }
+
+                    {(rows.length < 1 && type == TableType.tx) &&
+                    <LoadingTable rows={short ? ITEMS_PER_PAGE_SHORT : ITEMS_PER_CHUNK} cols={short ? TXS_TABLE_HEADERS_SHORT.length : TXS_TABLE_HEADERS.length} />
                     }
                 </tbody>
             </table>

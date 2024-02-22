@@ -10,7 +10,6 @@ import { formatAmount, getUnicornSeed, getUnicornWitness } from '@/app/utils'
  */
 export const formatToBlockDisplay = (block: BlockResult): BlockDisplay => {
   const blockData = (block[1] as BlockData).block
-
   const blockInfo: BlockDisplay = {
     bNum: blockData.header.b_num.toString(),
     hash: block[0] as string,
@@ -21,6 +20,7 @@ export const formatToBlockDisplay = (block: BlockResult): BlockDisplay => {
     nbTransactions: blockData.transactions.length.toString(),
     unicornSeed: getUnicornSeed(blockData.header.seed_value) || "n/a",
     unicornWitness: getUnicornWitness(blockData.header.seed_value) || "n/a",
+    timestamp: blockData.header.timestamp != undefined ? blockData.header.timestamp.toString() : "n/a"
   }
   return blockInfo
 }
@@ -105,4 +105,16 @@ export const formatTxTableRows = (txs: any, reversed: boolean): TxRow[] => {
     } as TxRow)
   })
   return reversed ? result.reverse() : result
+}
+
+export function isBlockTable(object: any): object is BlockRow {
+  if (object == undefined)
+      return false
+  return 'blockHash' in object
+}
+
+export function isTxTable(object: any): object is TxRow {
+  if (object == undefined)
+      return false
+  return 'txHash' in object
 }

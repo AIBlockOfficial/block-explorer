@@ -41,7 +41,7 @@ export interface TxRow {
 export interface BlockDisplay {
     hash: string
     bNum: string
-    timestamp?: string
+    timestamp: string
     merkleRootHash: string
     previousHash: string
     version: string

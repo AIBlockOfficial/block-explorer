@@ -4,7 +4,7 @@ import { Card, Typography } from "@material-tailwind/react"
 import { fira } from '@/app/styles/fonts'
 import Link from "next/link"
 import { InformationCircleIcon } from "@heroicons/react/24/outline"
-import Table from "@/app/ui/table"
+import Table, { TableType } from "@/app/ui/table"
 import { isHash, isNum, formatTxTableRows, formatToBlockDisplay } from "@/app/utils"
 import { BlockData, BlockDisplay, BlockItem, BlockResult, IErrorInternal, TxRow } from "@/app/interfaces"
 import { BLOCK_FIELDS } from "@/app/constants"
@@ -135,7 +135,7 @@ function BlockTxs({ blockTxIds, activeTab }: any) {
   }
 
   return (
-    <Table table={{ headers: ["Transaction Hash", "Type", "Status", "Age"], rows: blockTxs }} short={true} />
+    <Table type={TableType.tx} rows={blockTxs} short={true} />
   )
 }
 
@@ -223,7 +223,7 @@ function List({ blockInfo }: { blockInfo: BlockDisplay | undefined }) {
           <td className={`${col3}`}>
             {blockInfo != undefined ?
               <Typography variant='paragraph' className={`w-fit text-gray-800`}>
-                {'n/a'}
+                {blockInfo.timestamp}
               </Typography>
               :
               <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}

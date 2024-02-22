@@ -1,19 +1,14 @@
 "use client"
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import Table from '@/app/ui/table'
+import Table, { TableType } from '@/app/ui/table'
 import StatCard from '@/app/ui/statCard'
 import { CubeIcon } from "@heroicons/react/24/outline"
 import { ArrowsRightLeftIcon } from "@heroicons/react/24/outline"
 import { ListBulletIcon } from "@heroicons/react/24/outline"
-import { ITable, BlockRow, TxRow } from '@/app/interfaces'
+import { BlockRow } from '@/app/interfaces'
 import { getRange, formatBlockTableRow } from "@/app/utils"
-import { BLOCK_TABLE_HEADERS_SHORT, BLOCK_PER_PAGE_SHORT } from '@/app/constants'
-
-const TxTable: ITable = {
-  headers: ["TxHash", "Type", "Status", "Age"],
-  rows: []
-}
+import { ITEMS_PER_PAGE_SHORT } from '@/app/constants'
 
 export default function Page() {
   const [latestBlockNum, setLatest] = useState();
@@ -38,7 +33,7 @@ export default function Page() {
     if (latestBlockNum) {
       fetch(`/api/blocks`, {
         method: 'POST',
-        body: JSON.stringify(getRange((latestBlockNum - BLOCK_PER_PAGE_SHORT) >= 0 ? latestBlockNum - BLOCK_PER_PAGE_SHORT : 0, latestBlockNum)),
+        body: JSON.stringify(getRange((latestBlockNum - ITEMS_PER_PAGE_SHORT) >= 0 ? latestBlockNum - ITEMS_PER_PAGE_SHORT : 0, latestBlockNum)),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -63,14 +58,14 @@ export default function Page() {
             <p>Latest Blocks</p>
             <p className='text-xs leading-6 text-blue-900 hover:underline'><Link href={'/blocks'}>View all blocks {`->`}</Link></p>
           </div>
-          <Table table={{ headers: BLOCK_TABLE_HEADERS_SHORT, rows: blocksData }} short={true} />
+          <Table type={TableType.block} rows={blocksData} short={true} />
         </div>
         <div className='p-2 md:w-1/2 sm:w-full'>
           <div className='w-auto flex align-bottom justify-between'>
             <p>Latest Transactions</p>
             <p className='text-xs leading-6 text-blue-900 hover:underline'><Link href={'/transactions'}>View all transactions {`->`}</Link></p>
           </div>
-          <Table table={TxTable} short={true} />
+          <Table type={TableType.tx} rows={[]} short={true} />
         </div>
       </div>
     </>
