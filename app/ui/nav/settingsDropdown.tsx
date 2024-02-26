@@ -31,13 +31,13 @@ export default function SettingsDropdown() {
                     <div className="py-1">
                         {(Object.keys(Networks) as Array<keyof typeof Networks>).map((key) => {
                             return (
-                                <Menu.Item key={key}>
+                                <Menu.Item key={key} disabled={key == 'Mainnet' ? true : false}>
                                     <a
                                         onClick={(_e) => setActive(key)}
                                         href="#"
                                         className={classNames(
                                             active == key ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                                            'block px-4 py-2 text-sm'
+                                            'block px-4 py-2 text-sm', key == 'Mainnet'? ' text-gray-200 cursor-not-allowed': ''
                                         )}
                                     >
                                         {key}

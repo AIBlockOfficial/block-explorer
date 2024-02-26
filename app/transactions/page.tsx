@@ -30,7 +30,6 @@ export default function Page() {
       const data = await response.json()
       if (data.content) {
         setLatestTxNum(data.content.pagination.total)
-        console.log(data.content)
         const txRows: TxRow[] = await Promise.all(await data.content.transactions.map(async (tx: Transaction) => await formatTxTableRow(tx)))
         setTxsData(txRows)
       }

@@ -24,17 +24,20 @@ export default function Page({ params }: { params: { id: string } }) {
 
   /// The transaction information is being pulled here
   useEffect(() => {
+    console.log(params.id)
     if (isHash(params.id) || isGenesisTx(params.id)) { // is a hash
-      fetch(`/api/item/${params.id}`, {
+      console.log('is hash?')
+      fetch(`/api/transaction/${params.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       }).then(async response => {
-        if (response.status == 200) {
-          const data = await response.json()
+        const data = await response.json()
+        if (data.content) {
           setRawData(data.content)
-          const transactionInfo: TransactionDisplay = formatToTxDisplay((data.content as TransactionItem).Transaction, params.id);
+          console.log(data.content)
+          const transactionInfo: TransactionDisplay = formatToTxDisplay(data.content);
           setTxDisplay(transactionInfo)
           setFound(true)
         } else {
@@ -121,8 +124,8 @@ function Inputs({ txInputs }: { txInputs: InputDisplay[] }) {
                   </Typography>
                 </td>
                 <td className={`${col3}`}>
-                  <Typography variant='paragraph' className={`w-fit ${input.previousOutHash != 'n/a' ? 'text-blue-900 hover:underline' + fira.className : 'text-gray-800'}`}>
-                    {input.previousOutHash}
+                  <Typography variant='paragraph' className={`w-fit ${fira.className} ${input.previousOut != 'n/a' ? 'text-blue-900 hover:underline' : 'text-gray-800'}`}>
+                    {input.previousOut}
                   </Typography>
                 </td>
               </tr>
@@ -338,7 +341,7 @@ function List({ txInfo }: { txInfo: TransactionDisplay | undefined }) {
           </td>
           <td className={`${col3}`}>
             {txInfo != undefined ?
-              <Typography variant='paragraph' className={`w-fit text-gray-800 ${fira.className}`}>
+              <Typography variant='paragraph' className={`w-fit text-gray-800`}>
                 {txInfo.timpestamp}
               </Typography>
               :

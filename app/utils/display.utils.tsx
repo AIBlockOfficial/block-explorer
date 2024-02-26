@@ -1,6 +1,6 @@
 /** ------------ DISPLAY FORMAT ------------ */
 
-import { TransactionData } from "@/app/interfaces";
+import { FetchedTransaction, TransactionData } from "@/app/interfaces";
 
 /**
  * Gets all numbers from the start value to the end value, inclusive
@@ -51,21 +51,21 @@ export const formatAddressForDisplay = (address: string, nbChar: number) => {
   }
 };
 
-export const formatAmount = (tx: TransactionData, aggregated: boolean) => {
+export const formatAmount = (tx: FetchedTransaction, aggregated: boolean) => {
   let result = 0;
-  if (tx.outputs.length > 1) {
-    if (tx.outputs[0].value.hasOwnProperty("Token")) {
+  if (tx.outs.length > 1) {
+    if (tx.outs[0].valueType == 'token') {
       if (!aggregated)
-        result = (tx.outputs[0].value as { Token: number }).Token;
+        result = parseInt(tx.outs[0].amount)
       else
-        result = tx.outputs.reduce(
-          (acc: number, o: any) => acc + o.value.Token,
+        result = tx.outs.reduce(
+          (acc: number, o: any) => acc + o.value,
           0
         );
     }
-  } else if (tx.outputs.length != 0) {
-    if (tx.outputs[0].value.hasOwnProperty("Token")) {
-      result += (tx.outputs[0].value as { Token: number }).Token;
+  } else if (tx.outs.length != 0) {
+    if (tx.outs[0].valueType == 'token') {
+      result += parseInt(tx.outs[0].amount);
     }
   }
   return formatNumber((result / 25200).toFixed(2));
@@ -109,3 +109,28 @@ export const getUnicornSplit = (rawUnicornArray: any[]): string[] => {
 export const binToString = (array: any[]): string => {
   return String.fromCharCode.apply(String, array);
 };
+
+export const timestampElapsedTime = (date: string) => {
+  const current = new Date(date)
+  const now = new Date()
+  const elapsed = now.getTime() - current.getTime();
+  const seconds = Math.round(elapsed / 1000)
+  const minutes = Math.round(seconds / 60)
+  const hours = Math.round(minutes / 60)
+  const days = Math.round(hours / 24)
+  const months = Math.round(days / 30)
+  const years = Math.round(months / 12)
+
+  if (seconds < 60)
+    return seconds + 's'
+  else if (minutes < 60)
+    return minutes + 'min'
+  else if (hours < 24)
+    return hours + 'h'
+  else if (days < 30)
+    return days + 'd'
+  else if (months < 12)
+    return months + 'm'
+  else
+    return years + 'y'
+}

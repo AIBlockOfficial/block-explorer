@@ -1,26 +1,25 @@
 /** ------------ DATA FORMAT ------------ */
-import { BlockData, BlockDisplay, BlockResult, BlockRow, TxRow, InputData, OutputData, TransactionData, TransactionDisplay, StackDisplay, TokenDisplay, ItemDisplay, OutputType, Block, Transaction } from '@/app/interfaces'
+import { BlockData, BlockDisplay, BlockResult, BlockRow, TxRow, InputData, OutputData, TransactionData, TransactionDisplay, StackDisplay, TokenDisplay, ItemDisplay, OutputType, Block, Transaction, FetchedBlock, FetchedTransaction, In, Out } from '@/app/interfaces'
 import { formatAmount, getUnicornSeed, getUnicornWitness } from '@/app/utils'
 
 /** ------------ BLOCKS ------------ */
 /**
- * Format raw block data to Block display
- * @param block raw block
+ * Format block data to display format
+ * @param block fetched block
  * @returns 
  */
-export const formatToBlockDisplay = (block: BlockResult): BlockDisplay => {
-  const blockData = (block[1] as BlockData).block
+export const formatToBlockDisplay = async (block: FetchedBlock): Promise<BlockDisplay> => {
   const blockInfo: BlockDisplay = {
-    bNum: blockData.header.b_num.toString(),
-    hash: block[0] as string,
-    merkleRootHash: blockData.header.txs_merkle_root_and_hash[1] || "n/a",
-    previousHash: blockData.header.previous_hash || "n/a",
-    version: blockData.header.version.toString(),
-    byteSize: `${new TextEncoder().encode(JSON.stringify(blockData)).length} bytes`,
-    nbTransactions: blockData.transactions.length.toString(),
-    unicornSeed: getUnicornSeed(blockData.header.seed_value) || "n/a",
-    unicornWitness: getUnicornWitness(blockData.header.seed_value) || "n/a",
-    timestamp: blockData.header.timestamp != undefined ? blockData.header.timestamp.toString() : "n/a"
+    bNum: block.num.toString(),
+    hash: block.hash,
+    merkleRootHash: block.merkleRootHash || "n/a",
+    previousHash: block.previousHash || "n/a",
+    version: block.version.toString(),
+    byteSize: `${new TextEncoder().encode(JSON.stringify(block)).length} bytes`,
+    nbTransactions: await fetchNbTxForBlock(block.hash).then((result)=> result < 1 ? '-' : result.toString()),
+    unicornSeed: "n/a",
+    unicornWitness: "n/a",
+    timestamp: block.timestamp || "n/a"
   }
   return blockInfo
 }
@@ -30,50 +29,52 @@ export const formatToBlockDisplay = (block: BlockResult): BlockDisplay => {
  * @param block
  * @returns Array of block rows
  */
-export const formatBlockTableRow = async (block: Block): Promise<BlockRow> => {
+export const formatBlockTableRow = (block: Block): BlockRow => {
     const blockRow = {
       number: block.num.toString(),
       blockHash: block.hash,
-      nbTx: await fetchNbTxForBlock(block.hash).then((result)=> result < 1 ? '-' : result.toString()),
-      age: block.timestamp.slice(0,10) + ' ' + block.timestamp.replace('T', '').slice(10,18), // Format timestamp
+      // nbTx: await fetchNbTxForBlock(block.hash).then((result)=> result < 1 ? '-' : result.toString()),
+      nbTx: '-',
+      // age: block.timestamp.slice(0,10) + ' ' + block.timestamp.replace('T', '').slice(10,18), // Format timestamp
+      age: block.timestamp
     } as BlockRow
   return blockRow
 }
 
 /** ------------ TRANSACTIONS ------------ */
 
-export const formatToTxDisplay = (transaction: TransactionData, hash: string): TransactionDisplay => {
-  const type = transaction.outputs[0].value.hasOwnProperty('Token') ? OutputType.Token : OutputType.Item
+export const formatToTxDisplay = (transaction: FetchedTransaction): TransactionDisplay => {
+  const type = transaction.outs[0].valueType == 'token' ? OutputType.Token : OutputType.Item
   return {
-    hash: hash,
-    bHash: 'n/a',
+    hash: transaction.hash,
+    bHash: transaction.blockHash,
     bNum: 'n/a',
     type: type.toString(),
-    timpestamp: 'n/a',
-    inputs: transaction.inputs.map((input: InputData) => {
+    timpestamp: new Date(transaction.timestamp).toString(),
+    inputs: transaction.ins.map((input: In) => {
       return {
-        previousOutHash: input.previous_out ? input.previous_out.t_hash : 'n/a',
+        previousOut: 'n/a',
         scriptSig: {
-          op: input.script_signature.stack[0].Op,
-          num: input.script_signature.stack[0].Num?.toString(),
-          bytes: input.script_signature.stack[0].Bytes,
-          signature: input.script_signature.stack[0].Signature?.map((s:any) => s.toString()),
-          pubKey: input.script_signature.stack[0].PubKey?.map((k:any) => k.toString()),
+          op: input.scriptSignature.stack[0].Op,
+          num: input.scriptSignature.stack[0].Num?.toString(),
+          bytes: input.scriptSignature.stack[0].Bytes,
+          signature: input.scriptSignature.stack[0].Signature?.map((s:any) => s.toString()),
+          pubKey: input.scriptSignature.stack[0].PubKey?.map((k:any) => k.toString()),
         } as StackDisplay
       }
     }),
-    outputs: type == OutputType.Token ? transaction.outputs.map((output: OutputData) => {
+    outputs: type == OutputType.Token ? transaction.outs.map((output: Out) => {
       return { // Token
-        address: output.script_public_key,
-        tokens: formatAmount(transaction, true) + ' ABC',
-        fractionatedTokens: (output.value as { Token: number }).Token.toString(),
+        address: output.scriptPublicKey,
+        tokens: output.amount + ' ABC',
+        fractionatedTokens: 'n/a',
         lockTime: output.locktime.toString(),
       } as TokenDisplay
     })
-      : transaction.outputs.map((output: OutputData) => {
+      : transaction.outs.map((output: Out) => {
         return { // Item
-          address: output.script_public_key,
-          items: (output.value as { Item: number }).Item.toString(),
+          address: output.scriptPublicKey,
+          items: output.amount,
           lockTime: output.locktime.toString(),
           genesisTransactionHash: 'n/a',
           metadata: 'n/a'
@@ -130,7 +131,7 @@ export function isTxTable(object: any): object is TxRow {
 /** ------------ REQUESTS ------------ */
 
 export const fetchNbTxForBlock = async (blockHash: string): Promise<number> => {
-  let numTxs = await fetch(`api/blockTxs/${blockHash}`, {
+  let numTxs = await fetch(`/api/blockTxs/${blockHash}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -143,7 +144,7 @@ export const fetchNbTxForBlock = async (blockHash: string): Promise<number> => {
 }
 
 export const fetchTxType = async (txHash: string): Promise<string> => {
-  let txType = await fetch(`api/transaction/${txHash}`, {
+  let txType = await fetch(`/api/transaction/${txHash}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

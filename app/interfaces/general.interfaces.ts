@@ -60,7 +60,7 @@ export interface TransactionDisplay {
 }
 
 export interface InputDisplay {
-    previousOutHash: string
+    previousOut: string,
     scriptSig: StackDisplay
 }
 
@@ -99,11 +99,16 @@ export interface BlocksResult {
 }
 
 export interface Block {
-    hash: string
-    num: number
-    previousHash: string
-    timestamp: string
+    hash: string,
+    num: number,
+    previousHash: string,
+    timestamp: string,
     version: number
+}
+
+export interface FetchedBlock extends Block {
+    merkleRootHash: string,
+    bits: number
 }
 
 export interface Transaction {
@@ -111,6 +116,35 @@ export interface Transaction {
     hash: string,
     timestamp: string,
     version: number
+}
+
+export interface FetchedTransaction extends Transaction {
+    outs: Out[],
+    ins: In[]
+}
+
+export interface In {
+    scriptSignature: {
+        stack: StackData[]
+    }
+}
+
+export interface Out {
+    amount: string,
+    drsBlockHash: string | null
+    locktime: number
+    n: number
+    receiptMetadata: string | null
+    scriptPublicKey: string
+    valueType: string
+}
+
+export interface StackData {
+    Op?: string
+    Num?: number
+    Bytes?: string
+    Signature?: number[]
+    PubKey?: number[]
 }
 
 export interface Pagination {
@@ -177,12 +211,4 @@ export interface OutputData {
     locktime: number
     script_public_key: string
     value: { Token: number } | { Item: number }
-}
-
-export interface StackData {
-    Op?: string
-    Num?: number
-    Bytes?: string
-    Signature?: number[]
-    PubKey?: number[]
 }

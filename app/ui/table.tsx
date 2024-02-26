@@ -1,6 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
-import { shortenHash } from '@/app/utils'
+import { shortenHash, timestampElapsedTime } from '@/app/utils'
 import { ITable, BlockRow, TxRow } from '@/app/interfaces'
 import { Card, Typography } from '@material-tailwind/react'
 import { Square2StackIcon } from '@heroicons/react/24/outline'
@@ -59,7 +59,7 @@ function BlockTable({ rows, short = false }: { rows: BlockRow[], short?: boolean
                 </td>
                 <td className={row_spacing}>
                     <Typography variant='small' className={`text-gray-500`}>
-                        {age}
+                        {timestampElapsedTime(age)}
                     </Typography>
                 </td>
             </tr>
@@ -70,7 +70,7 @@ function BlockTable({ rows, short = false }: { rows: BlockRow[], short?: boolean
 
 function TxTable({ rows, short = false }: { rows: TxRow[], short?: boolean }) {
     let result: JSX.Element[] = []
-    rows.map(({ txHash, blockHash, type, address, age }: TxRow, index) => {
+    rows.map(({ txHash, blockHash, type, age }: TxRow, index) => {
         result.push(
             <tr key={index} className={`${index == rows.length - 1 ? '' : 'border-b border-b-gray-200'}`}>
                 <td className={`${row_spacing} flex flex-row`}>
@@ -86,12 +86,12 @@ function TxTable({ rows, short = false }: { rows: TxRow[], short?: boolean }) {
                 </td>
                 <td className={row_spacing}>
                     <Typography variant='small' className={`w-fit ${type == 'token' ? 'bg-green-200 text-green-900' : ''} ${type == 'receipt' ? ' bg-blue-200 text-blue-900' : ''}  text-center rounded-sm ${fira.className} px-1`}>
-                        {type.toUpperCase()}
+                        {type == 'receipt' ? 'ITEM' : type.toUpperCase()}
                     </Typography>
                 </td>
                 <td className={row_spacing}>
                     <Typography variant='small' className={`text-gray-500`}>
-                        {age}
+                        {timestampElapsedTime(age)}
                     </Typography>
                 </td>
             </tr>
@@ -125,7 +125,7 @@ function LoadingTable({ rows, cols }: { rows: number, cols: number }) {
  */
 export default function Table({ rows, type, short }: { rows: BlockRow[] | TxRow[], type: TableType, short?: boolean }) {
     return (
-        <Card className='min-h-fit w-full shadow-xl rounded-sm border border-gray-300 mt-2'>
+        <Card className='min-h-fit w-full shadow-md rounded-sm border border-gray-300 mt-2'>
             <table className='w-full min-w-max table-auto text-left rounded-sm'>
                 <thead>
                     <tr>

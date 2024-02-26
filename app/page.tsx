@@ -5,7 +5,6 @@ import Table, { TableType } from '@/app/ui/table'
 import StatCard from '@/app/ui/statCard'
 import { CubeIcon } from "@heroicons/react/24/outline"
 import { ArrowsRightLeftIcon } from "@heroicons/react/24/outline"
-import { ListBulletIcon } from "@heroicons/react/24/outline"
 import { Block, BlockRow, Transaction, TxRow } from '@/app/interfaces'
 import { formatBlockTableRow, formatTxTableRow } from "@/app/utils"
 import { ITEMS_PER_PAGE_SHORT } from '@/app/constants'
@@ -14,9 +13,8 @@ export default function Page() {
   const [latestBlockNum, setLatestBlockNum] = useState<number>();
   const [latestTxNum, setLatestTxNum] = useState<number>();
   const [blocksData, setBlocksData] = useState<BlockRow[]>([]);
-  const [txsData, setTxsData] = useState<TxRow[]>([]); 
+  const [txsData, setTxsData] = useState<TxRow[]>([]);
 
-  // Executed on component mount
   useEffect(() => {
     // Fetch blocks
     fetch(`api/blocks?limit=${ITEMS_PER_PAGE_SHORT}&offset=0`, {
@@ -28,11 +26,10 @@ export default function Page() {
       const data = await response.json()
       if (data.content) {
         setLatestBlockNum(data.content.pagination.total)
-        const blocksRows: BlockRow[] = await Promise.all(await data.content.blocks.map(async (block: Block) => await formatBlockTableRow(block))) // Currently used await because nb tx of each block is fetched
+        const blocksRows: BlockRow[] = await data.content.blocks.map((block: Block) => formatBlockTableRow(block)) // Currently used await because nb tx of each block is fetched
         setBlocksData(blocksRows)
       }
     })
-    
     // Fetch transactions
     fetch(`api/transactions?limit=${ITEMS_PER_PAGE_SHORT}&offset=0`, {
       method: 'GET',

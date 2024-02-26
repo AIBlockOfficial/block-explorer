@@ -1,6 +1,9 @@
 /** NETWORK */
 export const STORAGE_URL = 'https://storage.a-block.net'
 export const MEMPOOL_URL = 'https://compute.a-block.net'
+// export const MEMPOOL_URL = 'http://49.12.234.10:3003'
+// export const STORAGE_URL = 'http://49.12.234.10:3001'
+
 export const EXP_BACKEND = 'http://loki.explorer.se3ker.com/api'
 
 /** BLOCKS */
@@ -11,7 +14,7 @@ export const ITEMS_PER_CHUNK = 20;
 export const ITEMS_PER_PAGE_SHORT = 6;
 
 /** TRANSACTIONS */
-export const TXS_TABLE_HEADERS = ["Transaction Hash", "Block Num.", "Type", "Age"]
+export const TXS_TABLE_HEADERS = ["Transaction Hash", "Block Hash", "Type", "Age"]
 export const TXS_TABLE_HEADERS_SHORT = ["Tx Hash", "Block Hash", "Type", "Age"]
 export const TXS_FIELDS = ['Transaction Hash', 'Block Hash', 'Block Number', 'Transaction Type', 'Timestamp']
 export const TXS_IN_FIELDS = ['Previous Out', 'Script Sig']
