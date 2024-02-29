@@ -8,7 +8,7 @@ import Dropdown from '@/app/ui/nav/dropdown'
 import SettingsDropdown from '@/app/ui/nav/settingsDropdown'
 import { Disclosure } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
-import Logo from '@/app/static/bigLogo.svg'
+import Logo from '@/app/static/full_logo.svg'
 
 interface NavItems {
   name: string,
