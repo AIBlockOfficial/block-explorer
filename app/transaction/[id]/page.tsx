@@ -2,12 +2,12 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import ErrorBlock from '@/app/ui/errorBlock'
-import { IErrorInternal, InputDisplay, ItemDisplay, ItemType, OutputType, TokenDisplay, TransactionDisplay, TransactionItem } from "@/app/interfaces"
+import { IErrorInternal, InputDisplay, ItemDisplay, ItemType, OutputType, TokenDisplay, TransactionDisplay } from "@/app/interfaces"
 import { Card, Typography } from "@material-tailwind/react"
 import { InformationCircleIcon } from "@heroicons/react/24/outline"
 import { fira } from '@/app/styles/fonts'
-import { formatToTxDisplay, isGenesisTx, isHash } from "@/app/utils"
-import { TXS_FIELDS, TXS_IN_FIELDS, TXS_OUT_FIELDS } from "@/app/constants"
+import { formatToTxDisplay, isGenesisTx, isHash, isItem, isToken } from "@/app/utils"
+import { TXS_FIELDS, TXS_IN_FIELDS, TXS_IT_OUT_FIELDS, TXS_TK_OUT_FIELDS } from "@/app/constants"
 import { CountBadge } from "@/app/ui/countBadge"
 
 const tabs = ['Overview', 'Inputs', 'Outputs', 'Raw']
@@ -17,24 +17,24 @@ const col3 = 'pl-4 py-4 w-fit'
 const helpIcon = 'h-4 w-4 text-gray-600 hover:cursor-help'
 
 export default function Page({ params }: { params: { id: string } }) {
-  const [activeTab, setActiveTab] = useState(tabs[0])
-  const [rawData, setRawData] = useState<string | undefined>(undefined)
-  const [txDisplay, setTxDisplay] = useState<TransactionDisplay | undefined>(undefined);
-  const [found, setFound] = useState<boolean | undefined>(undefined)
+  const [activeTab, setActiveTab] = useState(tabs[0]) // Active tab
+  const [rawData, setRawData] = useState<string | undefined>(undefined) // Transaction raw data
+  const [txDisplay, setTxDisplay] = useState<TransactionDisplay | undefined>(undefined); // Transaction data
+  const [found, setFound] = useState<boolean | undefined>(undefined) // If block has been found
 
-  /// The transaction information is being pulled here
+  // The transaction information is being pulled here
   useEffect(() => {
     if (isHash(params.id) || isGenesisTx(params.id)) { // is a hash
-      fetch(`/api/item/${params.id}`, {
+      fetch(`/api/transaction/${params.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       }).then(async response => {
-        if (response.status == 200) {
-          const data = await response.json()
+        const data = await response.json()
+        if (data.content) {
           setRawData(data.content)
-          const transactionInfo: TransactionDisplay = formatToTxDisplay((data.content as TransactionItem).Transaction, params.id);
+          const transactionInfo: TransactionDisplay = formatToTxDisplay(data.content);
           setTxDisplay(transactionInfo)
           setFound(true)
         } else {
@@ -81,13 +81,7 @@ export default function Page({ params }: { params: { id: string } }) {
           </div>
           <div className={`${activeTab == tabs[2] ? 'block' : 'hidden'} w-full h-auto`}>
             {txDisplay && txDisplay.outputs.length > 0 &&
-              <div className="px-4 pb-4">
-                {txDisplay.type == OutputType.Token &&
-                  <TokenOutputs txOutputs={txDisplay.outputs as TokenDisplay[]} />
-                }{txDisplay.type == OutputType.Item &&
-                  <>n/a</>
-                }
-              </div>
+              <Outputs txOutputs={txDisplay ? txDisplay.outputs : []} />
             }
           </div>
           <div className={`${activeTab == tabs[3] ? 'block' : 'hidden'} w-full h-auto p-4`}>
@@ -103,6 +97,11 @@ export default function Page({ params }: { params: { id: string } }) {
   )
 }
 
+/**
+ * Transaction input data display
+ * @param txInputs - Transaction input list
+ * @returns 
+ */
 function Inputs({ txInputs }: { txInputs: InputDisplay[] }) {
   return (
     txInputs.map((input, index) => {
@@ -110,7 +109,7 @@ function Inputs({ txInputs }: { txInputs: InputDisplay[] }) {
         <div className="mt-2" key={index}>
           <Typography variant='small' className={`ml-2 ${fira.className}`}>{index + 1}:</Typography>
           <table className='min-w-fit max-w-fit table-auto text-left rounded-sm'>
-            <tbody>{/** Transaction Hash */}
+            <tbody>{/** Previous out */}
               <tr className="border">
                 <td className={`${col1}`}>
                   <InformationCircleIcon className={helpIcon} />
@@ -121,8 +120,8 @@ function Inputs({ txInputs }: { txInputs: InputDisplay[] }) {
                   </Typography>
                 </td>
                 <td className={`${col3}`}>
-                  <Typography variant='paragraph' className={`w-fit ${input.previousOutHash != 'n/a' ? 'text-blue-900 hover:underline' + fira.className : 'text-gray-800'}`}>
-                    {input.previousOutHash}
+                  <Typography as={Link} href={`/transaction/${input.previousOut}`} variant='paragraph' className={`w-fit ${fira.className} ${input.previousOut != 'n/a' ? 'text-blue-900 hover:underline' : 'text-gray-800'}`}>
+                    {input.previousOut}
                   </Typography>
                 </td>
               </tr>
@@ -137,13 +136,18 @@ function Inputs({ txInputs }: { txInputs: InputDisplay[] }) {
                   </Typography>
                 </td>
                 <td className={`${col3}`}>
-                  <Typography variant='small' className={`w-fit text-gray-800 ${fira.className}`}>
-                    {input.scriptSig.op ? input.scriptSig.op : []}
-                    {input.scriptSig.num ? input.scriptSig.num : []}
-                    {input.scriptSig.bytes ? input.scriptSig.bytes : []}
-                    {input.scriptSig.signature ? input.scriptSig.signature : []}
-                    {input.scriptSig.pubKey ? input.scriptSig.pubKey : []}
-                  </Typography>
+                  {input.scriptSig.stack.map((stackItem, i) => {
+                    return (
+                      <Typography key={i} variant='small' className={`w-fit font-bold text-gray-900 ${fira.className} rounded-xl bg-gray-200 px-2 my-2`}>
+                        {stackItem.op ? stackItem.op : ''}
+                        {stackItem.num ? stackItem.num : ''}
+                        {stackItem.bytes ? stackItem.bytes : ''}
+                        {stackItem.signature ? stackItem.signature : ''}
+                        {stackItem.pubKey ? stackItem.pubKey : ''}
+                      </Typography>
+                    )
+                  })}
+
                 </td>
               </tr>
             </tbody>
@@ -154,90 +158,177 @@ function Inputs({ txInputs }: { txInputs: InputDisplay[] }) {
   )
 }
 
-function TokenOutputs({ txOutputs }: { txOutputs: TokenDisplay[] }) {
+/**
+ * Transaction output data display
+ * @param txOutputs - Transaction outputs list (Token or Item)
+ */
+function Outputs({ txOutputs }: { txOutputs: TokenDisplay[] | ItemDisplay[] }) {
   if (txOutputs)
     return (
       txOutputs.map((output, index) => {
-        return (
-          <div className="mt-2" key={index} >
-            <Typography variant='small' className={`ml-2 ${fira.className}`}>{index + 1}:</Typography>
-            <table className='w-full min-w-fit table-auto text-left rounded-sm'>
-              <tbody>
-                {/** Address */}
-                <tr className="border">
-                  <td className={`${col1}`}>
-                    <InformationCircleIcon className={helpIcon} />
-                  </td>
-                  <td className={`${col2}`}>
-                    <Typography variant='small' className={`font-body text-gray-600`}>
-                      {TXS_OUT_FIELDS[0]}
-                    </Typography>
-                  </td>
-                  <td className={`${col3}`}>
-                    <Typography as={Link} href={`/address/${output.address}`} variant='small' className={`w-fit text-blue-900 ${fira.className} hover:underline`}>
-                      {output.address}
-                    </Typography>
-                  </td>
-                </tr>
-                {/** Tokens */}
-                <tr className="border">
-                  <td className={`${col1}`}>
-                    <InformationCircleIcon className={helpIcon} />
-                  </td>
-                  <td className={`${col2}`}>
-                    <Typography variant='small' className={`font-body text-gray-600`}>
-                      {TXS_OUT_FIELDS[1]}
-                    </Typography>
-                  </td>
-                  <td className={`${col3}`}>
-                    <div className="flex align-middle">
-                      <Typography variant='small' className={`w-fit text-gray-800 ${fira.className}`}>
-                        {output.tokens}
+        /** TOKEN */
+        if (output.valueType == OutputType.Token)
+          return (
+            <div className="mt-2" key={index} >
+              <Typography variant='small' className={`ml-2 ${fira.className}`}>{index + 1}:</Typography>
+              <table className='w-full min-w-fit table-auto text-left rounded-sm'>
+                <tbody>
+                  {/** Address */}
+                  <tr className="border">
+                    <td className={`${col1}`}>
+                      <InformationCircleIcon className={helpIcon} />
+                    </td>
+                    <td className={`${col2}`}>
+                      <Typography variant='small' className={`font-body text-gray-600`}>
+                        {TXS_TK_OUT_FIELDS[0]}
                       </Typography>
-                    </div>
-                  </td>
-                </tr>
-                {/** Fractionated Tokens */}
-                <tr className="border">
-                  <td className={`${col1}`}>
-                    <InformationCircleIcon className={helpIcon} />
-                  </td>
-                  <td className={`${col2}`}>
-                    <Typography variant='small' className={`font-body text-gray-600`}>
-                      {TXS_OUT_FIELDS[2]}
-                    </Typography>
-                  </td>
-                  <td className={`${col3}`}>
-                    <Typography variant='small' className={`w-fit text-gray-800 ${fira.className}`}>
-                      {output.fractionatedTokens}
-                    </Typography>
-                  </td>
-                </tr>
-                {/** LockTime */}
-                <tr className="border">
-                  <td className={`${col1}`}>
-                    <InformationCircleIcon className={helpIcon} />
-                  </td>
-                  <td className={`${col2}`}>
-                    <Typography variant='small' className={`font-body text-gray-600`}>
-                      {TXS_OUT_FIELDS[3]}
-                    </Typography>
-                  </td>
-                  <td className={`${col3}`}>
-                    <Typography variant='small' className={`w-fit text-gray-800  ${fira.className}`}>
-                      {output.lockTime}
-                    </Typography>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        )
+                    </td>
+                    <td className={`${col3}`}>
+                      <Typography as={Link} href={`#`} variant='small' className={`w-fit text-blue-900 ${fira.className} hover:underline`}>
+                        {output.address}
+                      </Typography>
+                    </td>
+                  </tr>
+                  {/** Tokens */}
+                  <tr className="border">
+                    <td className={`${col1}`}>
+                      <InformationCircleIcon className={helpIcon} />
+                    </td>
+                    <td className={`${col2}`}>
+                      <Typography variant='small' className={`font-body text-gray-600`}>
+                        {TXS_TK_OUT_FIELDS[1]}
+                      </Typography>
+                    </td>
+                    <td className={`${col3}`}>
+                      <div className="flex align-middle">
+                        <Typography variant='small' className={`w-fit text-gray-800 ${fira.className}`}>
+                          {(output as TokenDisplay).tokens}
+                        </Typography>
+                      </div>
+                    </td>
+                  </tr>
+                  {/** Fractionated Tokens */}
+                  <tr className="border">
+                    <td className={`${col1}`}>
+                      <InformationCircleIcon className={helpIcon} />
+                    </td>
+                    <td className={`${col2}`}>
+                      <Typography variant='small' className={`font-body text-gray-600`}>
+                        {TXS_TK_OUT_FIELDS[2]}
+                      </Typography>
+                    </td>
+                    <td className={`${col3}`}>
+                      <Typography variant='small' className={`w-fit text-gray-800 ${fira.className}`}>
+                        {(output as TokenDisplay).fractionatedTokens}
+                      </Typography>
+                    </td>
+                  </tr>
+                  {/** LockTime */}
+                  <tr className="border">
+                    <td className={`${col1}`}>
+                      <InformationCircleIcon className={helpIcon} />
+                    </td>
+                    <td className={`${col2}`}>
+                      <Typography variant='small' className={`font-body text-gray-600`}>
+                        {TXS_TK_OUT_FIELDS[3]}
+                      </Typography>
+                    </td>
+                    <td className={`${col3}`}>
+                      <Typography variant='small' className={`w-fit text-gray-800  ${fira.className}`}>
+                        {output.lockTime}
+                      </Typography>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          )
+        /** ITEM */
+        if (output.valueType == OutputType.Item)
+          return (
+            <div className="mt-2" key={index} >
+              <Typography variant='small' className={`ml-2 ${fira.className}`}>{index + 1}:</Typography>
+              <table className='w-full min-w-fit table-auto text-left rounded-sm'>
+                <tbody>
+                  {/** Address */}
+                  <tr className="border">
+                    <td className={`${col1}`}>
+                      <InformationCircleIcon className={helpIcon} />
+                    </td>
+                    <td className={`${col2}`}>
+                      <Typography variant='small' className={`font-body text-gray-600`}>
+                        {TXS_IT_OUT_FIELDS[0]}
+                      </Typography>
+                    </td>
+                    <td className={`${col3}`}>
+                      <Typography as={Link} href={`/address/${output.address}`} variant='small' className={`w-fit text-blue-900 ${fira.className} hover:underline`}>
+                        {output.address}
+                      </Typography>
+                    </td>
+                  </tr>
+                  {/** Items */}
+                  <tr className="border">
+                    <td className={`${col1}`}>
+                      <InformationCircleIcon className={helpIcon} />
+                    </td>
+                    <td className={`${col2}`}>
+                      <Typography variant='small' className={`font-body text-gray-600`}>
+                        {TXS_IT_OUT_FIELDS[1]}
+                      </Typography>
+                    </td>
+                    <td className={`${col3}`}>
+                      <div className="flex align-middle">
+                        <Typography variant='small' className={`w-fit text-gray-800 ${fira.className}`}>
+                          {(output as ItemDisplay).items}
+                        </Typography>
+                      </div>
+                    </td>
+                  </tr>
+                  {/** Metadata */}
+                  <tr className="border">
+                    <td className={`${col1}`}>
+                      <InformationCircleIcon className={helpIcon} />
+                    </td>
+                    <td className={`${col2}`}>
+                      <Typography variant='small' className={`font-body text-gray-600`}>
+                        {TXS_IT_OUT_FIELDS[2]}
+                      </Typography>
+                    </td>
+                    <td className={`${col3}`}>
+                      <Typography variant='small' className={`w-fit text-gray-800  ${fira.className}`}>
+                        {(output as ItemDisplay).metadata}
+                      </Typography>
+                    </td>
+                  </tr>
+                  {/** LockTime */}
+                  <tr className="border">
+                    <td className={`${col1}`}>
+                      <InformationCircleIcon className={helpIcon} />
+                    </td>
+                    <td className={`${col2}`}>
+                      <Typography variant='small' className={`font-body text-gray-600`}>
+                        {TXS_IT_OUT_FIELDS[3]}
+                      </Typography>
+                    </td>
+                    <td className={`${col3}`}>
+                      <Typography variant='small' className={`w-fit text-gray-800  ${fira.className}`}>
+                        {output.lockTime}
+                      </Typography>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          )
       })
     )
   return []
 }
 
+/**
+ * Transaction data display
+ * @param txInfo Transaction data 
+ */
 function List({ txInfo }: { txInfo: TransactionDisplay | undefined }) {
   return (
     <table className='w-full min-w-fit table-auto text-left rounded-sm'>
@@ -274,25 +365,6 @@ function List({ txInfo }: { txInfo: TransactionDisplay | undefined }) {
             {txInfo != undefined ?
               <Typography as={Link} href={`/block/${txInfo.bHash}`} variant='small' className={`w-fit text-blue-900 hover:underline ${fira.className}`}>
                 {txInfo.bHash}
-              </Typography>
-              :
-              <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
-          </td>
-        </tr>
-        {/** Block Number */}
-        <tr className="border-b border-t">
-          <td className={`${col1}`}>
-            <InformationCircleIcon className={helpIcon} />
-          </td>
-          <td className={`${col2}`}>
-            <Typography variant='small' className={`font-body text-gray-600`}>
-              {TXS_FIELDS[2]}
-            </Typography>
-          </td>
-          <td className={`${col3}`}>
-            {txInfo != undefined ?
-              <Typography as={Link} href={`/block/${txInfo.bNum}`} variant='small' className={`w-fit text-blue-900 hover:underline ${fira.className}`}>
-                {txInfo.bNum}
               </Typography>
               :
               <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
@@ -338,7 +410,7 @@ function List({ txInfo }: { txInfo: TransactionDisplay | undefined }) {
           </td>
           <td className={`${col3}`}>
             {txInfo != undefined ?
-              <Typography variant='paragraph' className={`w-fit text-gray-800 ${fira.className}`}>
+              <Typography variant='paragraph' className={`w-fit text-gray-800`}>
                 {txInfo.timpestamp}
               </Typography>
               :
@@ -349,3 +421,4 @@ function List({ txInfo }: { txInfo: TransactionDisplay | undefined }) {
     </table>
   )
 }
+

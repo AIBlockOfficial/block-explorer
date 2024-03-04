@@ -2,70 +2,58 @@
 import React, { useEffect, useState } from "react"
 import Table, { TableType } from '@/app/ui/table'
 import { Typography } from "@material-tailwind/react"
-import { getRange, formatBlockTableRow } from "../utils"
-import { BlockRow } from "@/app/interfaces"
+import { formatBlockTableRow } from "../utils"
+import { Block, BlockRow } from "@/app/interfaces"
 import useScrollPosition from "../hooks/useScrollPosition"
 import { ITEMS_PER_CHUNK } from "../constants"
 
 export default function Page() {
-  // const [reversed, setReversed] = useState<boolean>(true); // Revers table order
   const [expandCounter, setExpandCounter] = useState<number>(0) // Auto expand table as page is scrolled
-  const [latestBlockNum, setLatest] = useState<number>(); // Serves as end value for blocks fetch scope
+  const [latestBlockNum, setLatestBlockNum] = useState<number>(); // Serves as end value for blocks fetch scope
   const [blocksData, setBlocksData] = useState<BlockRow[]>([]); // Blocks data list
   const scroll = useScrollPosition() // Scroll position hook
-
-  useEffect(() => { // Auto expand feature. Can be improved but works well for now.
+  
+  // Auto expand feature
+  useEffect(() => {
     if (scroll > (window.innerHeight / 2) * expandCounter) {
       expand()
     }
   }, [scroll])
 
+  // List of blocks is being pulled here
   useEffect(() => {
-    fetch(`api/latestBlock`, {
+    fetch(`api/blocks?limit=${ITEMS_PER_CHUNK}&offset=0`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
     }).then(async response => {
       const data = await response.json()
-      setLatest(data.content ? data.content.block.header.b_num : 0) // Set latest block. If error set latest to 0 (won't load any blocks)
-
-    });
+      if (data.content) {
+        setLatestBlockNum(data.content.pagination.total)
+        const blocksRows: BlockRow[] = data.content.blocks.map((block: Block) => formatBlockTableRow(block))
+        setBlocksData(blocksRows)
+      }
+    })
   }, []);
-
-  // Executed after latestBlock state is changed
-  useEffect(() => {
-    if (latestBlockNum) {
-      fetch(`/api/blocks`, {
-        method: 'POST',
-        body: JSON.stringify(getRange((latestBlockNum - ITEMS_PER_CHUNK) >= 0 ? latestBlockNum - ITEMS_PER_CHUNK : 0, latestBlockNum)),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }).then(async response => {
-        const data = await response.json();
-        const blocksRows: BlockRow[] = data.content.map((rawBlock: any) => formatBlockTableRow(rawBlock)) // Format raw block to app interface
-        setBlocksData(blocksRows.reverse())
-      });
-    }
-  }, [latestBlockNum])
 
   // Expand table items by ITEMS_PER_CHUNK (triggers when scroll is at a certain height on page)
   async function expand() {
     if (latestBlockNum) {
-      fetch(`/api/blocks`, {
-        method: 'POST',
-        body: JSON.stringify(getRange((latestBlockNum - ITEMS_PER_CHUNK * expandCounter) - ITEMS_PER_CHUNK >= 0 ? (latestBlockNum - ITEMS_PER_CHUNK * expandCounter) - ITEMS_PER_CHUNK : 0, (latestBlockNum - ITEMS_PER_CHUNK * expandCounter) - 1)),
+      const offset = (ITEMS_PER_CHUNK * expandCounter) < (latestBlockNum) ? (ITEMS_PER_CHUNK * expandCounter) : ((ITEMS_PER_CHUNK * expandCounter) - (latestBlockNum - (ITEMS_PER_CHUNK * expandCounter)))
+      fetch(`api/blocks?limit=${ITEMS_PER_CHUNK}&offset=${offset}`, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       }).then(async response => {
-        const data = await response.json();
-        let existing = blocksData;
-        const blocksRows: BlockRow[] = data.content.map((rawBlock: any) => formatBlockTableRow(rawBlock)) // Format raw block to app interface
-        console.log(blocksRows)
-        setBlocksData([...existing, ...blocksRows.reverse()])
-      });
+        const data = await response.json()
+        if (data.content) {
+          let existing = blocksData;
+          const blocksRows: BlockRow[] = data.content.blocks.map((block: Block) => formatBlockTableRow(block))
+          setBlocksData([...existing, ...blocksRows])
+        }
+      })
       setExpandCounter(expandCounter + 1)
     }
   }
@@ -76,7 +64,6 @@ export default function Page() {
         <Typography variant="lead" className="">Blocks</Typography>
         <Typography variant="small" className="text-gray-600">Blocks on the A-Block blockchain</Typography>
       </div>
-      {/* {blocksData.length > 0 && <Button className="w-fit h-fit" onClick={() => { setReversed(!reversed); setExpandCounter(0) }}>Order</Button>} */}
       <Table rows={blocksData} type={TableType.block} />
     </>
   )

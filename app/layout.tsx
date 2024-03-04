@@ -1,9 +1,7 @@
 "use client"
 import Navbar from '@/app/ui/nav/navbar'
-
 import '@/app/styles/globals.css'
 import { inter } from '@/app/styles/fonts'
-import { useEffect } from 'react'
 
 export default function RootLayout({
   children,

@@ -11,16 +11,21 @@ export default function Searchbar() {
     const [input, setInput] = useState<string>('')
     const [displayAlert, setDisplayAlert] = useState<boolean>(false)
 
+    // Reset input content on page change
     useEffect(() => {
         setInput('')
     }, [pathname])
 
+    // Keypress handler to validate input on 'Enter' keypress
     const handleKeyDown = (e: any) => {
         if (e.key == 'Enter') {
             search()
         }
     }
 
+    /**
+     * Search funtion for block hash, block number, and transaction hash
+     */
     const search = () => {
         setDisplayAlert(false)
         if (isHash(input)) {
@@ -38,6 +43,9 @@ export default function Searchbar() {
         }
     }
 
+    /**
+     * Alert for input feedback
+     */
     function Alert() {
         return (
             <div className="bg-red-100 border border-red-400 text-red-700 w-[450px] px-4 py-3 rounded fixed left-5 bottom-5 z-50" role="alert">

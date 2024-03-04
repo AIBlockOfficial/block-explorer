@@ -1,26 +1,26 @@
 /** ------------ DATA FORMAT ------------ */
-import { BlockData, BlockDisplay, BlockResult, BlockRow, TxRow, InputData, OutputData, TransactionData, TransactionDisplay, StackDisplay, TokenDisplay, ItemDisplay, OutputType } from '@/app/interfaces'
-import { formatAmount, getUnicornSeed, getUnicornWitness } from '@/app/utils'
+import { BlockDisplay, BlockRow, TxRow, TransactionDisplay, StackDisplay, TokenDisplay, ItemDisplay, OutputType, Block, Transaction, FetchedBlock, FetchedTransaction, In, Out, StackData, InputDisplay } from '@/app/interfaces'
+import { getUnicornSeed, getUnicornWitness, tokenValue } from '@/app/utils'
+import { TOKEN_CURRENCY } from '../constants'
 
 /** ------------ BLOCKS ------------ */
 /**
- * Format raw block data to Block display
- * @param block raw block
- * @returns 
+ * Format block data for display
+ * @param block fetched block
+ * @returns formatted block for display
  */
-export const formatToBlockDisplay = (block: BlockResult): BlockDisplay => {
-  const blockData = (block[1] as BlockData).block
+export const formatToBlockDisplay = (block: FetchedBlock): BlockDisplay => {
   const blockInfo: BlockDisplay = {
-    bNum: blockData.header.b_num.toString(),
-    hash: block[0] as string,
-    merkleRootHash: blockData.header.txs_merkle_root_and_hash[1] || "n/a",
-    previousHash: blockData.header.previous_hash || "n/a",
-    version: blockData.header.version.toString(),
-    byteSize: `${new TextEncoder().encode(JSON.stringify(blockData)).length} bytes`,
-    nbTransactions: blockData.transactions.length.toString(),
-    unicornSeed: getUnicornSeed(blockData.header.seed_value) || "n/a",
-    unicornWitness: getUnicornWitness(blockData.header.seed_value) || "n/a",
-    timestamp: blockData.header.timestamp != undefined ? blockData.header.timestamp.toString() : "n/a"
+    bNum: block.num.toString(),
+    hash: block.hash,
+    merkleRootHash: block.merkleRootHash || "n/a",
+    previousHash: block.previousHash || "n/a",
+    version: block.version.toString(),
+    byteSize: `${new TextEncoder().encode(JSON.stringify(block)).length} bytes`,
+    nbTransactions: '',
+    unicornSeed: getUnicornSeed(block.seed),
+    unicornWitness: getUnicornWitness(block.seed),
+    timestamp: block.timestamp || "n/a"
   }
   return blockInfo
 }
@@ -28,59 +28,67 @@ export const formatToBlockDisplay = (block: BlockResult): BlockDisplay => {
 /**
  * Format table row for block
  * @param block
- * @param reversed 
- * @returns Array of block rows
+ * @returns Block row for table display
  */
-export const formatBlockTableRow = (block: BlockResult): BlockRow => {
-    const blockData = (block[1] as BlockData).block
-    const blockRow = {
-      number: blockData.header.b_num.toString(),
-      blockHash: blockData.header.previous_hash,
-      status: 'Unknown',
-      nbTx: blockData.transactions.length.toString(),
-      age: blockData.header.timestamp.toString(), // Format timestamp
-    } as BlockRow
+export const formatBlockTableRow = (block: Block): BlockRow => {
+  const blockRow = {
+    number: block.num.toString(),
+    blockHash: block.hash,
+    previousHash: block.previousHash,
+    nbTx: block.nbTx.toString(),
+    age: block.timestamp
+  } as BlockRow
   return blockRow
 }
 
-
 /** ------------ TRANSACTIONS ------------ */
-
-export const formatToTxDisplay = (transaction: TransactionData, hash: string): TransactionDisplay => {
-  const type = transaction.outputs[0].value.hasOwnProperty('Token') ? OutputType.Token : OutputType.Item
+/**
+ * Format transaction data for display
+ * @param transaction fetched transaction
+ * @returns formatted transaction for display
+ */
+export const formatToTxDisplay = (transaction: FetchedTransaction): TransactionDisplay => {
+  const type = transaction.outs[0].valueType == 'token' ? OutputType.Token : OutputType.Item
   return {
-    hash: hash,
-    bHash: 'n/a',
+    hash: transaction.hash,
+    bHash: transaction.blockHash,
     bNum: 'n/a',
     type: type.toString(),
-    timpestamp: 'n/a',
-    inputs: transaction.inputs.map((input: InputData) => {
+    timpestamp: new Date(transaction.timestamp).toString(),
+    inputs: transaction.ins.map((input: In) => {
       return {
-        previousOutHash: input.previous_out ? input.previous_out.t_hash : 'n/a',
+        previousOut: input.previousOutTxHash ? input.previousOutTxHash : 'n/a',
         scriptSig: {
-          op: input.script_signature.stack[0].Op,
-          num: input.script_signature.stack[0].Num?.toString(),
-          bytes: input.script_signature.stack[0].Bytes,
-          signature: input.script_signature.stack[0].Signature?.map((s:any) => s.toString()),
-          pubKey: input.script_signature.stack[0].PubKey?.map((k:any) => k.toString()),
-        } as StackDisplay
-      }
+          stack: input.scriptSignature.stack.map((stackItem: StackData) => {
+            return {
+              op: stackItem.Op,
+              num: stackItem.Num?.toString(),
+              bytes: stackItem.Bytes,
+              signature: stackItem.Signature?.map((s: any) => s.toString()),
+              pubKey: stackItem.PubKey?.map((k: any) => k.toString()),
+            } as StackDisplay
+          })
+        }
+      }as InputDisplay
     }),
-    outputs: type == OutputType.Token ? transaction.outputs.map((output: OutputData) => {
+    outputs: type == OutputType.Token ? transaction.outs.map((output: Out) => {
       return { // Token
-        address: output.script_public_key,
-        tokens: formatAmount(transaction, true) + ' ABC',
-        fractionatedTokens: (output.value as { Token: number }).Token.toString(),
+        valueType: output.valueType,
+        address: output.scriptPublicKey,
+        tokens: tokenValue(parseInt(output.amount)) + ' ' + TOKEN_CURRENCY,
+        fractionatedTokens: output.amount,
         lockTime: output.locktime.toString(),
       } as TokenDisplay
     })
-      : transaction.outputs.map((output: OutputData) => {
+      : transaction.outs.map((output: Out) => {
         return { // Item
-          address: output.script_public_key,
-          items: (output.value as { Item: number }).Item.toString(),
+          valueType: output.valueType,
+          address: output.scriptPublicKey,
+          items: output.amount,
+          drsBlockHash: output.drsBlockHash ? output.drsBlockHash : 'null',
           lockTime: output.locktime.toString(),
           genesisTransactionHash: 'n/a',
-          metadata: 'n/a'
+          metadata: output.itemMetadata
         } as ItemDisplay
       })
   }
@@ -88,33 +96,16 @@ export const formatToTxDisplay = (transaction: TransactionData, hash: string): T
 
 /**
  * Format table row for transaction
- * @param txs Raw format
- * @param reversed 
- * @returns Array of transaction rows
+ * @param block
+ * @returns Transaction row for table display
  */
-export const formatTxTableRows = (txs: any, reversed: boolean): TxRow[] => {
-  const result: TxRow[] = []
-  txs.forEach((tx: any) => {
-    result.push({
-      txHash: tx[0],
-      blockNum: '',
-      type: 'Token',
-      status: 'Item',
-      address: 'n/a',
-      age: 'n/a',
-    } as TxRow)
-  })
-  return reversed ? result.reverse() : result
-}
-
-export function isBlockTable(object: any): object is BlockRow {
-  if (object == undefined)
-      return false
-  return 'blockHash' in object
-}
-
-export function isTxTable(object: any): object is TxRow {
-  if (object == undefined)
-      return false
-  return 'txHash' in object
+export const formatTxTableRow = (tx: Transaction): TxRow => {
+  const txRow = {
+    txHash: tx.hash,
+    blockHash: tx.blockHash,
+    type: tx.txType ? tx.txType : 'n/a',
+    address: '-',
+    age: tx.timestamp,
+  } as TxRow
+  return txRow
 }
