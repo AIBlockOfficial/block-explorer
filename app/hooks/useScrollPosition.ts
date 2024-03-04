@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 
+/**
+ * Scroll position hook for auto expand of block or txs table
+ */
 const useScrollPosition = () => {
   const [scrollPosition, setScrollPosition] = useState(0);
 

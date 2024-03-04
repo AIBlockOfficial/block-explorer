@@ -13,14 +13,14 @@ import ErrorBlock from "@/app/ui/errorBlock"
 const tabs = ['Overview', 'Transactions']
 
 export default function Page({ params }: { params: { id: string } }) {
-  const [activeTab, setActiveTab] = useState(tabs[0])
-  const [blockDisplay, setBlockDisplay] = useState<BlockDisplay | undefined>(undefined);
-  const [txs, setTxs] = useState<TxRow[] | undefined>(undefined)
-  const [found, setFound] = useState<boolean | undefined>(undefined)
+  const [activeTab, setActiveTab] = useState<string>(tabs[0]) // Active tab
+  const [blockDisplay, setBlockDisplay] = useState<BlockDisplay | undefined>(undefined); // Block data
+  const [txs, setTxs] = useState<TxRow[] | undefined>(undefined) // Block transaction data
+  const [found, setFound] = useState<boolean | undefined>(undefined) // If block has been found
 
-  /// The block information is being pulled here
+  // The block information is being pulled here (and block txs)
   useEffect(() => {
-    if (isHash(params.id) || isNum(params.id)) { // is a hash
+    if (isHash(params.id) || isNum(params.id)) { 
       fetch(`/api/block/${params.id}`, {
         method: 'GET',
         headers: {
@@ -29,7 +29,6 @@ export default function Page({ params }: { params: { id: string } }) {
       }).then(async response => {
         const data = await response.json()
         if (data.content) {
-          console.log('1: ',data.content)
           const blockDisplay: BlockDisplay = formatToBlockDisplay(data.content as FetchedBlock)
           setBlockDisplay(blockDisplay)
           setFound(true)
@@ -37,8 +36,7 @@ export default function Page({ params }: { params: { id: string } }) {
           setFound(false)
       })
 
-
-      fetch(`/api/blockTxs/${params.id}`, {
+      fetch(`/api/blockTxs/${params.id}`, { 
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -46,7 +44,7 @@ export default function Page({ params }: { params: { id: string } }) {
       }).then(async response => {
         const data = await response.json()
         if (data.content) {
-          const txRows: TxRow[] = await Promise.all(await data.content.transactions.map(async (tx: Transaction) => await formatTxTableRow(tx)))
+          const txRows: TxRow[] = data.content.transactions.map((tx: Transaction) => formatTxTableRow(tx))
           setTxs(txRows)
         }
       })

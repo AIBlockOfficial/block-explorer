@@ -1,11 +1,7 @@
-/** WIP, some of these structures are unfinished */
-/** General interface are divided into three types : 
- *  Data    : Raw data retrieved from API calls
- *  Display    : Formatted data ready to be displayed on front-end
- */
 /* -------------------------------------------------------------------------- */
-/*                             Display Structures                             */
+/*                          General Interface Structures                      */
 /* -------------------------------------------------------------------------- */
+
 export enum ItemType {
     Block,
     Transaction,
@@ -16,9 +12,14 @@ export enum OutputType {
     Item = 'item'
 }
 
+/* -------------------------------------------------------------------------- */
+/*                             Display Structures                             */
+/* -------------------------------------------------------------------------- */
+
 export interface BlockRow {
     number: string,
     blockHash: string,
+    previousHash: string,
     nbTx: string,
     age: string,
 }
@@ -86,7 +87,7 @@ export interface ItemDisplay {
 }
 
 /* -------------------------------------------------------------------------- */
-/*                     Replace Network Fetch Data                             */
+/*                     Data from explorer backend                             */
 /* -------------------------------------------------------------------------- */
 
 export interface BlocksResult {

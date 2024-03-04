@@ -1,7 +1,9 @@
 import { EXP_BACKEND } from "../constants";
 import { IAPIRoute } from "../interfaces";
 
-/** Fetches blocks count */
+/**
+ * Fetches blocks count 
+ */
 export function blocksCount() {
     return fetch(`${EXP_BACKEND}${IAPIRoute.BlocksCount}`, {
         method: 'GET',
@@ -17,10 +19,9 @@ export function blocksCount() {
 }
 
 /**
- * Fetches block from its hash or number
+ * Fetches block with a hash or number
  * 
  * @param id {string} - hash or number of the block to fetch
- * @returns 
  */
 export function block(id: string) {
     return fetch(`${EXP_BACKEND}${IAPIRoute.Block}/${id}`, {
@@ -39,9 +40,8 @@ export function block(id: string) {
 /**
  *  Fetches a range of latetest blocks
  * 
- * @param limit {string}  - amount to fetch
+ * @param limit {string}  - amount to fetch from latest block
  * @param offset {string} - offset from latest block 
- * @returns 
  */
 export function blocks(limit: string, offset: string) {
     return fetch(`${EXP_BACKEND}${IAPIRoute.Blocks}?limit=${limit}&offset=${offset}`,
@@ -59,16 +59,15 @@ export function blocks(limit: string, offset: string) {
 }
 
 /**
- * Fetches block transactions from its hash or number
+ * Fetches block transactions with a hash or number
  * 
  * @param id {string} - hash or number of the block to fetch
- * @returns 
  */
-export function fetchBlockTxs(id: string) {
+export function blockTxs(id: string) {
     return fetch(`${EXP_BACKEND}${IAPIRoute.Block}/${id}/transactions`, {
         method: 'GET',
         headers: {
-            // 'Content-Type': 'application/json',
+            'Content-Type': 'application/json',
         }
     }).then((response) => {
         if (response.status == 200)
@@ -81,9 +80,8 @@ export function fetchBlockTxs(id: string) {
 /**
  *  Fetches a range of latetest transactions
  * 
- * @param limit {string}  - amount to fetch
+ * @param limit {string}  - amount to fetch from latest transaction
  * @param offset {string} - offset from latest transaction 
- * @returns 
  */
 export function transactions(limit: string, offset: string) {
     return fetch(`${EXP_BACKEND}${IAPIRoute.Transactions}?limit=${limit}&offset=${offset}`,
@@ -101,10 +99,9 @@ export function transactions(limit: string, offset: string) {
 }
 
 /**
- * Fetches a transaction from its hash
+ * Fetches a transaction with a hash
  * 
  * @param hash {string} - hash of the transaction to fetch
- * @returns 
  */
 export function transaction(hash: string) {
     return fetch(`${EXP_BACKEND}${IAPIRoute.Transaction}/${hash}`, {

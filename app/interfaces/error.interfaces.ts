@@ -1,3 +1,7 @@
+/* -------------------------------------------------------------------------- */
+/*                           Error Interface Structures                       */
+/* -------------------------------------------------------------------------- */
+
 export enum IErrorInternal {
     ExportError = 'Export Error',
     UnknownError = 'Unknown Error',

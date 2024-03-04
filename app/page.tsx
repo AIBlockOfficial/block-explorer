@@ -10,10 +10,10 @@ import { formatBlockTableRow, formatTxTableRow } from "@/app/utils"
 import { ITEMS_PER_PAGE_SHORT } from '@/app/constants'
 
 export default function Page() {
-  const [latestBlockNum, setLatestBlockNum] = useState<number>();
-  const [latestTxNum, setLatestTxNum] = useState<number>();
-  const [blocksData, setBlocksData] = useState<BlockRow[]>([]);
-  const [txsData, setTxsData] = useState<TxRow[]>([]);
+  const [latestBlockNum, setLatestBlockNum] = useState<number>(); // Total number of blocks to display in card
+  const [latestTxNum, setLatestTxNum] = useState<number>(); // Total number of transactions to display in card
+  const [blocksData, setBlocksData] = useState<BlockRow[]>([]); // Short table block row data
+  const [txsData, setTxsData] = useState<TxRow[]>([]); // Short table transaction row data
 
   useEffect(() => {
     // Fetch blocks
@@ -51,7 +51,6 @@ export default function Page() {
       <div className="flex p-4 justify-evenly flex-wrap">
         <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Blocks'} value={latestBlockNum ? latestBlockNum : undefined} icon={<CubeIcon className='card-icons' />} href={'/blocks'} /></div>
         <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Transactions'} value={latestTxNum ? latestTxNum : undefined} icon={<ArrowsRightLeftIcon className='card-icons' />} href={'/transactions'} /></div>
-        {/* <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Addresses'} value={latestBlockNum ? undefined : undefined} icon={<ListBulletIcon className='card-icons' />} href={'#'} /></div> */}
       </div>
       <div className="flex p-4 justify-evenly flex-wrap">
         <div className='p-2 md:w-1/2 sm:w-full'>

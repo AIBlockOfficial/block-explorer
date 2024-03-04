@@ -3,7 +3,7 @@ const chain = require('../../chainFetch');
 
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const item = await chain.fetchBlockTxs(params.id);
+    const item = await chain.blockTxs(params.id);
     return NextResponse.json({content: item});
   } catch (error: any) {
     return NextResponse.json(

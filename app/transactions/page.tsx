@@ -14,12 +14,14 @@ export default function Page() {
   const [txsData, setTxsData] = useState<TxRow[]>([]) // Txs data list
   const scroll = useScrollPosition() // Scroll position hook
 
-  useEffect(() => { 
+  // Auto expand feature
+  useEffect(() => {
     if (scroll > (window.innerHeight / 2) * expandCounter) {
       expand()
     }
   }, [scroll])
 
+  // List of transactions is being pulled here
   useEffect(() => {
     fetch(`api/transactions?limit=${ITEMS_PER_CHUNK}&offset=0`, {
       method: 'GET',
@@ -30,7 +32,7 @@ export default function Page() {
       const data = await response.json()
       if (data.content) {
         setLatestTxNum(data.content.pagination.total)
-        const txRows: TxRow[] = await Promise.all(await data.content.transactions.map(async (tx: Transaction) => await formatTxTableRow(tx)))
+        const txRows: TxRow[] = data.content.transactions.map((tx: Transaction) => formatTxTableRow(tx))
         setTxsData(txRows)
       }
     })
@@ -39,9 +41,8 @@ export default function Page() {
   // Expand table items by ITEMS_PER_CHUNK (triggers when scroll is at a certain height on page)
   async function expand() {
     if (latestTxNum) {
-      const offset = (ITEMS_PER_CHUNK * expandCounter) <= (latestTxNum - ITEMS_PER_CHUNK) ? (ITEMS_PER_CHUNK * expandCounter) : (latestTxNum - ITEMS_PER_CHUNK) 
-      console.log('expand', offset)
-      fetch(`api/transactions?limit=${ITEMS_PER_CHUNK}&offset=${ITEMS_PER_CHUNK * expandCounter}`, {
+      const offset = (ITEMS_PER_CHUNK * expandCounter) < (latestTxNum) ? (ITEMS_PER_CHUNK * expandCounter) : ((ITEMS_PER_CHUNK * expandCounter) - (latestTxNum - (ITEMS_PER_CHUNK * expandCounter)))
+      fetch(`api/transactions?limit=${ITEMS_PER_CHUNK}&offset=${offset}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -51,18 +52,12 @@ export default function Page() {
         if (data.content) {
           let existing = txsData;
           const txRows: TxRow[] = data.content.transactions.map((tx: Transaction) => formatTxTableRow(tx))
-          console.log('>',txRows)
           setTxsData([...existing, ...txRows])
         }
       })
       setExpandCounter(expandCounter + 1)
     }
   }
-
-  useEffect(()=> {
-    console.log(latestTxNum, txsData.length)
-
-  }, [txsData])
 
   return (
     <>

@@ -5,7 +5,7 @@ import { BlockRow, TxRow } from '@/app/interfaces'
 import { Card, Typography } from '@material-tailwind/react'
 import { Square2StackIcon } from '@heroicons/react/24/outline'
 import { fira } from '@/app/styles/fonts'
-import { BLOCK_TABLE_HEADERS, BLOCK_TABLE_HEADERS_SHORT, ITEMS_PER_CHUNK, ITEMS_PER_PAGE_SHORT, TXS_TABLE_HEADERS, TXS_TABLE_HEADERS_SHORT } from '@/app/constants'
+import { BLOCK_TABLE_HEADERS, ITEMS_PER_CHUNK, ITEMS_PER_PAGE_SHORT, TXS_TABLE_HEADERS } from '@/app/constants'
 
 export enum TableType {
     block = 'block',
@@ -13,6 +13,9 @@ export enum TableType {
 }
 const row_spacing = `px-4 py-3`
 
+/**
+ * Table header
+ */
 function Headers({ headers }: { headers: string[] }) {
     let result: JSX.Element[] = []
     headers.map((head, i) => {
@@ -35,9 +38,12 @@ function Headers({ headers }: { headers: string[] }) {
     return result
 }
 
+/**
+ * Block table for BlockRow
+ */
 function BlockTable({ rows }: { rows: BlockRow[] }) {
     let result: JSX.Element[] = []
-    rows.map(({ number, blockHash, nbTx, age }: BlockRow, index) => {
+    rows.map(({ number, blockHash, previousHash, nbTx, age }: BlockRow, index) => {
         result.push(
             <tr key={index} className={`${index == rows.length - 1 ? '' : 'border-b border-b-gray-200'}`}>
                 <td className={row_spacing}>
@@ -45,12 +51,23 @@ function BlockTable({ rows }: { rows: BlockRow[] }) {
                         {number}
                     </Typography>
                 </td>
-                <td className={`${row_spacing} flex flex-row`}>
-                    <Typography as={Link} href={`/block/${blockHash}`} variant='small' className={`text-blue-900 text-xs ${fira.className} hover:underline`}>
-                        {shortenHash(blockHash)}
-                    </Typography>
-                    <Square2StackIcon className='text-blue-900 h-4 w-4 hover:cursor-pointer' onClick={() => null} />
+                <td className={`${row_spacing}`}>
+                    <div className='flex flex-row'>
+                        <Typography as={Link} href={`/block/${blockHash}`} variant='small' className={`text-blue-900 text-xs ${fira.className} hover:underline`}>
+                            {shortenHash(blockHash)}
+                        </Typography>
+                        <Square2StackIcon className='text-blue-900 h-4 w-4 hover:cursor-pointer' onClick={() => null} />
+                    </div>
                 </td>
+                <td className={`${row_spacing}`}>
+                    <div className='flex flex-row'>
+                        <Typography as={Link} href={`/block/${previousHash}`} variant='small' className={`text-blue-900 text-xs ${fira.className} hover:underline`}>
+                            {shortenHash(previousHash)}
+                        </Typography>
+                        <Square2StackIcon className='text-blue-900 h-4 w-4 hover:cursor-pointer' onClick={() => null} />
+                    </div>
+                </td>
+                {/* <td><p>Test</p></td> */}
                 <td className={row_spacing}>
                     <Typography variant='small' className={`w-1/2 text-center ${nbTx == '0' ? 'text-red-900 bg-red-200' : 'text-purple-900 bg-purple-200'} rounded-sm ${fira.className} px-1 w-[40px]`}>
                         {nbTx == '0' ? 'NONE' : nbTx}
@@ -67,6 +84,9 @@ function BlockTable({ rows }: { rows: BlockRow[] }) {
     return result
 }
 
+/**
+ * Transaction table for TxRow
+ */
 function TxTable({ rows }: { rows: TxRow[] }) {
     let result: JSX.Element[] = []
     rows.map(({ txHash, blockHash, type, age }: TxRow, index) => {
@@ -99,6 +119,9 @@ function TxTable({ rows }: { rows: TxRow[] }) {
     return result
 }
 
+/**
+ * Loading table skeleton
+ */
 function LoadingTable({ rows, cols }: { rows: number, cols: number }) {
     let result: JSX.Element[] = []
     for (let i = 0; i < rows; i++) {
@@ -138,22 +161,27 @@ export default function Table({ rows, type, short }: { rows: BlockRow[] | TxRow[
                 </thead>
                 <tbody>
                     {type == TableType.block &&
-                        <BlockTable rows={rows as BlockRow[]} />
+                        <>
+                            <BlockTable rows={rows as BlockRow[]} />
+                            {!short && rows.length > 0 && (rows[rows.length - 1] as BlockRow).number != '0' &&
+                                <LoadingTable rows={5} cols={BLOCK_TABLE_HEADERS.length} />
+                            }
+                        </>
                     }
                     {type == TableType.tx &&
                         <>
                             <TxTable rows={rows as TxRow[]} />
-                            {!short && rows.length > 0 && (rows[rows.length-1] as TxRow).txHash != '000010' &&
+                            {!short && rows.length > 0 && (rows[rows.length - 1] as TxRow).txHash != '000000' && (rows[rows.length - 1] as TxRow).txHash != '000010' && (rows[rows.length - 1] as TxRow).txHash != '000001' && (rows[rows.length - 1] as TxRow).txHash != '000011' &&
                                 <LoadingTable rows={5} cols={TXS_TABLE_HEADERS.length} />
                             }
                         </>
                     }
                     {(rows.length < 1 && type == TableType.block) &&
-                        <LoadingTable rows={short ? ITEMS_PER_PAGE_SHORT : ITEMS_PER_CHUNK} cols={short ? BLOCK_TABLE_HEADERS_SHORT.length : BLOCK_TABLE_HEADERS.length} />
+                        <LoadingTable rows={short ? ITEMS_PER_PAGE_SHORT : ITEMS_PER_CHUNK} cols={BLOCK_TABLE_HEADERS.length} />
                     }
 
                     {(rows.length < 1 && type == TableType.tx) &&
-                        <LoadingTable rows={short ? ITEMS_PER_PAGE_SHORT : ITEMS_PER_CHUNK} cols={short ? TXS_TABLE_HEADERS_SHORT.length : TXS_TABLE_HEADERS.length} />
+                        <LoadingTable rows={short ? ITEMS_PER_PAGE_SHORT : ITEMS_PER_CHUNK} cols={TXS_TABLE_HEADERS.length} />
                     }
                 </tbody>
             </table>

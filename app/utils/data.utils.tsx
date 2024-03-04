@@ -5,9 +5,9 @@ import { TOKEN_CURRENCY } from '../constants'
 
 /** ------------ BLOCKS ------------ */
 /**
- * Format block data to display format
+ * Format block data for display
  * @param block fetched block
- * @returns 
+ * @returns formatted block for display
  */
 export const formatToBlockDisplay = (block: FetchedBlock): BlockDisplay => {
   const blockInfo: BlockDisplay = {
@@ -28,12 +28,13 @@ export const formatToBlockDisplay = (block: FetchedBlock): BlockDisplay => {
 /**
  * Format table row for block
  * @param block
- * @returns Array of block rows
+ * @returns Block row for table display
  */
 export const formatBlockTableRow = (block: Block): BlockRow => {
   const blockRow = {
     number: block.num.toString(),
     blockHash: block.hash,
+    previousHash: block.previousHash,
     nbTx: block.nbTx.toString(),
     age: block.timestamp
   } as BlockRow
@@ -41,7 +42,11 @@ export const formatBlockTableRow = (block: Block): BlockRow => {
 }
 
 /** ------------ TRANSACTIONS ------------ */
-
+/**
+ * Format transaction data for display
+ * @param transaction fetched transaction
+ * @returns formatted transaction for display
+ */
 export const formatToTxDisplay = (transaction: FetchedTransaction): TransactionDisplay => {
   const type = transaction.outs[0].valueType == 'token' ? OutputType.Token : OutputType.Item
   return {
@@ -89,6 +94,11 @@ export const formatToTxDisplay = (transaction: FetchedTransaction): TransactionD
   }
 }
 
+/**
+ * Format table row for transaction
+ * @param block
+ * @returns Transaction row for table display
+ */
 export const formatTxTableRow = (tx: Transaction): TxRow => {
   const txRow = {
     txHash: tx.hash,
@@ -98,16 +108,4 @@ export const formatTxTableRow = (tx: Transaction): TxRow => {
     age: tx.timestamp,
   } as TxRow
   return txRow
-}
-
-export function isToken(object: any): object is BlockRow {
-  if (object == undefined)
-    return false
-  return 'tokens' in object
-}
-
-export function isItem(object: any): object is TxRow {
-  if (object == undefined)
-    return false
-  return 'items' in object
 }

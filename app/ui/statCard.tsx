@@ -21,8 +21,6 @@ export default function StatCard({ title, value, icon, href }: IProps) {
                     <Typography variant='lead' className={`mt-1 text-black ${ibm.className}`}>{formatNumber(value)}</Typography> 
                     : 
                     <div className="mt-2 h-6 w-32 rounded bg-gray-200 animate-pulse"></div> }
-
-                    
                 </div>
             </div>
             <div className='w-full h-14 mt-auto pl-5 rounded-b-md bg-gray-100 flex items-center justify-start'>

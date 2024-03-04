@@ -1,5 +1,4 @@
 /** ------------ DISPLAY FORMAT ------------ */
-
 import { FetchedTransaction } from "@/app/interfaces";
 import { TOKEN_FRACTION } from "../constants";
 
@@ -37,6 +36,12 @@ export const formatNumber = (num: string | number): string => {
   return target.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
 
+/**
+ * Format address (shortens the hash for display)
+ * @param address hash to format
+ * @param nbChar
+ * @returns 
+ */
 export const formatAddressForDisplay = (address: string, nbChar: number) => {
   if (address) {
     let displayAddress = address;
@@ -52,26 +57,11 @@ export const formatAddressForDisplay = (address: string, nbChar: number) => {
   }
 };
 
-export const formatAmount = (tx: FetchedTransaction, aggregated: boolean) => {
-  let result = 0;
-  if (tx.outs.length > 1) {
-    if (tx.outs[0].valueType == 'token') {
-      if (!aggregated)
-        result = parseInt(tx.outs[0].amount)
-      else
-        result = tx.outs.reduce(
-          (acc: number, o: any) => acc + o.value,
-          0
-        );
-    }
-  } else if (tx.outs.length != 0) {
-    if (tx.outs[0].valueType == 'token') {
-      result += parseInt(tx.outs[0].amount);
-    }
-  }
-  return formatNumber((result / 25200).toFixed(2));
-};
-
+/**
+ * Format fractionnated tokens to amount
+ * @param amount 
+ * @returns 
+ */
 export const tokenValue = (amount: number) => {
   return (amount / TOKEN_FRACTION)
 }
@@ -115,6 +105,11 @@ export const binToString = (array: any[]): string => {
   return String.fromCharCode.apply(String, array);
 };
 
+/**
+ * Format timestamp to elapsed time
+ * @param date 
+ * @returns 
+ */
 export const timestampElapsedTime = (date: string) => {
   const current = new Date(date)
   const now = new Date()

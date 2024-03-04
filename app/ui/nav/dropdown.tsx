@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { Menu, Transition } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/24/outline'
 
-
 function classNames(...classes: any) {
     return classes.filter(Boolean).join(' ')
 }

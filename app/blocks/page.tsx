@@ -8,18 +8,19 @@ import useScrollPosition from "../hooks/useScrollPosition"
 import { ITEMS_PER_CHUNK } from "../constants"
 
 export default function Page() {
-  // const [reversed, setReversed] = useState<boolean>(true); // Revers table order
   const [expandCounter, setExpandCounter] = useState<number>(0) // Auto expand table as page is scrolled
   const [latestBlockNum, setLatestBlockNum] = useState<number>(); // Serves as end value for blocks fetch scope
   const [blocksData, setBlocksData] = useState<BlockRow[]>([]); // Blocks data list
   const scroll = useScrollPosition() // Scroll position hook
-
-  useEffect(() => { // Auto expand feature. Can be improved but works well for now.
+  
+  // Auto expand feature
+  useEffect(() => {
     if (scroll > (window.innerHeight / 2) * expandCounter) {
       expand()
     }
   }, [scroll])
 
+  // List of blocks is being pulled here
   useEffect(() => {
     fetch(`api/blocks?limit=${ITEMS_PER_CHUNK}&offset=0`, {
       method: 'GET',
@@ -30,7 +31,7 @@ export default function Page() {
       const data = await response.json()
       if (data.content) {
         setLatestBlockNum(data.content.pagination.total)
-        const blocksRows: BlockRow[] = await Promise.all(await data.content.blocks.map(async (block: Block) => await formatBlockTableRow(block))) // Currently used await because nb tx of each block is fetched
+        const blocksRows: BlockRow[] = data.content.blocks.map((block: Block) => formatBlockTableRow(block))
         setBlocksData(blocksRows)
       }
     })
@@ -39,7 +40,8 @@ export default function Page() {
   // Expand table items by ITEMS_PER_CHUNK (triggers when scroll is at a certain height on page)
   async function expand() {
     if (latestBlockNum) {
-      fetch(`api/blocks?limit=${ITEMS_PER_CHUNK}&offset=${ITEMS_PER_CHUNK * expandCounter}`, {
+      const offset = (ITEMS_PER_CHUNK * expandCounter) < (latestBlockNum) ? (ITEMS_PER_CHUNK * expandCounter) : ((ITEMS_PER_CHUNK * expandCounter) - (latestBlockNum - (ITEMS_PER_CHUNK * expandCounter)))
+      fetch(`api/blocks?limit=${ITEMS_PER_CHUNK}&offset=${offset}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -48,7 +50,7 @@ export default function Page() {
         const data = await response.json()
         if (data.content) {
           let existing = blocksData;
-          const blocksRows: BlockRow[] = await Promise.all(await data.content.blocks.map(async (block: Block) => await formatBlockTableRow(block))) // Currently used await because nb tx of each block is fetched
+          const blocksRows: BlockRow[] = data.content.blocks.map((block: Block) => formatBlockTableRow(block))
           setBlocksData([...existing, ...blocksRows])
         }
       })
@@ -62,7 +64,6 @@ export default function Page() {
         <Typography variant="lead" className="">Blocks</Typography>
         <Typography variant="small" className="text-gray-600">Blocks on the A-Block blockchain</Typography>
       </div>
-      {/* {blocksData.length > 0 && <Button className="w-fit h-fit" onClick={() => { setReversed(!reversed); setExpandCounter(0) }}>Order</Button>} */}
       <Table rows={blocksData} type={TableType.block} />
     </>
   )

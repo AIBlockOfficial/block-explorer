@@ -17,12 +17,12 @@ const col3 = 'pl-4 py-4 w-fit'
 const helpIcon = 'h-4 w-4 text-gray-600 hover:cursor-help'
 
 export default function Page({ params }: { params: { id: string } }) {
-  const [activeTab, setActiveTab] = useState(tabs[0])
-  const [rawData, setRawData] = useState<string | undefined>(undefined)
-  const [txDisplay, setTxDisplay] = useState<TransactionDisplay | undefined>(undefined);
-  const [found, setFound] = useState<boolean | undefined>(undefined)
+  const [activeTab, setActiveTab] = useState(tabs[0]) // Active tab
+  const [rawData, setRawData] = useState<string | undefined>(undefined) // Transaction raw data
+  const [txDisplay, setTxDisplay] = useState<TransactionDisplay | undefined>(undefined); // Transaction data
+  const [found, setFound] = useState<boolean | undefined>(undefined) // If block has been found
 
-  /// The transaction information is being pulled here
+  // The transaction information is being pulled here
   useEffect(() => {
     if (isHash(params.id) || isGenesisTx(params.id)) { // is a hash
       fetch(`/api/transaction/${params.id}`, {
@@ -97,6 +97,11 @@ export default function Page({ params }: { params: { id: string } }) {
   )
 }
 
+/**
+ * Transaction input data display
+ * @param txInputs - Transaction input list
+ * @returns 
+ */
 function Inputs({ txInputs }: { txInputs: InputDisplay[] }) {
   return (
     txInputs.map((input, index) => {
@@ -115,7 +120,7 @@ function Inputs({ txInputs }: { txInputs: InputDisplay[] }) {
                   </Typography>
                 </td>
                 <td className={`${col3}`}>
-                  <Typography as={Link} href={`/transaction/${input.previousOut}`}  variant='paragraph' className={`w-fit ${fira.className} ${input.previousOut != 'n/a' ? 'text-blue-900 hover:underline' : 'text-gray-800'}`}>
+                  <Typography as={Link} href={`/transaction/${input.previousOut}`} variant='paragraph' className={`w-fit ${fira.className} ${input.previousOut != 'n/a' ? 'text-blue-900 hover:underline' : 'text-gray-800'}`}>
                     {input.previousOut}
                   </Typography>
                 </td>
@@ -153,10 +158,15 @@ function Inputs({ txInputs }: { txInputs: InputDisplay[] }) {
   )
 }
 
+/**
+ * Transaction output data display
+ * @param txOutputs - Transaction outputs list (Token or Item)
+ */
 function Outputs({ txOutputs }: { txOutputs: TokenDisplay[] | ItemDisplay[] }) {
   if (txOutputs)
     return (
       txOutputs.map((output, index) => {
+        /** TOKEN */
         if (output.valueType == OutputType.Token)
           return (
             <div className="mt-2" key={index} >
@@ -199,20 +209,20 @@ function Outputs({ txOutputs }: { txOutputs: TokenDisplay[] | ItemDisplay[] }) {
                   </tr>
                   {/** Fractionated Tokens */}
                   <tr className="border">
-                  <td className={`${col1}`}>
-                    <InformationCircleIcon className={helpIcon} />
-                  </td>
-                  <td className={`${col2}`}>
-                    <Typography variant='small' className={`font-body text-gray-600`}>
-                      {TXS_TK_OUT_FIELDS[2]}
-                    </Typography>
-                  </td>
-                  <td className={`${col3}`}>
-                    <Typography variant='small' className={`w-fit text-gray-800 ${fira.className}`}>
-                      {(output as TokenDisplay).fractionatedTokens}
-                    </Typography>
-                  </td>
-                </tr>
+                    <td className={`${col1}`}>
+                      <InformationCircleIcon className={helpIcon} />
+                    </td>
+                    <td className={`${col2}`}>
+                      <Typography variant='small' className={`font-body text-gray-600`}>
+                        {TXS_TK_OUT_FIELDS[2]}
+                      </Typography>
+                    </td>
+                    <td className={`${col3}`}>
+                      <Typography variant='small' className={`w-fit text-gray-800 ${fira.className}`}>
+                        {(output as TokenDisplay).fractionatedTokens}
+                      </Typography>
+                    </td>
+                  </tr>
                   {/** LockTime */}
                   <tr className="border">
                     <td className={`${col1}`}>
@@ -233,6 +243,7 @@ function Outputs({ txOutputs }: { txOutputs: TokenDisplay[] | ItemDisplay[] }) {
               </table>
             </div>
           )
+        /** ITEM */
         if (output.valueType == OutputType.Item)
           return (
             <div className="mt-2" key={index} >
@@ -314,6 +325,10 @@ function Outputs({ txOutputs }: { txOutputs: TokenDisplay[] | ItemDisplay[] }) {
   return []
 }
 
+/**
+ * Transaction data display
+ * @param txInfo Transaction data 
+ */
 function List({ txInfo }: { txInfo: TransactionDisplay | undefined }) {
   return (
     <table className='w-full min-w-fit table-auto text-left rounded-sm'>
@@ -355,25 +370,6 @@ function List({ txInfo }: { txInfo: TransactionDisplay | undefined }) {
               <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
           </td>
         </tr>
-        {/** Block Number */}
-        {/* <tr className="border-b border-t">
-          <td className={`${col1}`}>
-            <InformationCircleIcon className={helpIcon} />
-          </td>
-          <td className={`${col2}`}>
-            <Typography variant='small' className={`font-body text-gray-600`}>
-              {TXS_FIELDS[2]}
-            </Typography>
-          </td>
-          <td className={`${col3}`}>
-            {txInfo != undefined ?
-              <Typography as={Link} href={`/block/${txInfo.bNum}`} variant='small' className={`w-fit text-blue-900 hover:underline ${fira.className}`}>
-                {txInfo.bNum}
-              </Typography>
-              :
-              <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
-          </td>
-        </tr> */}
         {/** Transaction type */}
         <tr className="border-b border-t">
           <td className={`${col1}`}>
