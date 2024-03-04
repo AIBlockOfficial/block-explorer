@@ -26,7 +26,7 @@ export default function Page() {
       const data = await response.json()
       if (data.content) {
         setLatestBlockNum(data.content.pagination.total)
-        const blocksRows: BlockRow[] = await data.content.blocks.map((block: Block) => formatBlockTableRow(block)) // Currently used await because nb tx of each block is fetched
+        const blocksRows: BlockRow[] = data.content.blocks.map((block: Block) => formatBlockTableRow(block)) // Currently used await because nb tx of each block is fetched
         setBlocksData(blocksRows)
       }
     })
@@ -40,7 +40,7 @@ export default function Page() {
       const data = await response.json()
       if (data.content) {
         setLatestTxNum(data.content.pagination.total)
-        const txRows: TxRow[] = await Promise.all(await data.content.transactions.map(async (tx: Transaction) => await formatTxTableRow(tx)))
+        const txRows: TxRow[] = data.content.transactions.map((tx: Transaction) => formatTxTableRow(tx))
         setTxsData(txRows)
       }
     })

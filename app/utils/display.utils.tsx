@@ -1,6 +1,7 @@
 /** ------------ DISPLAY FORMAT ------------ */
 
-import { FetchedTransaction, TransactionData } from "@/app/interfaces";
+import { FetchedTransaction } from "@/app/interfaces";
+import { TOKEN_FRACTION } from "../constants";
 
 /**
  * Gets all numbers from the start value to the end value, inclusive
@@ -70,6 +71,10 @@ export const formatAmount = (tx: FetchedTransaction, aggregated: boolean) => {
   }
   return formatNumber((result / 25200).toFixed(2));
 };
+
+export const tokenValue = (amount: number) => {
+  return (amount / TOKEN_FRACTION)
+}
 
 /**
  * Get unicorn seed from raw unicorn value

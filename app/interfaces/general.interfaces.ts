@@ -12,13 +12,8 @@ export enum ItemType {
 }
 
 export enum OutputType {
-    Token = 'Token',
-    Item = 'Item'
-}
-
-export interface ITable {
-    headers: string[]
-    rows: BlockRow[] | TxRow[]
+    Token = 'token',
+    Item = 'item'
 }
 
 export interface BlockRow {
@@ -61,7 +56,7 @@ export interface TransactionDisplay {
 
 export interface InputDisplay {
     previousOut: string,
-    scriptSig: StackDisplay
+    scriptSig: {stack: StackDisplay[]}
 }
 
 export interface StackDisplay {
@@ -73,7 +68,7 @@ export interface StackDisplay {
 }
 
 export interface TokenDisplay {
-    type: OutputType
+    valueType: OutputType
     address: string
     tokens: string
     fractionatedTokens: string
@@ -81,9 +76,10 @@ export interface TokenDisplay {
 }
 
 export interface ItemDisplay {
-    type: OutputType
+    valueType: OutputType
     address: string
     items: string
+    drsBlockHash: string 
     lockTime: string
     genesisTransactionHash: string
     metadata: string
@@ -102,41 +98,48 @@ export interface Block {
     hash: string,
     num: number,
     previousHash: string,
+    nbTx: number,
     timestamp: string,
     version: number
 }
 
 export interface FetchedBlock extends Block {
     merkleRootHash: string,
-    bits: number
+    bits: number,
+    seed: any
 }
 
 export interface Transaction {
-    blockHash: string,
     hash: string,
-    timestamp: string,
+    blockHash: string
     version: number
+    timestamp: string
+    txType?: string
 }
 
 export interface FetchedTransaction extends Transaction {
-    outs: Out[],
+    fees: any
+    druidInfo: string | null
     ins: In[]
+    outs: Out[]
 }
 
 export interface In {
     scriptSignature: {
         stack: StackData[]
     }
+    previousOutTxHash: string | null
+    previousOutTxN: string | null
 }
 
 export interface Out {
-    amount: string,
-    drsBlockHash: string | null
-    locktime: number
-    n: number
-    receiptMetadata: string | null
-    scriptPublicKey: string
     valueType: string
+    amount: string,
+    locktime: number
+    drsBlockHash: string | null
+    scriptPublicKey: string
+    itemMetadata: string | null
+    n: number
 }
 
 export interface StackData {
@@ -151,64 +154,4 @@ export interface Pagination {
     limit: number,
     offset: number,
     total: number
-}
-
-/* -------------------------------------------------------------------------- */
-/*                             Network Fetch Data                             */
-/* -------------------------------------------------------------------------- */
-/**
- *  Network Fetched data is the raw format of blockchain items when retrieved through the API.
- */
-export type BlockResult = (string | BlockData)[] // when fetching block_by_num or latestBlock, the hash is returned seperate from main object
-
-export type NonceMiningTx = (number[] | string)[]
-
-export interface BlockData {
-    block: {
-        hash: string,
-        header: {
-            version: number
-            bits: number
-            nonce_and_mining_tx_hash: NonceMiningTx
-            b_num: number
-            seed_value: number[]
-            timestamp: number
-            previous_hash: string
-            txs_merkle_root_and_hash: string[]
-        }
-        transactions: string[]
-    }
-}
-
-export interface BlockItem {
-    Block: BlockData
-}
-
-export interface TransactionItem {
-    Transaction: TransactionData
-}
-
-export interface TransactionData {
-    druid_info: null
-    inputs: InputData[]
-    outputs: OutputData[]
-    version: number
-}
-
-export interface InputData {
-    previous_out: {
-        n: number
-        t_hash: string
-    }
-    script_signature: {
-        stack: StackData[]
-    }
-}
-
-export interface OutputData {
-    drs_block_hash: string | null
-    drs_tx_hash: string | null
-    locktime: number
-    script_public_key: string
-    value: { Token: number } | { Item: number }
 }

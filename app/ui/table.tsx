@@ -1,7 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { shortenHash, timestampElapsedTime } from '@/app/utils'
-import { ITable, BlockRow, TxRow } from '@/app/interfaces'
+import { BlockRow, TxRow } from '@/app/interfaces'
 import { Card, Typography } from '@material-tailwind/react'
 import { Square2StackIcon } from '@heroicons/react/24/outline'
 import { fira } from '@/app/styles/fonts'
@@ -11,7 +11,6 @@ export enum TableType {
     block = 'block',
     tx = 'tx'
 }
-
 const row_spacing = `px-4 py-3`
 
 function Headers({ headers }: { headers: string[] }) {
@@ -36,7 +35,7 @@ function Headers({ headers }: { headers: string[] }) {
     return result
 }
 
-function BlockTable({ rows, short = false }: { rows: BlockRow[], short?: boolean }) {
+function BlockTable({ rows }: { rows: BlockRow[] }) {
     let result: JSX.Element[] = []
     rows.map(({ number, blockHash, nbTx, age }: BlockRow, index) => {
         result.push(
@@ -53,8 +52,8 @@ function BlockTable({ rows, short = false }: { rows: BlockRow[], short?: boolean
                     <Square2StackIcon className='text-blue-900 h-4 w-4 hover:cursor-pointer' onClick={() => null} />
                 </td>
                 <td className={row_spacing}>
-                    <Typography variant='small' className={`w-1/2 text-center`}>
-                        {nbTx}
+                    <Typography variant='small' className={`w-1/2 text-center ${nbTx == '0' ? 'text-red-900 bg-red-200' : 'text-purple-900 bg-purple-200'} rounded-sm ${fira.className} px-1 w-[40px]`}>
+                        {nbTx == '0' ? 'NONE' : nbTx}
                     </Typography>
                 </td>
                 <td className={row_spacing}>
@@ -68,14 +67,14 @@ function BlockTable({ rows, short = false }: { rows: BlockRow[], short?: boolean
     return result
 }
 
-function TxTable({ rows, short = false }: { rows: TxRow[], short?: boolean }) {
+function TxTable({ rows }: { rows: TxRow[] }) {
     let result: JSX.Element[] = []
     rows.map(({ txHash, blockHash, type, age }: TxRow, index) => {
         result.push(
             <tr key={index} className={`${index == rows.length - 1 ? '' : 'border-b border-b-gray-200'}`}>
                 <td className={`${row_spacing} flex flex-row`}>
                     <Typography as={Link} href={`/transaction/${txHash}`} variant='small' className={`text-blue-900 text-xs ${fira.className} hover:underline`}>
-                        {txHash.length > 6 ? shortenHash(txHash) : txHash}
+                        {txHash != undefined && txHash.length > 6 ? shortenHash(txHash) : txHash}
                     </Typography>
                     <Square2StackIcon className='h-4 w-4 text-blue-900 hover:cursor-pointer' />
                 </td>
@@ -85,8 +84,8 @@ function TxTable({ rows, short = false }: { rows: TxRow[], short?: boolean }) {
                     </Typography>
                 </td>
                 <td className={row_spacing}>
-                    <Typography variant='small' className={`w-fit ${type == 'token' ? 'bg-green-200 text-green-900' : ''} ${type == 'receipt' ? ' bg-blue-200 text-blue-900' : ''}  text-center rounded-sm ${fira.className} px-1`}>
-                        {type == 'receipt' ? 'ITEM' : type.toUpperCase()}
+                    <Typography variant='small' className={`w-fit ${type == 'token' ? 'bg-green-200 text-green-900' : ''} ${type == 'item' ? ' bg-blue-200 text-blue-900' : ''} text-center rounded-sm ${fira.className} px-1`}>
+                        {type.toUpperCase()}
                     </Typography>
                 </td>
                 <td className={row_spacing}>
@@ -125,30 +124,29 @@ function LoadingTable({ rows, cols }: { rows: number, cols: number }) {
  */
 export default function Table({ rows, type, short }: { rows: BlockRow[] | TxRow[], type: TableType, short?: boolean }) {
     return (
-        <Card className='min-h-fit w-full shadow-md rounded-sm border border-gray-300 mt-2'>
+        <Card className='min-h-fit min-w-fit w-full shadow-md rounded-sm border border-gray-300 mt-2'>
             <table className='w-full min-w-max table-auto text-left rounded-sm'>
                 <thead>
                     <tr>
-                        {(type == TableType.block && short) &&
-                            <Headers headers={BLOCK_TABLE_HEADERS_SHORT} />
-                        }
-                        {(type == TableType.block && !short) &&
+                        {type == TableType.block &&
                             <Headers headers={BLOCK_TABLE_HEADERS} />
                         }
-                        {(type == TableType.tx && short) &&
-                            <Headers headers={TXS_TABLE_HEADERS_SHORT} />
-                        }
-                        {(type == TableType.tx && !short) &&
+                        {type == TableType.tx &&
                             <Headers headers={TXS_TABLE_HEADERS} />
                         }
                     </tr>
                 </thead>
                 <tbody>
                     {type == TableType.block &&
-                        <BlockTable rows={rows as BlockRow[]} short={short} />
+                        <BlockTable rows={rows as BlockRow[]} />
                     }
                     {type == TableType.tx &&
-                        <TxTable rows={rows as TxRow[]} short={short} />
+                        <>
+                            <TxTable rows={rows as TxRow[]} />
+                            {!short && rows.length > 0 && (rows[rows.length-1] as TxRow).txHash != '000010' &&
+                                <LoadingTable rows={5} cols={TXS_TABLE_HEADERS.length} />
+                            }
+                        </>
                     }
                     {(rows.length < 1 && type == TableType.block) &&
                         <LoadingTable rows={short ? ITEMS_PER_PAGE_SHORT : ITEMS_PER_CHUNK} cols={short ? BLOCK_TABLE_HEADERS_SHORT.length : BLOCK_TABLE_HEADERS.length} />

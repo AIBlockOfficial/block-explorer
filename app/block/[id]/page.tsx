@@ -5,8 +5,8 @@ import { fira } from '@/app/styles/fonts'
 import Link from "next/link"
 import { InformationCircleIcon } from "@heroicons/react/24/outline"
 import Table, { TableType } from "@/app/ui/table"
-import { isHash, isNum, formatTxTableRows, formatToBlockDisplay, timestampElapsedTime, formatTxTableRow } from "@/app/utils"
-import { BlockData, BlockDisplay, BlockItem, BlockResult, FetchedBlock, IErrorInternal, Transaction, TxRow } from "@/app/interfaces"
+import { isHash, isNum, formatToBlockDisplay, timestampElapsedTime, formatTxTableRow } from "@/app/utils"
+import { BlockDisplay, FetchedBlock, IErrorInternal, Transaction, TxRow } from "@/app/interfaces"
 import { BLOCK_FIELDS } from "@/app/constants"
 import ErrorBlock from "@/app/ui/errorBlock"
 
@@ -29,7 +29,8 @@ export default function Page({ params }: { params: { id: string } }) {
       }).then(async response => {
         const data = await response.json()
         if (data.content) {
-          const blockDisplay: BlockDisplay = await Promise.resolve(await formatToBlockDisplay(data.content as FetchedBlock))
+          console.log('1: ',data.content)
+          const blockDisplay: BlockDisplay = formatToBlockDisplay(data.content as FetchedBlock)
           setBlockDisplay(blockDisplay)
           setFound(true)
         } else
@@ -44,7 +45,6 @@ export default function Page({ params }: { params: { id: string } }) {
         },
       }).then(async response => {
         const data = await response.json()
-        console.log(data)
         if (data.content) {
           const txRows: TxRow[] = await Promise.all(await data.content.transactions.map(async (tx: Transaction) => await formatTxTableRow(tx)))
           setTxs(txRows)
@@ -140,7 +140,7 @@ function List({ blockInfo }: { blockInfo: BlockDisplay | undefined }) {
               <Typography as={Link} href={`/block/${blockInfo.previousHash}`} variant='small' className={`w-fit text-blue-900 hover:underline ${fira.className}`}>
                 {blockInfo.previousHash}
               </Typography>
-            }{blockInfo != undefined && blockInfo.previousHash == 'n/a' &&
+            }{blockInfo != undefined && blockInfo.previousHash == 'n/a' && // First block previous hash
               <Typography variant='paragraph' className={`w-fit text-gray-800`}>
                 {blockInfo.previousHash}
               </Typography>
@@ -181,7 +181,7 @@ function List({ blockInfo }: { blockInfo: BlockDisplay | undefined }) {
           <td className={`${col3}`}>
             {blockInfo != undefined ?
               <Typography variant='small' className={`w-fit text-gray-800 `}>
-                {new Date(blockInfo.timestamp).toString()}
+                {new Date(blockInfo.timestamp).toString() + ' ' + timestampElapsedTime(blockInfo.timestamp)}
               </Typography>
               :
               <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}

@@ -26,8 +26,8 @@ export function block(id: string) {
     return fetch(`${EXP_BACKEND}${IAPIRoute.Block}/${id}`, {
         method: 'GET',
         headers: {
-            'Content-Type': 'application/json',
-        }
+            'Content-Type': 'application/json', 
+        } 
     }).then((response) => {
         if (response.status == 200)
             return Promise.resolve(response.json())
@@ -68,7 +68,7 @@ export function fetchBlockTxs(id: string) {
     return fetch(`${EXP_BACKEND}${IAPIRoute.Block}/${id}/transactions`, {
         method: 'GET',
         headers: {
-            'Content-Type': 'application/json',
+            // 'Content-Type': 'application/json',
         }
     }).then((response) => {
         if (response.status == 200)

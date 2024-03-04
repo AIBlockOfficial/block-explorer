@@ -18,4 +18,10 @@ export const TXS_TABLE_HEADERS = ["Transaction Hash", "Block Hash", "Type", "Age
 export const TXS_TABLE_HEADERS_SHORT = ["Tx Hash", "Block Hash", "Type", "Age"]
 export const TXS_FIELDS = ['Transaction Hash', 'Block Hash', 'Block Number', 'Transaction Type', 'Timestamp']
 export const TXS_IN_FIELDS = ['Previous Out', 'Script Sig']
-export const TXS_OUT_FIELDS = ['Address', 'Tokens', 'Fractionated Tokens', 'Locktime']
+export const TXS_TK_OUT_FIELDS = ['Address', 'Tokens', 'Fractionated Tokens', 'Locktime']
+export const TXS_IT_OUT_FIELDS = ['Address', 'Items', 'Metadata', 'Locktime']
+
+/** TOKEN */
+export const TOKEN_FRACTION = 25200
+export const TOKEN_CURRENCY = 'ABC'
+
