@@ -4,9 +4,9 @@ import Link from "next/link"
 import ErrorBlock from '@/app/ui/errorBlock'
 import { IErrorInternal, InputDisplay, ItemDisplay, ItemType, OutputType, TokenDisplay, TransactionDisplay } from "@/app/interfaces"
 import { Card, Typography } from "@material-tailwind/react"
-import { InformationCircleIcon } from "@heroicons/react/24/outline"
+import { InformationCircleIcon, Square2StackIcon } from "@heroicons/react/24/outline"
 import { fira } from '@/app/styles/fonts'
-import { formatToTxDisplay, isGenesisTx, isHash, isItem, isToken } from "@/app/utils"
+import { formatToTxDisplay, isGenesisTx, isHash } from "@/app/utils"
 import { TXS_FIELDS, TXS_IN_FIELDS, TXS_IT_OUT_FIELDS, TXS_TK_OUT_FIELDS } from "@/app/constants"
 import { CountBadge } from "@/app/ui/countBadge"
 
@@ -261,9 +261,12 @@ function Outputs({ txOutputs }: { txOutputs: TokenDisplay[] | ItemDisplay[] }) {
                       </Typography>
                     </td>
                     <td className={`${col3}`}>
-                      <Typography as={Link} href={`/address/${output.address}`} variant='small' className={`w-fit text-blue-900 ${fira.className} hover:underline`}>
-                        {output.address}
-                      </Typography>
+                      <div className="flex flex-row">
+                        <Typography as={Link} href={`/address/${output.address}`} variant='small' className={`w-fit text-blue-900 ${fira.className} hover:underline`}>
+                          {output.address}
+                        </Typography>
+                        <Square2StackIcon className='h-4 w-4 ml-1 text-blue-900 hover:cursor-pointer active:border border-gray-50' onClick={() => navigator.clipboard.writeText(output.address)} />
+                      </div>
                     </td>
                   </tr>
                   {/** Items */}
@@ -344,9 +347,12 @@ function List({ txInfo }: { txInfo: TransactionDisplay | undefined }) {
           </td>
           <td className={`${col3}`}>
             {txInfo != undefined ?
-              <Typography as={Link} href={`/transaction/${txInfo.hash}`} target="_blank" variant='small' className={`w-fit text-blue-900 ${fira.className} hover:underline`}>
-                {txInfo.hash}
-              </Typography>
+              <div className="flex flex-row">
+                <Typography as={Link} href={`/transaction/${txInfo.hash}`} target="_blank" variant='small' className={`w-fit text-blue-900 ${fira.className} hover:underline`}>
+                  {txInfo.hash}
+                </Typography>
+                <Square2StackIcon className='h-4 w-4 ml-1 text-blue-900 hover:cursor-pointer active:border border-gray-50' onClick={() => navigator.clipboard.writeText(txInfo.hash)} />
+              </div>
               :
               <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
           </td>
@@ -363,9 +369,12 @@ function List({ txInfo }: { txInfo: TransactionDisplay | undefined }) {
           </td>
           <td className={`${col3}`}>
             {txInfo != undefined ?
-              <Typography as={Link} href={`/block/${txInfo.bHash}`} variant='small' className={`w-fit text-blue-900 hover:underline ${fira.className}`}>
-                {txInfo.bHash}
-              </Typography>
+              <div className="flex flex-row">
+                <Typography as={Link} href={`/block/${txInfo.bHash}`} variant='small' className={`w-fit text-blue-900 hover:underline ${fira.className}`}>
+                  {txInfo.bHash}
+                </Typography>
+                <Square2StackIcon className='h-4 w-4 ml-1 text-blue-900 hover:cursor-pointer active:border border-gray-50' onClick={() => navigator.clipboard.writeText(txInfo.bHash)} />
+              </div>
               :
               <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
           </td>

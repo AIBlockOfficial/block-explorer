@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import { Card, Typography } from "@material-tailwind/react"
 import { fira } from '@/app/styles/fonts'
 import Link from "next/link"
-import { InformationCircleIcon } from "@heroicons/react/24/outline"
+import { InformationCircleIcon, Square2StackIcon } from "@heroicons/react/24/outline"
 import Table, { TableType } from "@/app/ui/table"
 import { isHash, isNum, formatToBlockDisplay, timestampElapsedTime, formatTxTableRow } from "@/app/utils"
 import { BlockDisplay, FetchedBlock, IErrorInternal, Transaction, TxRow } from "@/app/interfaces"
@@ -20,7 +20,7 @@ export default function Page({ params }: { params: { id: string } }) {
 
   // The block information is being pulled here (and block txs)
   useEffect(() => {
-    if (isHash(params.id) || isNum(params.id)) { 
+    if (isHash(params.id) || isNum(params.id)) {
       fetch(`/api/block/${params.id}`, {
         method: 'GET',
         headers: {
@@ -36,7 +36,7 @@ export default function Page({ params }: { params: { id: string } }) {
           setFound(false)
       })
 
-      fetch(`/api/blockTxs/${params.id}`, { 
+      fetch(`/api/blockTxs/${params.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -79,8 +79,8 @@ export default function Page({ params }: { params: { id: string } }) {
           </div >
           {/** Transactions */}
           <div className={`${activeTab == tabs[1] ? 'block' : 'hidden'} w-full h-auto pb-2`}>
-            {blockDisplay != undefined && txs!= undefined && txs?.length > 0 &&
-              <div className="px-2 pb-2"><Table type={TableType.tx} rows={txs} short={true}/></div>
+            {blockDisplay != undefined && txs != undefined && txs?.length > 0 &&
+              <div className="px-2 pb-2"><Table type={TableType.tx} rows={txs} short={true} /></div>
             }{txs != undefined && txs.length == 0 &&
               <div className="ml-auto mb-4 mr-auto p-4 font-thin border-t border-gray-200 shadow-sm bg-white">
                 <Typography variant='paragraph' className='font-thin text-gray-800 ml-auto mr-auto py-2 w-fit'>No transactions</Typography>
@@ -116,9 +116,12 @@ function List({ blockInfo }: { blockInfo: BlockDisplay | undefined }) {
           </td>
           <td className={`${col3}`}>
             {blockInfo != undefined ?
-              <Typography as={Link} href={`/block/${blockInfo.hash}`} target="_blank" variant='small' className={`w-fit text-blue-900 ${fira.className} hover:underline`}>
-                {blockInfo.hash}
-              </Typography>
+              <div className="flex flex-row">
+                <Typography as={Link} href={`/block/${blockInfo.hash}`} target="_blank" variant='small' className={`w-fit text-blue-900 ${fira.className} hover:underline`}>
+                  {blockInfo.hash}
+                </Typography>
+                <Square2StackIcon className='h-4 w-4 ml-1 text-blue-900 hover:cursor-pointer active:border border-gray-50' onClick={() => navigator.clipboard.writeText(blockInfo.hash)} />
+              </div>
               :
               <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
           </td>
@@ -135,9 +138,12 @@ function List({ blockInfo }: { blockInfo: BlockDisplay | undefined }) {
           </td>
           <td className={`${col3}`}>
             {blockInfo != undefined && blockInfo.previousHash != 'n/a' &&
-              <Typography as={Link} href={`/block/${blockInfo.previousHash}`} variant='small' className={`w-fit text-blue-900 hover:underline ${fira.className}`}>
-                {blockInfo.previousHash}
-              </Typography>
+              <div className="flex flex-row">
+                <Typography as={Link} href={`/block/${blockInfo.previousHash}`} variant='small' className={`w-fit text-blue-900 hover:underline ${fira.className}`}>
+                  {blockInfo.previousHash}
+                </Typography>
+                <Square2StackIcon className='h-4 w-4 ml-1 text-blue-900 hover:cursor-pointer active:border border-gray-50' onClick={() => navigator.clipboard.writeText(blockInfo.previousHash)} />
+              </div>
             }{blockInfo != undefined && blockInfo.previousHash == 'n/a' && // First block previous hash
               <Typography variant='paragraph' className={`w-fit text-gray-800`}>
                 {blockInfo.previousHash}
