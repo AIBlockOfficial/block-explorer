@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import Searchbar from '@/app/ui/nav/searchbar'
@@ -35,6 +35,7 @@ function classNames(...classes: any) {
 }
 
 export default function Navbar() {
+  let router = useRouter()
   const pathname = usePathname()
   const [current, setCurrent] = useState(pathname)
 
@@ -64,7 +65,8 @@ export default function Navbar() {
                 {/** Logo */}
                 <div className="flex flex-shrink-0 items-center">
                   <Image
-                    className="w-48"
+                    onClick={()=> router.push('/')}
+                    className="w-48 hover:cursor-pointer"
                     src={Logo}
                     alt="AIBlock Explorer"
                     priority={true}

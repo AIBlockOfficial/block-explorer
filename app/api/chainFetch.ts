@@ -1,5 +1,5 @@
-import { EXP_BACKEND } from "../constants";
-import { IAPIRoute } from "../interfaces";
+import { EXP_BACKEND } from "../constants"
+import { IAPIRoute } from "../interfaces"
 
 /**
  * Fetches blocks count 
@@ -15,7 +15,7 @@ export function blocksCount() {
             return Promise.resolve(response.json())
         else
             return Promise.reject({ reason: response.statusText, status: response.status, route: IAPIRoute.BlocksCount })
-    });
+    })
 }
 
 /**
@@ -34,7 +34,7 @@ export function block(id: string) {
             return Promise.resolve(response.json())
         else
             return Promise.reject({ reason: response.statusText, status: response.status, route: IAPIRoute.Block })
-    });
+    })
 }
 
 /**
@@ -74,7 +74,7 @@ export function blockTxs(id: string) {
             return Promise.resolve(response.json())
         else
             return Promise.reject({ reason: response.statusText, status: response.status, route: IAPIRoute.Block })
-    });
+    })
 }
 
 /**
@@ -114,5 +114,5 @@ export function transaction(hash: string) {
             return Promise.resolve(response.json())
         else
             return Promise.reject({ reason: response.statusText, status: response.status, route: IAPIRoute.Transaction })
-    });
+    })
 }

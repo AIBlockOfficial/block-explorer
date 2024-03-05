@@ -14,7 +14,7 @@ const tabs = ['Overview', 'Transactions']
 
 export default function Page({ params }: { params: { id: string } }) {
   const [activeTab, setActiveTab] = useState<string>(tabs[0]) // Active tab
-  const [blockDisplay, setBlockDisplay] = useState<BlockDisplay | undefined>(undefined); // Block data
+  const [blockDisplay, setBlockDisplay] = useState<BlockDisplay | undefined>(undefined) // Block data
   const [txs, setTxs] = useState<TxRow[] | undefined>(undefined) // Block transaction data
   const [found, setFound] = useState<boolean | undefined>(undefined) // If block has been found
 
@@ -50,7 +50,7 @@ export default function Page({ params }: { params: { id: string } }) {
       })
     } else
       setFound(false)
-  }, [params.id]);
+  }, [params.id])
 
   return (
     <>

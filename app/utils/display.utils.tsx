@@ -1,6 +1,5 @@
 /** ------------ DISPLAY FORMAT ------------ */
-import { FetchedTransaction } from "@/app/interfaces";
-import { TOKEN_FRACTION } from "../constants";
+import { TOKEN_FRACTION } from "../constants"
 
 /**
  * Gets all numbers from the start value to the end value, inclusive
@@ -9,7 +8,7 @@ import { TOKEN_FRACTION } from "../constants";
  * @param end {number} - The end value
  */
 export const getRange = (start: number = 0, end: number = 9) => {
-  return [...Array(end - start + 1)].map((_, i) => start + i);
+  return [...Array(end - start + 1)].map((_, i) => start + i)
 }
 
 /**
@@ -28,13 +27,13 @@ export function shortenHash(string: string): string {
  * @returns string with formated number
  */
 export const formatNumber = (num: string | number): string => {
-  let target = "";
+  let target = ""
   if (num) {
-    if (typeof num === "number") target = num.toString();
-    else target = num;
+    if (typeof num === "number") target = num.toString()
+    else target = num
   }
-  return target.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-};
+  return target.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+}
 
 /**
  * Format address (shortens the hash for display)
@@ -44,18 +43,18 @@ export const formatNumber = (num: string | number): string => {
  */
 export const formatAddressForDisplay = (address: string, nbChar: number) => {
   if (address) {
-    let displayAddress = address;
+    let displayAddress = address
     if (address.length > nbChar) {
       displayAddress =
         address.substring(0, nbChar / 2) +
         "..." +
-        address.substring(address.length - nbChar / 2, address.length);
+        address.substring(address.length - nbChar / 2, address.length)
     }
-    return displayAddress;
+    return displayAddress
   } else {
-    return "N/A";
+    return "N/A"
   }
-};
+}
 
 /**
  * Format fractionnated tokens to amount
@@ -72,9 +71,9 @@ export const tokenValue = (amount: number) => {
  * @returns string
  */
 export const getUnicornSeed = (rawUnicornArray: any[]): string => {
-  const unicornSplit = getUnicornSplit(rawUnicornArray);
-  return unicornSplit[0];
-};
+  const unicornSplit = getUnicornSplit(rawUnicornArray)
+  return unicornSplit[0]
+}
 
 /**
  * Get unicorn witness from raw unicorn value
@@ -82,9 +81,9 @@ export const getUnicornSeed = (rawUnicornArray: any[]): string => {
  * @returns string
  */
 export const getUnicornWitness = (rawUnicornArray: any[]): string => {
-  const unicornSplit = getUnicornSplit(rawUnicornArray);
-  return unicornSplit[1];
-};
+  const unicornSplit = getUnicornSplit(rawUnicornArray)
+  return unicornSplit[1]
+}
 
 /**
  * Split unicorn value into seed and witness values
@@ -92,9 +91,9 @@ export const getUnicornWitness = (rawUnicornArray: any[]): string => {
  * @returns Array of string
  */
 export const getUnicornSplit = (rawUnicornArray: any[]): string[] => {
-  const unicornSeed = binToString(rawUnicornArray);
-  return unicornSeed.split("-");
-};
+  const unicornSeed = binToString(rawUnicornArray)
+  return unicornSeed.split("-")
+}
 
 /**
  * Binary to string
@@ -102,8 +101,8 @@ export const getUnicornSplit = (rawUnicornArray: any[]): string[] => {
  * @returns string
  */
 export const binToString = (array: any[]): string => {
-  return String.fromCharCode.apply(String, array);
-};
+  return String.fromCharCode.apply(String, array)
+}
 
 /**
  * Format timestamp to elapsed time
@@ -113,7 +112,7 @@ export const binToString = (array: any[]): string => {
 export const timestampElapsedTime = (date: string) => {
   const current = new Date(date)
   const now = new Date()
-  const elapsed = now.getTime() - current.getTime();
+  const elapsed = now.getTime() - current.getTime()
   const seconds = Math.round(elapsed / 1000)
   const minutes = Math.round(seconds / 60)
   const hours = Math.round(minutes / 60)

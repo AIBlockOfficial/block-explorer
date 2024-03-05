@@ -8,7 +8,6 @@ import { ITEMS_PER_CHUNK } from "../constants"
 import { formatTxTableRow } from "../utils"
 
 export default function Page() {
-  // const [reversed, setReversed] = useState<boolean>(true); // Revers table order
   const [expandCounter, setExpandCounter] = useState<number>(0) // Auto expand table as page is scrolled
   const [latestTxNum, setLatestTxNum] = useState<number>() // Serves as end value for blocks fetch scope
   const [txsData, setTxsData] = useState<TxRow[]>([]) // Txs data list
@@ -29,7 +28,7 @@ export default function Page() {
         setTxsData(txRows)
       }
     })
-  }, []);
+  }, [])
 
   // Auto expand feature
   useEffect(() => {
@@ -45,7 +44,7 @@ export default function Page() {
         }).then(async response => {
           const data = await response.json()
           if (data.content) {
-            let existing = txsData;
+            let existing = txsData
             const txRows: TxRow[] = data.content.transactions.map((tx: Transaction) => formatTxTableRow(tx))
             setTxsData([...existing, ...txRows])
           }

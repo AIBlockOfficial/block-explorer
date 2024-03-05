@@ -10,10 +10,10 @@ import { formatBlockTableRow, formatTxTableRow } from "@/app/utils"
 import { ITEMS_PER_PAGE_SHORT } from '@/app/constants'
 
 export default function Page() {
-  const [latestBlockNum, setLatestBlockNum] = useState<number>(); // Total number of blocks to display in card
-  const [latestTxNum, setLatestTxNum] = useState<number>(); // Total number of transactions to display in card
-  const [blocksData, setBlocksData] = useState<BlockRow[]>([]); // Short table block row data
-  const [txsData, setTxsData] = useState<TxRow[]>([]); // Short table transaction row data
+  const [latestBlockNum, setLatestBlockNum] = useState<number>() // Total number of blocks to display in card
+  const [latestTxNum, setLatestTxNum] = useState<number>() // Total number of transactions to display in card
+  const [blocksData, setBlocksData] = useState<BlockRow[]>([]) // Short table block row data
+  const [txsData, setTxsData] = useState<TxRow[]>([]) // Short table transaction row data
 
   useEffect(() => {
     // Fetch blocks

@@ -9,8 +9,8 @@ import { ITEMS_PER_CHUNK } from "../constants"
 
 export default function Page() {
   const [expandCounter, setExpandCounter] = useState<number>(0) // Auto expand table as page is scrolled
-  const [latestBlockNum, setLatestBlockNum] = useState<number>(); // Serves as end value for blocks fetch scope
-  const [blocksData, setBlocksData] = useState<BlockRow[]>([]); // Blocks data list
+  const [latestBlockNum, setLatestBlockNum] = useState<number>() // Serves as end value for blocks fetch scope
+  const [blocksData, setBlocksData] = useState<BlockRow[]>([]) // Blocks data list
   const scroll = useScrollPosition() // Scroll position hook
 
   // List of blocks is being pulled here
@@ -28,7 +28,7 @@ export default function Page() {
         setBlocksData(blocksRows)
       }
     })
-  }, []);
+  }, [])
 
   // Auto expand feature
   useEffect(() => {
@@ -44,7 +44,7 @@ export default function Page() {
         }).then(async response => {
           const data = await response.json()
           if (data.content) {
-            let existing = blocksData;
+            let existing = blocksData
             const blocksRows: BlockRow[] = data.content.blocks.map((block: Block) => formatBlockTableRow(block))
             setBlocksData([...existing, ...blocksRows])
           }

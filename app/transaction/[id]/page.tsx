@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import ErrorBlock from '@/app/ui/errorBlock'
-import { IErrorInternal, InputDisplay, ItemDisplay, ItemType, OutputType, TokenDisplay, TransactionDisplay } from "@/app/interfaces"
+import { IErrorInternal, InputDisplay, ItemDisplay, OutputType, TokenDisplay, TransactionDisplay } from "@/app/interfaces"
 import { Card, Typography } from "@material-tailwind/react"
 import { InformationCircleIcon, Square2StackIcon } from "@heroicons/react/24/outline"
 import { fira } from '@/app/styles/fonts'
@@ -19,7 +19,7 @@ const helpIcon = 'h-4 w-4 text-gray-600 hover:cursor-help'
 export default function Page({ params }: { params: { id: string } }) {
   const [activeTab, setActiveTab] = useState(tabs[0]) // Active tab
   const [rawData, setRawData] = useState<string | undefined>(undefined) // Transaction raw data
-  const [txDisplay, setTxDisplay] = useState<TransactionDisplay | undefined>(undefined); // Transaction data
+  const [txDisplay, setTxDisplay] = useState<TransactionDisplay | undefined>(undefined) // Transaction data
   const [found, setFound] = useState<boolean | undefined>(undefined) // If block has been found
 
   // The transaction information is being pulled here
@@ -34,7 +34,7 @@ export default function Page({ params }: { params: { id: string } }) {
         const data = await response.json()
         if (data.content) {
           setRawData(data.content)
-          const transactionInfo: TransactionDisplay = formatToTxDisplay(data.content);
+          const transactionInfo: TransactionDisplay = formatToTxDisplay(data.content)
           setTxDisplay(transactionInfo)
           setFound(true)
         } else {
@@ -45,7 +45,7 @@ export default function Page({ params }: { params: { id: string } }) {
       setFound(false)
     }
   }, [params.id])
-  
+
   return (
     <>
       {found == undefined || found ?

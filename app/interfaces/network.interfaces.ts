@@ -7,11 +7,11 @@ export enum Networks {
 }
 
 export interface Network {
-    name: string;
-    displayName: string;
-    chainId: number;
-    sIp: string;
-    sPort: number;
+    name: string
+    displayName: string
+    chainId: number
+    sIp: string
+    sPort: number
 }
 
 /* -------------------------------------------------------------------------- */
