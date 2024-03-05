@@ -12,13 +12,6 @@ export default function Page() {
   const [latestBlockNum, setLatestBlockNum] = useState<number>(); // Serves as end value for blocks fetch scope
   const [blocksData, setBlocksData] = useState<BlockRow[]>([]); // Blocks data list
   const scroll = useScrollPosition() // Scroll position hook
-  
-  // Auto expand feature
-  useEffect(() => {
-    if (scroll > (window.innerHeight / 2) * expandCounter) {
-      expand()
-    }
-  }, [scroll])
 
   // List of blocks is being pulled here
   useEffect(() => {
@@ -37,26 +30,32 @@ export default function Page() {
     })
   }, []);
 
-  // Expand table items by ITEMS_PER_CHUNK (triggers when scroll is at a certain height on page)
-  async function expand() {
-    if (latestBlockNum) {
-      const offset = (ITEMS_PER_CHUNK * expandCounter) < (latestBlockNum) ? (ITEMS_PER_CHUNK * expandCounter) : ((ITEMS_PER_CHUNK * expandCounter) - (latestBlockNum - (ITEMS_PER_CHUNK * expandCounter)))
-      fetch(`api/blocks?limit=${ITEMS_PER_CHUNK}&offset=${offset}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }).then(async response => {
-        const data = await response.json()
-        if (data.content) {
-          let existing = blocksData;
-          const blocksRows: BlockRow[] = data.content.blocks.map((block: Block) => formatBlockTableRow(block))
-          setBlocksData([...existing, ...blocksRows])
-        }
-      })
-      setExpandCounter(expandCounter + 1)
+  // Auto expand feature
+  useEffect(() => {
+    // Expand table items by ITEMS_PER_CHUNK (triggers when scroll is at a certain height on page)
+    async function expand() {
+      if (latestBlockNum) {
+        const offset = (ITEMS_PER_CHUNK * expandCounter) < (latestBlockNum) ? (ITEMS_PER_CHUNK * expandCounter) : ((ITEMS_PER_CHUNK * expandCounter) - (latestBlockNum - (ITEMS_PER_CHUNK * expandCounter)))
+        fetch(`api/blocks?limit=${ITEMS_PER_CHUNK}&offset=${offset}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }).then(async response => {
+          const data = await response.json()
+          if (data.content) {
+            let existing = blocksData;
+            const blocksRows: BlockRow[] = data.content.blocks.map((block: Block) => formatBlockTableRow(block))
+            setBlocksData([...existing, ...blocksRows])
+          }
+        })
+        setExpandCounter(expandCounter + 1)
+      }
     }
-  }
+    if (scroll > (window.innerHeight / 2) * expandCounter) {
+      expand()
+    }
+  }, [scroll, expandCounter, latestBlockNum, blocksData])
 
   return (
     <>

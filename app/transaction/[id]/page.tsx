@@ -44,7 +44,8 @@ export default function Page({ params }: { params: { id: string } }) {
     } else {
       setFound(false)
     }
-  }, [])
+  }, [params.id])
+  
   return (
     <>
       {found == undefined || found ?
