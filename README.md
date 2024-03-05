@@ -15,18 +15,18 @@ This will install all required dependencies for the project and start it up in d
 
 ..
 
-## 🔧 Building for Production
+## 🤝 Contributing
 
-```
-npm run build
-npm run start
-```
+Find resources on contribution here:
 
-This will build the app, ready for production. The build files can be found in the `.next` folder.
+- 🧩 [Contribution Process](https://github.com/ABlockOfficial/.github/blob/main/contribution-process/README.md)
+- 🪲 [Issue Template](https://github.com/ABlockOfficial/.github/blob/main/issue-template/README.md)
+- 🛠️ [Pull Request Template](https://github.com/ABlockOfficial/.github/blob/main/pr-template/README.md)
+- 🤝 [Community Guidelines](https://github.com/ABlockOfficial/.github/blob/main/community-guidelines/README.md)
 
 ..
 
-## Learn More
+## ✅ Learn More
 
 To learn more about A-Block, take a look at the following resources:
 
