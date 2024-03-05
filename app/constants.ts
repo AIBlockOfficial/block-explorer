@@ -1,6 +1,6 @@
 /** NETWORK */
-export const STORAGE_URL = 'http://49.12.234.10:3001'
-export const EXP_BACKEND = 'http://loki.explorer.se3ker.com/api'
+export const STORAGE_URL = process.env.STORAGE_URL
+export const EXP_BACKEND = process.env.EXP_BACKEND_TESTNET
 
 /** BLOCKS */
 export const BLOCK_TABLE_HEADERS = ["Number", "Block Hash", "Previous Hash", "Nb of Tx", "Age"]
@@ -16,6 +16,6 @@ export const TXS_TK_OUT_FIELDS = ['Address', 'Tokens', 'Fractionated Tokens', 'L
 export const TXS_IT_OUT_FIELDS = ['Address', 'Items', 'Metadata', 'Locktime']
 
 /** TOKEN */
-export const TOKEN_FRACTION = 25200
+export const TOKEN_FRACTION = 25200 // Will change on network update
 export const TOKEN_CURRENCY = 'ABC'
 

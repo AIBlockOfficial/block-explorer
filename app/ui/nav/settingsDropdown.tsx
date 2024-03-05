@@ -40,7 +40,7 @@ export default function SettingsDropdown() {
                                             'block px-4 py-2 text-sm', key == 'Mainnet'? ' text-gray-200 cursor-not-allowed': ''
                                         )}
                                     >
-                                        {key}
+                                        {key == 'Mainnet' ? <s>{key}</s> : key}
                                     </a>
                                 </Menu.Item>
                             )
