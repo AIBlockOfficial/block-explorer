@@ -58,7 +58,7 @@ export default function Page({ params }: { params: { id: string } }) {
         <Card className="mt-6 w-full border border-gray-300 min-w-fit">
           <div className="mb-2 pt-4 pl-5">
             <Typography variant="lead" className="">Block</Typography>
-            <Typography variant="small" className="text-gray-600">A block on the A-Block blockchain</Typography>
+            <Typography variant="small" className="text-gray-600">A block on the AIBlock blockchain</Typography>
           </div>
           {/** TABS */}
           <div className="w-full h-12 pl-2 bg-transparent flex align-bottom justify-start">

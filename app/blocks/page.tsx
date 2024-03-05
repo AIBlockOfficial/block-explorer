@@ -62,7 +62,7 @@ export default function Page() {
     <>
       <div className="mb-2">
         <Typography variant="lead" className="">Blocks</Typography>
-        <Typography variant="small" className="text-gray-600">Blocks on the A-Block blockchain</Typography>
+        <Typography variant="small" className="text-gray-600">Blocks on the AIBlock blockchain</Typography>
       </div>
       <Table rows={blocksData} type={TableType.block} />
     </>

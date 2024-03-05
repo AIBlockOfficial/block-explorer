@@ -66,7 +66,7 @@ export default function Navbar() {
                   <Image
                     className="w-48"
                     src={Logo}
-                    alt="A-Block Explorer"
+                    alt="AIBlock Explorer"
                     priority={true}
                   />
                 </div>

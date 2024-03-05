@@ -1,9 +1,5 @@
 /** NETWORK */
-export const STORAGE_URL = 'https://storage.a-block.net'
-export const MEMPOOL_URL = 'https://compute.a-block.net'
-// export const MEMPOOL_URL = 'http://49.12.234.10:3003'
-// export const STORAGE_URL = 'http://49.12.234.10:3001'
-
+export const STORAGE_URL = 'http://49.12.234.10:3001'
 export const EXP_BACKEND = 'http://loki.explorer.se3ker.com/api'
 
 /** BLOCKS */
