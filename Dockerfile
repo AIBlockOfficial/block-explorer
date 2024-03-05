@@ -1,4 +1,4 @@
-FROM cgr.dev/chainguard/node@sha256:4a8f2fb37f0d2b34460f1a86f106c504954917561a50af1fa310f615709079d1 as build
+FROM cgr.dev/chainguard/node@sha256:39d19ad5086ede8bc9412e23ec80417c12bf39dfdd175e06eedd82b16527cbeb as build
 
 WORKDIR /app
 
@@ -12,7 +12,7 @@ RUN npm run build
 
 # Use distroless
 #FROM cgr.dev/chainguard/nginx@sha256:3dd8fa303f77d7eb6ce541cb05009a5e8723bd7e3778b95131ab4a2d12fadb8f
-FROM cgr.dev/chainguard/node@sha256:4a8f2fb37f0d2b34460f1a86f106c504954917561a50af1fa310f615709079d1
+FROM cgr.dev/chainguard/node@sha256:39d19ad5086ede8bc9412e23ec80417c12bf39dfdd175e06eedd82b16527cbeb
 
 COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/node_modules ./node_modules
