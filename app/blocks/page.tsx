@@ -8,7 +8,7 @@ import useScrollPosition from "../hooks/useScrollPosition"
 import { ITEMS_PER_CHUNK } from "../constants"
 
 export default function Page() {
-  const [expandCounter, setExpandCounter] = useState<number>(0) // Auto expand table as page is scrolled
+  const [expandCounter, setExpandCounter] = useState<number>(1) // Auto expand table as page is scrolled
   const [latestBlockNum, setLatestBlockNum] = useState<number>() // Serves as end value for blocks fetch scope
   const [blocksData, setBlocksData] = useState<BlockRow[]>([]) // Blocks data list
   const scroll = useScrollPosition() // Scroll position hook
