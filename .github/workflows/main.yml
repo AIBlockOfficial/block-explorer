@@ -30,4 +30,4 @@ jobs:
       REGION: ${{ vars.REGION }}
       PROJECT_ID: ${{ vars.PROJECT_ID }}
       CLUSTER_NAME: ${{ vars.CLUSTER_NAME }}
-      DEPLOYMENT: block-explorer
+      DEPLOYMENT: explorer
