@@ -6,8 +6,11 @@
  * @returns 
  */
 export function isHash(value: string): boolean {
-    if (value[0] == 'b' || value[0] == 'g') { //Valid hash from the chain
-        const hashRegex = /^[a-fA-F0-9]{65}$/; // Determine why hash lenght is 65 when it should be 64
+    if (value[0] == 'b') {
+        const hashRegex = /^[a-fA-F0-9]{65}$/ 
+        return hashRegex.test(value)
+    } else if (value[0] == 'g') {
+        const hashRegex = /^[a-fgA-F0-9]{32}$/
         return hashRegex.test(value)
     }
     return false
@@ -21,7 +24,7 @@ export function isHash(value: string): boolean {
 export function isNum(value: string): boolean {
     if (isGenesisTx(value))
         return false
-    const regex = /^[0-9]+$/;
+    const regex = /^[0-9]+$/
     return regex.test(value)
 }
 
@@ -32,7 +35,7 @@ export function isNum(value: string): boolean {
  */
 export function isGenesisTx(value: string): boolean {
     if (value.length == 6) {
-        const genesisTxRegex = /0{4}[0-1]{2}/;
+        const genesisTxRegex = /0{4}[0-1]{2}/
         return genesisTxRegex.test(value)
     }
     return false

@@ -2,7 +2,7 @@
   "name": "block-explorer",
   "version": "0.2.0",
   "private": true,
-  "author": "A-Block",
+  "author": "AIBlock",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

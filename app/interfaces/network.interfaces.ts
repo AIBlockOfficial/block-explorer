@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------------- */
-/*                                 API Routes                                 */
+/*                           Network Interfaces                               */
 /* -------------------------------------------------------------------------- */
 export enum Networks {
     Testnet = 'Testnet',
@@ -7,17 +7,21 @@ export enum Networks {
 }
 
 export interface Network {
-    name: string;
-    displayName: string;
-    chainId: number;
-    sIp: string;
-    sPort: number;
+    name: string
+    displayName: string
+    chainId: number
+    sIp: string
+    sPort: number
 }
 
+/* -------------------------------------------------------------------------- */
+/*                                 API Routes                                 */
+/* -------------------------------------------------------------------------- */
+
 export enum IAPIRoute {
-    /* --------------------------- Storage Network Routes --------------------------- */
-    LatestBlock = '/latest_block',
-    BlockByNum = '/block_by_num',
-    BlockchainEntry = '/blockchain_entry',
-    Transactions = '/transactions_by_key',
+    BlocksCount = '/blocks/count',
+    Block = '/block',
+    Blocks= '/blocks',
+    Transaction = '/transaction',
+    Transactions = '/transactions',
 }

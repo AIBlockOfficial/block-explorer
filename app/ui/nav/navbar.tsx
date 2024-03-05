@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import Searchbar from '@/app/ui/nav/searchbar'
@@ -8,7 +8,7 @@ import Dropdown from '@/app/ui/nav/dropdown'
 import SettingsDropdown from '@/app/ui/nav/settingsDropdown'
 import { Disclosure } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
-import Logo from '@/app/static/bigLogo.svg'
+import Logo from '@/app/static/full_logo.svg'
 
 interface NavItems {
   name: string,
@@ -20,7 +20,7 @@ interface NavItems {
 const navigation: NavItems[] = [
   { name: 'Home', href: '/' },
   { name: 'Blocks', href: '/blocks' },
-  { name: 'Transactions', href: '/transactions', disabled: true },
+  { name: 'Transactions', href: '/transactions'},
   {
     name: 'Statistics', href: '/statistics', disabled: true ,items: [
       { name: 'Rich List & Supply', href: '/stats' },
@@ -35,6 +35,7 @@ function classNames(...classes: any) {
 }
 
 export default function Navbar() {
+  let router = useRouter()
   const pathname = usePathname()
   const [current, setCurrent] = useState(pathname)
 
@@ -64,9 +65,10 @@ export default function Navbar() {
                 {/** Logo */}
                 <div className="flex flex-shrink-0 items-center">
                   <Image
-                    className="w-48"
+                    onClick={()=> router.push('/')}
+                    className="w-48 hover:cursor-pointer"
                     src={Logo}
-                    alt="A-Block Explorer"
+                    alt="AIBlock Explorer"
                     priority={true}
                   />
                 </div>

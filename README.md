@@ -1,6 +1,6 @@
-# A-Block Explorer
+# AIBlock Explorer
 
-The A-Block explorer, for auditing and viewing the blockchain.
+The AIBlock explorer, for auditing and viewing the blockchain.
 
 ..
 
@@ -28,9 +28,9 @@ Find resources on contribution here:
 
 ## ✅ Learn More
 
-To learn more about A-Block, take a look at the following resources:
+To learn more about AIBlock, take a look at the following resources:
 
-- [A-Block Documentation](https://a-block.io/docs) - learn about Ablock.js features.
-- [A-Block API](https://a-block.io/docs/api/overview) - interact with A-Block network using API calls.
+- [AIBlock Documentation](https://aiblock.dev/docs/) - developer documentation.
+- [AIBlock API](https://aiblock.dev/docs/api/overview) - interact with AIBlock network using API calls.
 
-You can check out [the A-Block GitHub repository](https://github.com/ABlockOfficial) - your feedback and contributions are welcome!
+You can check out [the AIBlock GitHub repository](https://github.com/AIBlockOfficial/) - your feedback and contributions are welcome!

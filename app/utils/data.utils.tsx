@@ -1,157 +1,111 @@
 /** ------------ DATA FORMAT ------------ */
-import { Block, BlockData, BlockInfo, BlockResult, BlockRow, TxRow, InputData, OutputData, Transaction, TransactionData, TransactionInfo, StackInfo, StackData, Input, Output, TokenInfo, ItemInfo, OutputType } from '@/app/interfaces'
-import { formatAmount, getUnicornSeed, getUnicornWitness } from '@/app/utils'
+import { BlockDisplay, BlockRow, TxRow, TransactionDisplay, StackDisplay, TokenDisplay, ItemDisplay, OutputType, Block, Transaction, FetchedBlock, FetchedTransaction, In, Out, StackData, InputDisplay } from '@/app/interfaces'
+import { getUnicornSeed, getUnicornWitness, tokenValue } from '@/app/utils'
+import { TOKEN_CURRENCY } from '../constants'
 
 /** ------------ BLOCKS ------------ */
 /**
- * Format raw block data to Block interface
- * @param block raw block
- * @returns 
+ * Format block data for display
+ * @param block fetched block
+ * @returns formatted block for display
  */
-export const formatBlockData = (block: BlockResult): Block => {
-  const blockData = (block[1] as BlockData).block
-  return {
-    hash: block[0] as string,
-    bNum: blockData.header.b_num,
-    previousHash: blockData.header.previous_hash,
-    seed: blockData.header.seed_value,
-    version: blockData.header.version,
-    bits: blockData.header.bits,
-    miningTxHashNonces: {
-      hash: blockData.header.nonce_and_mining_tx_hash[1] as string,
-      nonce: blockData.header.nonce_and_mining_tx_hash[0] as number[],
-    },
-    merkleRootHash: {
-      merkleRootHash: blockData.header.txs_merkle_root_and_hash[1],
-      txsHash: blockData.header.txs_merkle_root_and_hash[0],
-    },
-    transactions: blockData.transactions,
-  }
-}
-
-export const formatToBlockInfo = (block: Block): BlockInfo => {
-  const blockInfo: BlockInfo = {
-    bNum: block.bNum.toString(),
+export const formatToBlockDisplay = (block: FetchedBlock): BlockDisplay => {
+  const blockInfo: BlockDisplay = {
+    bNum: block.num.toString(),
     hash: block.hash,
-    merkleRootHash: block.merkleRootHash.merkleRootHash || "n/a",
+    merkleRootHash: block.merkleRootHash || "n/a",
     previousHash: block.previousHash || "n/a",
     version: block.version.toString(),
     byteSize: `${new TextEncoder().encode(JSON.stringify(block)).length} bytes`,
-    nbTransactions: block.transactions.length.toString(),
-    unicornSeed: getUnicornSeed(block.seed) || "n/a",
-    unicornWitness: getUnicornWitness(block.seed) || "n/a",
+    nbTransactions: '',
+    unicornSeed: getUnicornSeed(block.seed),
+    unicornWitness: getUnicornWitness(block.seed),
+    timestamp: block.timestamp || "n/a"
   }
   return blockInfo
 }
 
 /**
  * Format table row for block
- * @param blocks
- * @param reversed 
- * @returns Array of block rows
+ * @param block
+ * @returns Block row for table display
  */
-export const formatBlockTableRows = (blocks: Block[], reversed: boolean): BlockRow[] => {
-  const result: BlockRow[] = []
-  blocks.forEach((block: Block) => {
-    result.push({
-      number: block.bNum.toString(),
-      blockHash: block.hash,
-      status: 'Unknown',
-      nbTx: block.transactions.length.toString(),
-      age: 'n/a',
-    } as BlockRow)
-  })
-  return reversed ? result.reverse() : result
+export const formatBlockTableRow = (block: Block): BlockRow => {
+  const blockRow = {
+    number: block.num.toString(),
+    blockHash: block.hash,
+    previousHash: block.previousHash,
+    nbTx: block.nbTx.toString(),
+    age: block.timestamp
+  } as BlockRow
+  return blockRow
 }
 
 /** ------------ TRANSACTIONS ------------ */
-
-export const formatTxData = (data: TransactionData, hash: string): Transaction => {
-  return {
-    hash: hash,
-    druidInfo: data.druid_info,
-    inputs: data.inputs.map((input: InputData) => {
-      return {
-        previousOut: input.previous_out
-          ? {
-            num: input.previous_out.n,
-            tHash: input.previous_out.t_hash,
-          }
-          : null,
-        scriptSig: input.script_signature,
-      };
-    }),
-    outputs: data.outputs.map((output: OutputData) => {
-      return {
-        drsBHash: output.drs_block_hash,
-        drsTHash: output.drs_tx_hash,
-        locktime: output.locktime,
-        scriptPubKey: output.script_public_key,
-        value: output.value,
-      };
-    }),
-    version: data.version,
-  };
-}
-
-export const formatToTxInfo = (transaction: Transaction): TransactionInfo => {
-  const type = transaction.outputs[0].value.hasOwnProperty('Token') ? OutputType.Token : OutputType.Item
+/**
+ * Format transaction data for display
+ * @param transaction fetched transaction
+ * @returns formatted transaction for display
+ */
+export const formatToTxDisplay = (transaction: FetchedTransaction): TransactionDisplay => {
+  const type = transaction.outs[0].valueType == 'token' ? OutputType.Token : OutputType.Item
   return {
     hash: transaction.hash,
-    bHash: 'n/a',
+    bHash: transaction.blockHash,
     bNum: 'n/a',
     type: type.toString(),
-    timpestamp: 'n/a',
-    inputs: transaction.inputs.map((input: Input) => {
+    timpestamp: new Date(transaction.timestamp).toString(),
+    inputs: transaction.ins.map((input: In) => {
       return {
-        previousOutHash: input.previousOut ? input.previousOut.tHash : 'n/a',
+        previousOut: input.previousOutTxHash ? input.previousOutTxHash : 'n/a',
         scriptSig: {
-          op: input.scriptSig.stack[0].Op,
-          num: input.scriptSig.stack[0].Num?.toString(),
-          bytes: input.scriptSig.stack[0].Bytes,
-          signature: input.scriptSig.stack[0].Signature?.map((s) => s.toString()),
-          pubKey: input.scriptSig.stack[0].PubKey?.map((k) => k.toString()),
+          stack: input.scriptSignature.stack.map((stackItem: StackData) => {
+            return {
+              op: stackItem.Op,
+              num: stackItem.Num?.toString(),
+              bytes: stackItem.Bytes,
+              signature: stackItem.Signature?.map((s: any) => s.toString()),
+              pubKey: stackItem.PubKey?.map((k: any) => k.toString()),
+            } as StackDisplay
+          })
         }
-      }
+      }as InputDisplay
     }),
-    // outputs: []
-    outputs: type == OutputType.Token ? transaction.outputs.map((output: Output) => {
-      return {
-        address: output.scriptPubKey,
-        tokens: formatAmount(transaction, true) + ' ABC',
-        fractionatedTokens: (output.value as { Token: number }).Token.toString(),
+    outputs: type == OutputType.Token ? transaction.outs.map((output: Out) => {
+      return { // Token
+        valueType: output.valueType,
+        address: output.scriptPublicKey,
+        tokens: tokenValue(parseInt(output.amount)) + ' ' + TOKEN_CURRENCY,
+        fractionatedTokens: output.amount,
         lockTime: output.locktime.toString(),
-      } as TokenInfo
+      } as TokenDisplay
     })
-      : transaction.outputs.map((output: Output) => {
-        return {
-          address: output.scriptPubKey,
-          items: (output.value as { Item: number }).Item.toString(),
+      : transaction.outs.map((output: Out) => {
+        return { // Item
+          valueType: output.valueType,
+          address: output.scriptPublicKey,
+          items: output.amount,
+          drsBlockHash: output.drsBlockHash ? output.drsBlockHash : 'null',
           lockTime: output.locktime.toString(),
           genesisTransactionHash: 'n/a',
-          metadata: 'n/a'
-        } as ItemInfo
+          metadata: output.itemMetadata
+        } as ItemDisplay
       })
   }
 }
 
 /**
  * Format table row for transaction
- * @param txs Raw format
- * @param reversed 
- * @returns Array of transaction rows
+ * @param block
+ * @returns Transaction row for table display
  */
-export const formatTxTableRows = (txs: any, reversed: boolean): TxRow[] => {
-  const result: TxRow[] = []
-  txs.forEach((tx: any) => {
-    result.push({
-      txHash: tx[0],
-      blockNum: '',
-      type: 'Token',
-      status: 'Item',
-      address: 'n/a',
-      age: 'n/a',
-    } as TxRow)
-  })
-  return reversed ? result.reverse() : result
+export const formatTxTableRow = (tx: Transaction): TxRow => {
+  const txRow = {
+    txHash: tx.hash,
+    blockHash: tx.blockHash,
+    type: tx.txType ? tx.txType : 'n/a',
+    address: '-',
+    age: tx.timestamp,
+  } as TxRow
+  return txRow
 }

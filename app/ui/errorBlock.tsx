@@ -1,6 +1,6 @@
 import React from 'react'
 import { Typography } from '@material-tailwind/react'
-import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { ExclamationTriangleIcon } from "@heroicons/react/24/outline"
 
 export default function ErrorBlock({ msg }: { msg: string }) {
     return (

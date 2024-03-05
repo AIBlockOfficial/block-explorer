@@ -3,71 +3,54 @@ import { useEffect, useState } from "react"
 import { Card, Typography } from "@material-tailwind/react"
 import { fira } from '@/app/styles/fonts'
 import Link from "next/link"
-import { InformationCircleIcon } from "@heroicons/react/24/outline"
-import Table from "@/app/ui/table"
-import { isHash, isNum, formatTxTableRows, formatBlockData, formatToBlockInfo } from "@/app/utils"
-import { Block, BlockData, BlockInfo, BlockItem, BlockResult, IErrorInternal, TxRow } from "@/app/interfaces"
+import { InformationCircleIcon, Square2StackIcon } from "@heroicons/react/24/outline"
+import Table, { TableType } from "@/app/ui/table"
+import { isHash, isNum, formatToBlockDisplay, timestampElapsedTime, formatTxTableRow } from "@/app/utils"
+import { BlockDisplay, FetchedBlock, IErrorInternal, Transaction, TxRow } from "@/app/interfaces"
 import { BLOCK_FIELDS } from "@/app/constants"
 import ErrorBlock from "@/app/ui/errorBlock"
 
 const tabs = ['Overview', 'Transactions']
 
 export default function Page({ params }: { params: { id: string } }) {
-  const [activeTab, setActiveTab] = useState(tabs[0])
-  const [blockInfo, setBlockInfo] = useState<BlockInfo | undefined>(undefined);
-  const [blockTxIds, setBlockTxIds] = useState<string[]>([])
-  const [found, setFound] = useState<boolean | undefined>(undefined)
+  const [activeTab, setActiveTab] = useState<string>(tabs[0]) // Active tab
+  const [blockDisplay, setBlockDisplay] = useState<BlockDisplay | undefined>(undefined) // Block data
+  const [txs, setTxs] = useState<TxRow[] | undefined>(undefined) // Block transaction data
+  const [found, setFound] = useState<boolean | undefined>(undefined) // If block has been found
 
-  /// The block information is being pulled here
+  // The block information is being pulled here (and block txs)
   useEffect(() => {
-    if (isHash(params.id)) { // is a hash
-      fetch(`/api/item/${params.id}`, {
+    if (isHash(params.id) || isNum(params.id)) {
+      fetch(`/api/block/${params.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       }).then(async response => {
-        if (response.status == 200) {
-          const data = await response.json()
-          setBlockTxIds((data.content as BlockItem).Block.block.transactions)
-          const block: Block = formatBlockData([params.id, data.content.Block] as BlockResult)
-          handleFoundBlock(block)
-        } else {
+        const data = await response.json()
+        if (data.content) {
+          const blockDisplay: BlockDisplay = formatToBlockDisplay(data.content as FetchedBlock)
+          setBlockDisplay(blockDisplay)
+          setFound(true)
+        } else
           setFound(false)
-        }
       })
-    } else if (isNum(params.id)) { // is a number
-      fetch(`/api/blocks`, {
-        method: 'POST',
-        body: JSON.stringify([params.id]),
+
+      fetch(`/api/blockTxs/${params.id}`, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       }).then(async response => {
-        if (response.status == 200) {
-          const data = await response.json()
-          // if a bnum that doesn't exist is used, the result is successful and returns an empty value.
-          if (data.content[0][0] as BlockResult) {
-            setBlockTxIds((data.content[0][1] as BlockData).block.transactions)
-            const block: Block = formatBlockData(data.content[0] as BlockResult)
-            handleFoundBlock(block)
-          } else {
-            setFound(false)
-          }
-        } else { // did not pass format verification, therfore should not exist on chain
-          setFound(false)
+        const data = await response.json()
+        if (data.content) {
+          const txRows: TxRow[] = data.content.transactions.map((tx: Transaction) => formatTxTableRow(tx))
+          setTxs(txRows)
         }
       })
-    } else {
+    } else
       setFound(false)
-    }
-  }, []);
-
-  const handleFoundBlock = (block: Block) => {
-    const blockInfo = formatToBlockInfo(block);
-    setBlockInfo(blockInfo)
-    setFound(true)
-  }
+  }, [params.id])
 
   return (
     <>
@@ -75,7 +58,7 @@ export default function Page({ params }: { params: { id: string } }) {
         <Card className="mt-6 w-full border border-gray-300 min-w-fit">
           <div className="mb-2 pt-4 pl-5">
             <Typography variant="lead" className="">Block</Typography>
-            <Typography variant="small" className="text-gray-600">A block on the A-Block blockchain</Typography>
+            <Typography variant="small" className="text-gray-600">A block on the AIBlock blockchain</Typography>
           </div>
           {/** TABS */}
           <div className="w-full h-12 pl-2 bg-transparent flex align-bottom justify-start">
@@ -84,22 +67,22 @@ export default function Page({ params }: { params: { id: string } }) {
               {tabs[0]}
             </div>
             {/** Transactions */}
-            <div onClick={() => { if (blockInfo != undefined) setActiveTab(tabs[1]) }} className={`${activeTab == tabs[1] ? 'font-semibold border-b-2 border-gray-500' : ''} w-auto mx-2 px-2 pt-4 text-xs text-gray-600 border-gray-300 hover:border-b-2 hover:font-semibold hover:cursor-pointer flex flex-row align-middle justify-center`}>
-              {tabs[1]} {blockInfo != undefined && <div className="w-6 h-4 ml-2 bg-gray-300 rounded-t-xl rounded-b-xl"><p className={`w-fit ml-auto mr-auto font-semibold text-xs ${fira.className}`}>{blockTxIds.length}</p></div>}
+            <div onClick={() => { if (blockDisplay != undefined) setActiveTab(tabs[1]) }} className={`${activeTab == tabs[1] ? 'font-semibold border-b-2 border-gray-500' : ''} w-auto mx-2 px-2 pt-4 text-xs text-gray-600 border-gray-300 hover:border-b-2 hover:font-semibold hover:cursor-pointer flex flex-row align-middle justify-center`}>
+              {tabs[1]} {blockDisplay != undefined && txs != undefined && <div className="w-6 h-4 ml-2 bg-gray-300 rounded-t-xl rounded-b-xl"><p className={`w-fit ml-auto mr-auto font-semibold text-xs ${fira.className}`}>{txs.length}</p></div>}
             </div>
           </div>
           {/** TAB BODIES */}
           <div className={`${activeTab == tabs[0] ? 'block' : 'hidden'} w-full h-auto`}>{/** Overview */}
             <Card className='min-h-fit w-full border-gray-300'>
-              <List blockInfo={blockInfo} />
+              <List blockInfo={blockDisplay} />
             </Card>
           </div >
           {/** Transactions */}
           <div className={`${activeTab == tabs[1] ? 'block' : 'hidden'} w-full h-auto pb-2`}>
-            {blockTxIds.length > 0 && blockInfo != undefined &&
-              <BlockTxs blockTxIds={blockTxIds} activeTab={activeTab} />
-            }{blockTxIds.length == 0 &&
-              <div className="ml-auto mr-auto p-4 font-thin border-t border-gray-200 shadow-xl bg-white">
+            {blockDisplay != undefined && txs != undefined && txs?.length > 0 &&
+              <div className="px-2 pb-2"><Table type={TableType.tx} rows={txs} short={true} /></div>
+            }{txs != undefined && txs.length == 0 &&
+              <div className="ml-auto mb-4 mr-auto p-4 font-thin border-t border-gray-200 shadow-sm bg-white">
                 <Typography variant='paragraph' className='font-thin text-gray-800 ml-auto mr-auto py-2 w-fit'>No transactions</Typography>
               </div>
             }
@@ -112,38 +95,7 @@ export default function Page({ params }: { params: { id: string } }) {
   )
 }
 
-function BlockTxs({ blockTxIds, activeTab }: any) {
-  const [blockTxs, setBlockTxs] = useState<TxRow[]>([])
-
-  useEffect(() => {
-    if (blockTxs.length < 1 && activeTab == tabs[1])
-      handleBlockTxs(blockTxIds)
-  }, [activeTab])
-
-  const handleBlockTxs = async (txs: string[]) => {
-    let content: any = [];
-    for (const tx of txs) {
-      await fetch(`/api/item/${tx}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }).then(async (response) => {
-        if (response.status == 200) {
-          let data = await response.json()
-          content.push([tx, data.content.Transaction])
-        }
-      })
-    }
-    setBlockTxs(content ? formatTxTableRows(content, true) : [])
-  }
-
-  return (
-    <Table table={{ headers: ["Transaction Hash", "Type", "Status", "Age"], rows: blockTxs }} short={true} />
-  )
-}
-
-function List({ blockInfo }: { blockInfo: BlockInfo | undefined }) {
+function List({ blockInfo }: { blockInfo: BlockDisplay | undefined }) {
   const col1 = 'pl-2 pr-1 w-5'
   const col2 = 'py-4 w-64'
   const col3 = 'pl-4 py-4 w-fit'
@@ -164,9 +116,12 @@ function List({ blockInfo }: { blockInfo: BlockInfo | undefined }) {
           </td>
           <td className={`${col3}`}>
             {blockInfo != undefined ?
-              <Typography as={Link} href={`/block/${blockInfo.hash}`} target="_blank" variant='small' className={`w-fit text-blue-900 ${fira.className} hover:underline`}>
-                {blockInfo.hash}
-              </Typography>
+              <div className="flex flex-row">
+                <Typography as={Link} href={`/block/${blockInfo.hash}`} target="_blank" variant='small' className={`w-fit text-blue-900 ${fira.className} hover:underline`}>
+                  {blockInfo.hash}
+                </Typography>
+                <Square2StackIcon className='h-4 w-4 ml-1 text-blue-900 hover:cursor-pointer active:border border-gray-50' onClick={() => navigator.clipboard.writeText(blockInfo.hash)} />
+              </div>
               :
               <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
           </td>
@@ -183,10 +138,13 @@ function List({ blockInfo }: { blockInfo: BlockInfo | undefined }) {
           </td>
           <td className={`${col3}`}>
             {blockInfo != undefined && blockInfo.previousHash != 'n/a' &&
-              <Typography as={Link} href={`/block/${blockInfo.previousHash}`} variant='small' className={`w-fit text-blue-900 hover:underline ${fira.className}`}>
-                {blockInfo.previousHash}
-              </Typography>
-            }{blockInfo != undefined && blockInfo.previousHash == 'n/a' &&
+              <div className="flex flex-row">
+                <Typography as={Link} href={`/block/${blockInfo.previousHash}`} variant='small' className={`w-fit text-blue-900 hover:underline ${fira.className}`}>
+                  {blockInfo.previousHash}
+                </Typography>
+                <Square2StackIcon className='h-4 w-4 ml-1 text-blue-900 hover:cursor-pointer active:border border-gray-50' onClick={() => navigator.clipboard.writeText(blockInfo.previousHash)} />
+              </div>
+            }{blockInfo != undefined && blockInfo.previousHash == 'n/a' && // First block previous hash
               <Typography variant='paragraph' className={`w-fit text-gray-800`}>
                 {blockInfo.previousHash}
               </Typography>
@@ -226,8 +184,8 @@ function List({ blockInfo }: { blockInfo: BlockInfo | undefined }) {
           </td>
           <td className={`${col3}`}>
             {blockInfo != undefined ?
-              <Typography variant='paragraph' className={`w-fit text-gray-800`}>
-                {'n/a'}
+              <Typography variant='small' className={`w-fit text-gray-800 `}>
+                {new Date(blockInfo.timestamp).toString() + ' ' + timestampElapsedTime(blockInfo.timestamp)}
               </Typography>
               :
               <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}

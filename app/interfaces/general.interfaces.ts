@@ -1,48 +1,41 @@
-/** WIP, some of these structures are unfinished */
-/** General interface are divided into three types : 
- *  Data    : Raw data retrieved from API calls
- *  Regular : Similar to raw data, but serves as a bridge between raw data and display data 
- *  Info    : Formatted data ready to be displayed on front-end
- */
 /* -------------------------------------------------------------------------- */
-/*                             Display Structures                             */
+/*                          General Interface Structures                      */
 /* -------------------------------------------------------------------------- */
+
 export enum ItemType {
     Block,
     Transaction,
 }
 
 export enum OutputType {
-    Token = 'Token',
-    Item = 'Item'
+    Token = 'token',
+    Item = 'item'
 }
 
-export interface ITable {
-    headers: string[]
-    rows: BlockRow[] | TxRow[]
-}
+/* -------------------------------------------------------------------------- */
+/*                             Display Structures                             */
+/* -------------------------------------------------------------------------- */
 
 export interface BlockRow {
     number: string,
     blockHash: string,
-    status: string,
+    previousHash: string,
     nbTx: string,
     age: string,
 }
 
 export interface TxRow {
     txHash: string,
-    blockNum: string,
+    blockHash: string,
     type: string,
-    status: string,
     address: string,
     age: string,
 }
 
-export interface BlockInfo {
+export interface BlockDisplay {
     hash: string
     bNum: string
-    timestamp?: string
+    timestamp: string
     merkleRootHash: string
     previousHash: string
     version: string
@@ -52,22 +45,22 @@ export interface BlockInfo {
     unicornWitness: string
 }
 
-export interface TransactionInfo {
+export interface TransactionDisplay {
     hash: string,
     bHash: string,
     bNum: string,
     type: string,
     timpestamp: string,
-    inputs: InputInfo[]
-    outputs: TokenInfo[] | ItemInfo[]
+    inputs: InputDisplay[]
+    outputs: TokenDisplay[] | ItemDisplay[]
 }
 
-export interface InputInfo {
-    previousOutHash: string
-    scriptSig: StackInfo
+export interface InputDisplay {
+    previousOut: string,
+    scriptSig: {stack: StackDisplay[]}
 }
 
-export interface StackInfo {
+export interface StackDisplay {
     op?: string
     num?: string
     bytes?: string
@@ -75,137 +68,79 @@ export interface StackInfo {
     pubKey?: string[]
 }
 
-export interface TokenInfo {
-    type: OutputType
+export interface TokenDisplay {
+    valueType: OutputType
     address: string
     tokens: string
     fractionatedTokens: string
     lockTime: string
 }
 
-export interface ItemInfo {
-    type: OutputType
+export interface ItemDisplay {
+    valueType: OutputType
     address: string
     items: string
+    drsBlockHash: string 
     lockTime: string
     genesisTransactionHash: string
     metadata: string
 }
 
 /* -------------------------------------------------------------------------- */
-/*                             Data Structures                                */
+/*                     Data from explorer backend                             */
 /* -------------------------------------------------------------------------- */
+
+export interface BlocksResult {
+    blocks: Block[],
+    pagination: Pagination,
+}
+
 export interface Block {
-    hash: string
-    bNum: number
-    previousHash: string
-    seed: number[]
-    bits: number
+    hash: string,
+    num: number,
+    previousHash: string,
+    nbTx: number,
+    timestamp: string,
     version: number
-    miningTxHashNonces: {
-        hash: string
-        nonce: number[]
-    }
-    merkleRootHash: {
-        merkleRootHash: string
-        txsHash: string
-    }
-    transactions: string[]
+}
+
+export interface FetchedBlock extends Block {
+    merkleRootHash: string,
+    bits: number,
+    seed: any
 }
 
 export interface Transaction {
-    hash: string
-    druidInfo: null
-    inputs: Input[]
-    outputs: Output[]
+    hash: string,
+    blockHash: string
     version: number
+    timestamp: string
+    txType?: string
 }
 
-export interface Input {
-    previousOut: {
-        num: number
-        tHash: string
-    } | null
-    scriptSig: {
+export interface FetchedTransaction extends Transaction {
+    fees: any
+    druidInfo: string | null
+    ins: In[]
+    outs: Out[]
+}
+
+export interface In {
+    scriptSignature: {
         stack: StackData[]
     }
+    previousOutTxHash: string | null
+    previousOutTxN: string | null
 }
 
-export interface Output {
-    drsBHash: string | null
-    drsTHash: string | null
+export interface Out {
+    valueType: string
+    amount: string,
     locktime: number
-    scriptPubKey: string
-    value:
-    | { Token: number }
-    | { Item: number }
-    | { Token: OutputValue }
-    | { Item: OutputValue }
-}
-
-export interface OutputValue {
-    amount: number
-    drs_tx_hash: string | null
-    metadata: string | null
-}
-
-/* -------------------------------------------------------------------------- */
-/*                             Network Fetch Data                             */
-/* -------------------------------------------------------------------------- */
-/**
- *  Network Fetched data is the raw format of blockchain items when retrieved through the API.
- */
-export type BlockResult = (string | BlockData)[] // when fetching block_by_num or latestBlock, the hash is returned seperate from main object
-
-export type NonceMiningTx = (number[] | string)[]
-
-export interface BlockData {
-    block: {
-        hash: string,
-        header: {
-            version: number
-            bits: number
-            nonce_and_mining_tx_hash: NonceMiningTx
-            b_num: number
-            seed_value: number[]
-            previous_hash: string
-            txs_merkle_root_and_hash: string[]
-        }
-        transactions: string[]
-    }
-}
-
-export interface BlockItem {
-    Block: BlockData
-}
-
-export interface TransactionItem {
-    Transaction: TransactionData
-}
-
-export interface TransactionData {
-    druid_info: null
-    inputs: InputData[]
-    outputs: OutputData[]
-    version: number
-}
-
-export interface InputData {
-    previous_out: {
-        n: number
-        t_hash: string
-    }
-    script_signature: {
-        stack: StackData[]
-    }
-}
-
-export interface OutputData {
-    drs_block_hash: string | null
-    drs_tx_hash: string | null
-    locktime: number
-    script_public_key: string
-    value: { Token: number } | { Item: number }
+    drsBlockHash: string | null
+    scriptPublicKey: string
+    itemMetadata: string | null
+    n: number
 }
 
 export interface StackData {
@@ -214,4 +149,10 @@ export interface StackData {
     Bytes?: string
     Signature?: number[]
     PubKey?: number[]
+}
+
+export interface Pagination {
+    limit: number,
+    offset: number,
+    total: number
 }
