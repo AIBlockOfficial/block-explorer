@@ -17,7 +17,6 @@ export default function Page() {
   const [container, setContainer] = useState<HTMLElement | null>(null) // used to calculate scroll height
   const scroll = useScrollPosition() // Scroll position hook
 
-
   // List of blocks is being pulled here
   useEffect(() => {
     setContainer(document.getElementById('html')) // Set scroll container
