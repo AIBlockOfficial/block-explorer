@@ -9,6 +9,12 @@ import { isHash, isNum, formatToBlockDisplay, timestampElapsedTime, formatTxTabl
 import { BlockDisplay, FetchedBlock, IErrorInternal, Transaction, TxRow } from "@/app/interfaces"
 import { BLOCK_FIELDS } from "@/app/constants"
 import ErrorBlock from "@/app/ui/errorBlock"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/app/ui/tooltip"
 
 const tabs = ['Overview', 'Transactions']
 
@@ -102,196 +108,243 @@ function List({ blockInfo }: { blockInfo: BlockDisplay | undefined }) {
   const helpIcon = 'h-4 w-4 text-gray-600 hover:cursor-help'
 
   return (
-    <table className='w-full min-w-fit table-auto text-left rounded-sm'>
-      <tbody>
-        {/** Block Hash */}
-        <tr className="border-b border-t">
-          <td className={`${col1}`}>
-            <InformationCircleIcon className={helpIcon} />
-          </td>
-          <td className={`${col2}`}>
-            <Typography variant='small' className={`font-body text-gray-600`}>
-              {BLOCK_FIELDS[0]}
-            </Typography>
-          </td>
-          <td className={`${col3}`}>
-            {blockInfo != undefined ?
-              <div className="flex flex-row">
-                <Typography as={Link} href={`/block/${blockInfo.hash}`} target="_blank" variant='small' className={`w-fit text-blue-900 ${fira.className} hover:underline`}>
-                  {blockInfo.hash}
-                </Typography>
-                <Square2StackIcon className='h-4 w-4 ml-1 text-blue-900 hover:cursor-pointer active:border border-gray-50' onClick={() => navigator.clipboard.writeText(blockInfo.hash)} />
-              </div>
-              :
-              <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
-          </td>
-        </tr>
-        {/** Previous Hash */}
-        <tr className="border-b border-t">
-          <td className={`${col1}`}>
-            <InformationCircleIcon className={helpIcon} />
-          </td>
-          <td className={`${col2}`}>
-            <Typography variant='small' className={`font-body text-gray-600`}>
-              {BLOCK_FIELDS[1]}
-            </Typography>
-          </td>
-          <td className={`${col3}`}>
-            {blockInfo != undefined && blockInfo.previousHash != 'n/a' &&
-              <div className="flex flex-row">
-                <Typography as={Link} href={`/block/${blockInfo.previousHash}`} variant='small' className={`w-fit text-blue-900 hover:underline ${fira.className}`}>
+    <TooltipProvider delayDuration={100}>
+      <table className='w-full min-w-fit table-auto text-left rounded-sm'>
+        <tbody>
+          {/** Block Hash */}
+          <tr className="border-b border-t">
+            <td className={`${col1}`}>
+              <Tooltip>
+                <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+                <TooltipContent>
+                  <p>The hash that identifies a block</p>
+                </TooltipContent>
+              </Tooltip>
+            </td>
+            <td className={`${col2}`}>
+              <Typography variant='small' className={`font-body text-gray-600`}>
+                {BLOCK_FIELDS[0]}
+              </Typography>
+            </td>
+            <td className={`${col3}`}>
+              {blockInfo != undefined ?
+                <div className="flex flex-row">
+                  <Typography as={Link} href={`/block/${blockInfo.hash}`} target="_blank" variant='small' className={`w-fit text-blue-900 ${fira.className} hover:underline`}>
+                    {blockInfo.hash}
+                  </Typography>
+                  <Square2StackIcon className='h-4 w-4 ml-1 text-blue-900 hover:cursor-pointer active:border border-gray-50' onClick={() => navigator.clipboard.writeText(blockInfo.hash)} />
+                </div>
+                :
+                <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
+            </td>
+          </tr>
+          {/** Previous Hash */}
+          <tr className="border-b border-t">
+            <td className={`${col1}`}>
+              <Tooltip>
+                <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+                <TooltipContent>
+                  <p>The hash that identifies the previous block</p>
+                </TooltipContent>
+              </Tooltip>
+            </td>
+            <td className={`${col2}`}>
+              <Typography variant='small' className={`font-body text-gray-600`}>
+                {BLOCK_FIELDS[1]}
+              </Typography>
+            </td>
+            <td className={`${col3}`}>
+              {blockInfo != undefined && blockInfo.previousHash != 'n/a' &&
+                <div className="flex flex-row">
+                  <Typography as={Link} href={`/block/${blockInfo.previousHash}`} variant='small' className={`w-fit text-blue-900 hover:underline ${fira.className}`}>
+                    {blockInfo.previousHash}
+                  </Typography>
+                  <Square2StackIcon className='h-4 w-4 ml-1 text-blue-900 hover:cursor-pointer active:border border-gray-50' onClick={() => navigator.clipboard.writeText(blockInfo.previousHash)} />
+                </div>
+              }{blockInfo != undefined && blockInfo.previousHash == 'n/a' && // First block previous hash
+                <Typography variant='paragraph' className={`w-fit text-gray-800`}>
                   {blockInfo.previousHash}
                 </Typography>
-                <Square2StackIcon className='h-4 w-4 ml-1 text-blue-900 hover:cursor-pointer active:border border-gray-50' onClick={() => navigator.clipboard.writeText(blockInfo.previousHash)} />
-              </div>
-            }{blockInfo != undefined && blockInfo.previousHash == 'n/a' && // First block previous hash
-              <Typography variant='paragraph' className={`w-fit text-gray-800`}>
-                {blockInfo.previousHash}
+              }{blockInfo == undefined &&
+                <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>
+              }
+            </td>
+          </tr>
+          {/** Block Number */}
+          <tr className="border-b border-t">
+            <td className={`${col1}`}>
+              <Tooltip>
+                <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+                <TooltipContent>
+                  <p>The order of a block</p>
+                </TooltipContent>
+              </Tooltip>
+            </td>
+            <td className={`${col2}`}>
+              <Typography variant='small' className={`font-body  text-gray-600`}>
+                {BLOCK_FIELDS[2]}
               </Typography>
-            }{blockInfo == undefined &&
-              <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>
-            }
-          </td>
-        </tr>
-        {/** Block Number */}
-        <tr className="border-b border-t">
-          <td className={`${col1}`}>
-            <InformationCircleIcon className={helpIcon} />
-          </td>
-          <td className={`${col2}`}>
-            <Typography variant='small' className={`font-body  text-gray-600`}>
-              {BLOCK_FIELDS[2]}
-            </Typography>
-          </td>
-          <td className={`${col3}`}>
-            {blockInfo != undefined ?
-              <Typography as={Link} href={`/block/${blockInfo.bNum}`} target="_blank" variant='paragraph' className={`w-fit text-blue-900 ${fira.className} hover:underline`}>
-                {blockInfo.bNum}
+            </td>
+            <td className={`${col3}`}>
+              {blockInfo != undefined ?
+                <Typography as={Link} href={`/block/${blockInfo.bNum}`} target="_blank" variant='paragraph' className={`w-fit text-blue-900 ${fira.className} hover:underline`}>
+                  {blockInfo.bNum}
+                </Typography>
+                :
+                <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
+            </td>
+          </tr>
+          {/** Timestamp*/}
+          <tr className="border-b border-t">
+            <td className={`${col1}`}>
+              <Tooltip>
+                <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+                <TooltipContent>
+                  <p>The time and date when a block was constructed</p>
+                </TooltipContent>
+              </Tooltip>
+            </td>
+            <td className={`${col2}`}>
+              <Typography variant='small' className={`font-body  text-gray-600`}>
+                {BLOCK_FIELDS[3]}
               </Typography>
-              :
-              <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
-          </td>
-        </tr>
-        {/** Timestamp*/}
-        <tr className="border-b border-t">
-          <td className={`${col1}`}>
-            <InformationCircleIcon className={helpIcon} />
-          </td>
-          <td className={`${col2}`}>
-            <Typography variant='small' className={`font-body  text-gray-600`}>
-              {BLOCK_FIELDS[3]}
-            </Typography>
-          </td>
-          <td className={`${col3}`}>
-            {blockInfo != undefined ?
-              <Typography variant='small' className={`w-fit text-gray-800 `}>
-                {new Date(blockInfo.timestamp).toString() + ' ' + timestampElapsedTime(blockInfo.timestamp)}
+            </td>
+            <td className={`${col3}`}>
+              {blockInfo != undefined ?
+                <Typography variant='small' className={`w-fit text-gray-800 `}>
+                  {new Date(blockInfo.timestamp).toString() + ' ' + timestampElapsedTime(blockInfo.timestamp)}
+                </Typography>
+                :
+                <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
+            </td>
+          </tr>
+          {/** Merkle Root Hash */}
+          <tr className="border-b border-t">
+            <td className={`${col1}`}>
+              <Tooltip>
+                <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+                <TooltipContent>
+                  <p>The merkle root hash of all transactions in the block</p>
+                </TooltipContent>
+              </Tooltip>
+            </td>
+            <td className={`${col2}`}>
+              <Typography variant='small' className={`font-body  text-gray-600`}>
+                {BLOCK_FIELDS[4]}
               </Typography>
-              :
-              <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
-          </td>
-        </tr>
-        {/** Merkle Root Hash */}
-        <tr className="border-b border-t">
-          <td className={`${col1}`}>
-            <InformationCircleIcon className={helpIcon} />
-          </td>
-          <td className={`${col2}`}>
-            <Typography variant='small' className={`font-body  text-gray-600`}>
-              {BLOCK_FIELDS[4]}
-            </Typography>
-          </td>
-          <td className={`${col3}`}>
-            {blockInfo != undefined ?
-              <Typography variant='small' className={`w-fit text-gray-800 ${fira.className}`}>
-                {blockInfo.merkleRootHash}
+            </td>
+            <td className={`${col3}`}>
+              {blockInfo != undefined ?
+                <Typography variant='small' className={`w-fit text-gray-800 ${fira.className}`}>
+                  {blockInfo.merkleRootHash}
+                </Typography>
+                :
+                <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
+            </td>
+          </tr>
+          {/** Unicorn Seed */}
+          <tr className="border-b border-t">
+            <td className={`${col1}`}>
+              <Tooltip>
+                <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+                <TooltipContent>
+                  <p>The seed value, used as input in the RNG process</p>
+                </TooltipContent>
+              </Tooltip>
+            </td>
+            <td className={`${col2}`}>
+              <Typography variant='small' className={`font-body  text-gray-600`}>
+                {BLOCK_FIELDS[5]}
               </Typography>
-              :
-              <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
-          </td>
-        </tr>
-        {/** Unicorn Seed */}
-        <tr className="border-b border-t">
-          <td className={`${col1}`}>
-            <InformationCircleIcon className={helpIcon} />
-          </td>
-          <td className={`${col2}`}>
-            <Typography variant='small' className={`font-body  text-gray-600`}>
-              {BLOCK_FIELDS[5]}
-            </Typography>
-          </td>
-          <td className={`${col3}`}>
-            {blockInfo != undefined ?
-              <Typography variant='small' className={`w-fit text-gray-800 ${fira.className}`}>
-                {blockInfo.unicornSeed}
+            </td>
+            <td className={`${col3}`}>
+              {blockInfo != undefined ?
+                <Typography variant='small' className={`w-fit text-gray-800 ${fira.className}`}>
+                  {blockInfo.unicornSeed}
+                </Typography>
+                :
+                <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
+            </td>
+          </tr>
+          {/** Unicorn Witness*/}
+          <tr className="border-b border-t">
+            <td className={`${col1}`}>
+              <Tooltip>
+                <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+                <TooltipContent>
+                  <p>The witness value, used to quickly verify the RNG process's fairness</p>
+                </TooltipContent>
+              </Tooltip>
+            </td>
+            <td className={`${col2}`}>
+              <Typography variant='small' className={`font-body  text-gray-600`}>
+                {BLOCK_FIELDS[6]}
               </Typography>
-              :
-              <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
-          </td>
-        </tr>
-        {/** Unicorn Witness*/}
-        <tr className="border-b border-t">
-          <td className={`${col1}`}>
-            <InformationCircleIcon className={helpIcon} />
-          </td>
-          <td className={`${col2}`}>
-            <Typography variant='small' className={`font-body  text-gray-600`}>
-              {BLOCK_FIELDS[6]}
-            </Typography>
-          </td>
-          <td className={`${col3} pr-2`}>
-            {blockInfo != undefined ?
-              <Typography variant='small' className={`w-fit text-gray-800 ${fira.className}`}>
-                {blockInfo.unicornWitness}
+            </td>
+            <td className={`${col3} pr-2`}>
+              {blockInfo != undefined ?
+                <Typography variant='small' className={`w-fit text-gray-800 ${fira.className}`}>
+                  {blockInfo.unicornWitness}
+                </Typography>
+                :
+                <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
+            </td>
+          </tr>
+          {/** Byte Size */}
+          <tr className="border-b border-t">
+            <td className={`${col1}`}>
+              <Tooltip>
+                <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+                <TooltipContent>
+                  <p>The size in Bytes of a block</p>
+                </TooltipContent>
+              </Tooltip>
+            </td>
+            <td className={`${col2}`}>
+              <Typography variant='small' className={`font-body  text-gray-600`}>
+                {BLOCK_FIELDS[7]}
               </Typography>
-              :
-              <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
-          </td>
-        </tr>
-        {/** Byte Size */}
-        <tr className="border-b border-t">
-          <td className={`${col1}`}>
-            <InformationCircleIcon className={helpIcon} />
-          </td>
-          <td className={`${col2}`}>
-            <Typography variant='small' className={`font-body  text-gray-600`}>
-              {BLOCK_FIELDS[7]}
-            </Typography>
-          </td>
-          <td className={`${col3}`}>
-            {blockInfo != undefined ?
-              <div className="flex align-middle">
+            </td>
+            <td className={`${col3}`}>
+              {blockInfo != undefined ?
+                <div className="flex align-middle">
+                  <Typography variant='paragraph' className={`w-fit text-gray-800 ${fira.className}`}>
+                    {blockInfo.byteSize.split(' ')[0]}
+                  </Typography>
+                  <Typography variant='paragraph' className={`w-fit text-gray-800 pl-1`}>
+                    {blockInfo.byteSize.split(' ')[1]}
+                  </Typography>
+                </div>
+                :
+                <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
+            </td>
+          </tr>
+          {/** Version */}
+          <tr className="border-t">
+            <td className={`${col1}`}>
+              <Tooltip>
+                <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+                <TooltipContent>
+                  <p>The version of the block</p>
+                </TooltipContent>
+              </Tooltip>
+            </td>
+            <td className={`${col2}`}>
+              <Typography variant='small' className={`font-body  text-gray-600`}>
+                {BLOCK_FIELDS[8]}
+              </Typography>
+            </td>
+            <td className={`${col3}`}>
+              {blockInfo != undefined ?
                 <Typography variant='paragraph' className={`w-fit text-gray-800 ${fira.className}`}>
-                  {blockInfo.byteSize.split(' ')[0]}
+                  {blockInfo.version}
                 </Typography>
-                <Typography variant='paragraph' className={`w-fit text-gray-800 pl-1`}>
-                  {blockInfo.byteSize.split(' ')[1]}
-                </Typography>
-              </div>
-              :
-              <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
-          </td>
-        </tr>
-        {/** Version */}
-        <tr className="border-t">
-          <td className={`${col1}`}>
-            <InformationCircleIcon className={helpIcon} />
-          </td>
-          <td className={`${col2}`}>
-            <Typography variant='small' className={`font-body  text-gray-600`}>
-              {BLOCK_FIELDS[8]}
-            </Typography>
-          </td>
-          <td className={`${col3}`}>
-            {blockInfo != undefined ?
-              <Typography variant='paragraph' className={`w-fit text-gray-800 ${fira.className}`}>
-                {blockInfo.version}
-              </Typography>
-              :
-              <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
-          </td>
-        </tr>
-      </tbody>
-    </table>
+                :
+                <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </TooltipProvider>
   )
 }
