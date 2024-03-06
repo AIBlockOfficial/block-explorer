@@ -16,6 +16,6 @@ export const TXS_TK_OUT_FIELDS = ['Address', 'Tokens', 'Fractionated Tokens', 'L
 export const TXS_IT_OUT_FIELDS = ['Address', 'Items', 'Metadata', 'Locktime']
 
 /** TOKEN */
-export const TOKEN_FRACTION = 25200 // Will change on network update
+export const TOKEN_FRACTION = 72072000 // Will change on network update
 export const TOKEN_CURRENCY = 'ABC'
 
