@@ -114,9 +114,9 @@ export default function Navbar() {
                 <div className=" min-w-0 mr-4">
                   <Searchbar />
                 </div>
-                <div className='px-2'>
+                {/* <div className='px-2'>
                   <SettingsDropdown />
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
