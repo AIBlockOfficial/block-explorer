@@ -272,7 +272,7 @@ function List({ blockInfo }: { blockInfo: BlockDisplay | undefined }) {
               <Tooltip>
                 <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
                 <TooltipContent>
-                  <p>The witness value, used to quickly verify the RNG process's fairness</p>
+                  <p>{"The witness value, used to quickly verify the RNG process's fairness"}</p>
                 </TooltipContent>
               </Tooltip>
             </td>
