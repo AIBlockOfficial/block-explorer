@@ -67,7 +67,6 @@ function BlockTable({ rows }: { rows: BlockRow[] }) {
                         <Square2StackIcon className='text-blue-900 h-4 w-4 hover:cursor-pointer active:border border-gray-50' onClick={() => navigator.clipboard.writeText(previousHash)} />
                     </div>
                 </td>
-                {/* <td><p>Test</p></td> */}
                 <td className={row_spacing}>
                     <Typography variant='small' className={`w-1/2 text-center ${nbTx == '0' ? 'text-red-900 bg-red-200' : 'text-purple-900 bg-purple-200'} rounded-sm ${fira.className} px-1 w-[40px]`}>
                         {nbTx == '0' ? 'NONE' : nbTx}

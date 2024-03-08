@@ -14,6 +14,7 @@ export const TXS_FIELDS = ['Transaction Hash', 'Block Hash', 'Block Number', 'Tr
 export const TXS_IN_FIELDS = ['Previous Out', 'Script Sig']
 export const TXS_TK_OUT_FIELDS = ['Address', 'Tokens', 'Fractionated Tokens', 'Locktime']
 export const TXS_IT_OUT_FIELDS = ['Address', 'Items', 'Metadata', 'Locktime']
+export const COINBASE_FIELDS = ['Coinbase Hash', 'Token Reward', 'Fractionated Token Reward', 'Version', 'Script Public Key', 'Locktime']
 
 /** TOKEN */
 export const TOKEN_FRACTION = 72072000 // Will change on network update

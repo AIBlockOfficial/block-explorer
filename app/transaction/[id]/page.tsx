@@ -124,7 +124,7 @@ function Inputs({ txInputs }: { txInputs: InputDisplay[] }) {
                   <Tooltip>
                     <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
                     <TooltipContent>
-                      <p>Previous out</p>
+                      {'Previous out'}
                     </TooltipContent>
                   </Tooltip>
                 </td>
@@ -145,7 +145,7 @@ function Inputs({ txInputs }: { txInputs: InputDisplay[] }) {
                   <Tooltip>
                     <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
                     <TooltipContent>
-                      <p>Script signature</p>
+                      {'Script signature'}
                     </TooltipContent>
                   </Tooltip>
                 </td>
@@ -198,7 +198,7 @@ function Outputs({ txOutputs }: { txOutputs: TokenDisplay[] | ItemDisplay[] }) {
                       <Tooltip>
                         <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
                         <TooltipContent>
-                          <p>Address where output was sent</p>
+                          {'Address where output was sent'}
                         </TooltipContent>
                       </Tooltip>
                     </td>
@@ -219,7 +219,7 @@ function Outputs({ txOutputs }: { txOutputs: TokenDisplay[] | ItemDisplay[] }) {
                       <Tooltip>
                         <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
                         <TooltipContent>
-                          <p>The amount of tokens sent</p>
+                          {'The amount of tokens sent'}
                         </TooltipContent>
                       </Tooltip>
                     </td>
@@ -242,7 +242,7 @@ function Outputs({ txOutputs }: { txOutputs: TokenDisplay[] | ItemDisplay[] }) {
                       <Tooltip>
                         <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
                         <TooltipContent>
-                          <p>The fractionnated amount of tokens sent</p>
+                          {'The fractionnated amount of tokens sent'}
                         </TooltipContent>
                       </Tooltip>
                     </td>
@@ -263,7 +263,7 @@ function Outputs({ txOutputs }: { txOutputs: TokenDisplay[] | ItemDisplay[] }) {
                       <Tooltip>
                         <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
                         <TooltipContent>
-                          <p>The amount of time necessary for the transaction to be onspent</p>
+                          {'The amount of time necessary for the transaction to be onspent'}
                         </TooltipContent>
                       </Tooltip>
                     </td>
@@ -295,7 +295,7 @@ function Outputs({ txOutputs }: { txOutputs: TokenDisplay[] | ItemDisplay[] }) {
                       <Tooltip>
                         <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
                         <TooltipContent>
-                          <p>Address where output was sent</p>
+                          {'Address where output was sent'}
                         </TooltipContent>
                       </Tooltip>
                     </td>
@@ -319,7 +319,7 @@ function Outputs({ txOutputs }: { txOutputs: TokenDisplay[] | ItemDisplay[] }) {
                       <Tooltip>
                         <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
                         <TooltipContent>
-                          <p>The amount of items sent</p>
+                          {'The amount of items sent'}
                         </TooltipContent>
                       </Tooltip>
                     </td>
@@ -342,7 +342,7 @@ function Outputs({ txOutputs }: { txOutputs: TokenDisplay[] | ItemDisplay[] }) {
                       <Tooltip>
                         <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
                         <TooltipContent>
-                          <p>The metadata associated to the items</p>
+                          {'The metadata associated to the items'}
                         </TooltipContent>
                       </Tooltip>
                     </td>
@@ -363,7 +363,7 @@ function Outputs({ txOutputs }: { txOutputs: TokenDisplay[] | ItemDisplay[] }) {
                       <Tooltip>
                         <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
                         <TooltipContent>
-                          <p>The amount of time necessary for the transaction to be onspent</p>
+                          {'The amount of time necessary for the transaction to be onspent'}
                         </TooltipContent>
                       </Tooltip>
                     </td>
@@ -400,7 +400,7 @@ function List({ txInfo }: { txInfo: TransactionDisplay | undefined }) {
             <Tooltip>
               <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
               <TooltipContent>
-                <p>The hash that identifies a transaction</p>
+                {'The hash that identifies a transaction'}
               </TooltipContent>
             </Tooltip>
           </td>
@@ -427,7 +427,7 @@ function List({ txInfo }: { txInfo: TransactionDisplay | undefined }) {
             <Tooltip>
               <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
               <TooltipContent>
-                <p>The hash that identifies the block for this transaction</p>
+                {'The hash that identifies the block for this transaction'}
               </TooltipContent>
             </Tooltip>
           </td>
@@ -454,7 +454,7 @@ function List({ txInfo }: { txInfo: TransactionDisplay | undefined }) {
             <Tooltip>
               <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
               <TooltipContent>
-                <p>The type of asset being sent (Token or Item)</p>
+                {'The type of asset being sent (Token or Item)'}
               </TooltipContent>
             </Tooltip>
           </td>
@@ -487,7 +487,7 @@ function List({ txInfo }: { txInfo: TransactionDisplay | undefined }) {
             <Tooltip>
               <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
               <TooltipContent>
-                <p>The time and date when a transaction was validated</p>
+                {'The time and date when a transaction was validated'}
               </TooltipContent>
             </Tooltip>
           </td>

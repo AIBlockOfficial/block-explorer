@@ -62,7 +62,7 @@ export const formatAddressForDisplay = (address: string, nbChar: number) => {
  * @returns 
  */
 export const tokenValue = (amount: number) => {
-  return (amount / TOKEN_FRACTION)
+  return (amount / TOKEN_FRACTION).toString()
 }
 
 /**

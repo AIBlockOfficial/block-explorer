@@ -5,9 +5,9 @@ import { fira } from '@/app/styles/fonts'
 import Link from "next/link"
 import { InformationCircleIcon, Square2StackIcon } from "@heroicons/react/24/outline"
 import Table, { TableType } from "@/app/ui/table"
-import { isHash, isNum, formatToBlockDisplay, timestampElapsedTime, formatTxTableRow } from "@/app/utils"
-import { BlockDisplay, FetchedBlock, IErrorInternal, Transaction, TxRow } from "@/app/interfaces"
-import { BLOCK_FIELDS } from "@/app/constants"
+import { isHash, isNum, formatToBlockDisplay, timestampElapsedTime, formatTxTableRow, formatToCoinbaseDisplay } from "@/app/utils"
+import { BlockDisplay, Coinbase, CoinbaseDisplay, FetchedBlock, IErrorInternal, Transaction, TxRow } from "@/app/interfaces"
+import { BLOCK_FIELDS, COINBASE_FIELDS } from "@/app/constants"
 import ErrorBlock from "@/app/ui/errorBlock"
 import {
   Tooltip,
@@ -16,7 +16,12 @@ import {
   TooltipTrigger,
 } from "@/app/ui/tooltip"
 
-const tabs = ['Overview', 'Transactions']
+const tabs = ['Overview', 'Transactions', 'Coinbase Transaction']
+
+const col1 = 'pl-2 pr-1 w-5'
+const col2 = 'py-4 w-64'
+const col3 = 'pl-4 py-4 w-fit'
+const helpIcon = 'h-4 w-4 text-gray-600 hover:cursor-help'
 
 export default function Page({ params }: { params: { id: string } }) {
   const [activeTab, setActiveTab] = useState<string>(tabs[0]) // Active tab
@@ -76,9 +81,14 @@ export default function Page({ params }: { params: { id: string } }) {
             <div onClick={() => { if (blockDisplay != undefined) setActiveTab(tabs[1]) }} className={`${activeTab == tabs[1] ? 'font-semibold border-b-2 border-gray-500' : ''} w-auto mx-2 px-2 pt-4 text-xs text-gray-600 border-gray-300 hover:border-b-2 hover:font-semibold hover:cursor-pointer flex flex-row align-middle justify-center`}>
               {tabs[1]} {blockDisplay != undefined && txs != undefined && <div className="w-6 h-4 ml-2 bg-gray-300 rounded-t-xl rounded-b-xl"><p className={`w-fit ml-auto mr-auto font-semibold text-xs ${fira.className}`}>{txs.length}</p></div>}
             </div>
+            {/** Coinbase Transactions */}
+            <div onClick={() => { if (blockDisplay != undefined) setActiveTab(tabs[2]) }} className={`${activeTab == tabs[2] ? 'font-semibold border-b-2 border-gray-500' : ''} w-auto mx-2 px-2 pt-4 text-xs text-gray-600 border-gray-300 hover:border-b-2 hover:font-semibold hover:cursor-pointer flex flex-row align-middle justify-center`}>
+              {tabs[2]}
+            </div>
           </div>
           {/** TAB BODIES */}
-          <div className={`${activeTab == tabs[0] ? 'block' : 'hidden'} w-full h-auto`}>{/** Overview */}
+          {/** Overview */}
+          <div className={`${activeTab == tabs[0] ? 'block' : 'hidden'} w-full h-auto`}>
             <Card className='min-h-fit w-full border-gray-300'>
               <List blockInfo={blockDisplay} />
             </Card>
@@ -93,6 +103,12 @@ export default function Page({ params }: { params: { id: string } }) {
               </div>
             }
           </div>
+          {/** Coinbase Transaction */}
+          <div className={`${activeTab == tabs[2] ? 'block' : 'hidden'} w-full h-auto`}>
+            <Card className='min-h-fit w-full border-gray-300'>
+              <CoinbaseTx tx={blockDisplay?.miningTxHash} />
+            </Card>
+          </div >
         </Card >
         :
         <ErrorBlock msg={IErrorInternal.BlockNotFound} />
@@ -102,10 +118,6 @@ export default function Page({ params }: { params: { id: string } }) {
 }
 
 function List({ blockInfo }: { blockInfo: BlockDisplay | undefined }) {
-  const col1 = 'pl-2 pr-1 w-5'
-  const col2 = 'py-4 w-64'
-  const col3 = 'pl-4 py-4 w-fit'
-  const helpIcon = 'h-4 w-4 text-gray-600 hover:cursor-help'
 
   return (
     <TooltipProvider delayDuration={100}>
@@ -117,7 +129,7 @@ function List({ blockInfo }: { blockInfo: BlockDisplay | undefined }) {
               <Tooltip>
                 <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
                 <TooltipContent>
-                  <p>The hash that identifies a block</p>
+                  {'The hash that identifies a block'}
                 </TooltipContent>
               </Tooltip>
             </td>
@@ -144,7 +156,7 @@ function List({ blockInfo }: { blockInfo: BlockDisplay | undefined }) {
               <Tooltip>
                 <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
                 <TooltipContent>
-                  <p>The hash that identifies the previous block</p>
+                  {'The hash that identifies the previous block'}
                 </TooltipContent>
               </Tooltip>
             </td>
@@ -176,7 +188,7 @@ function List({ blockInfo }: { blockInfo: BlockDisplay | undefined }) {
               <Tooltip>
                 <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
                 <TooltipContent>
-                  <p>The order of a block</p>
+                  {'The order of a block'}
                 </TooltipContent>
               </Tooltip>
             </td>
@@ -200,7 +212,7 @@ function List({ blockInfo }: { blockInfo: BlockDisplay | undefined }) {
               <Tooltip>
                 <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
                 <TooltipContent>
-                  <p>The time and date when a block was constructed</p>
+                  {'The time and date when a block was constructed'}
                 </TooltipContent>
               </Tooltip>
             </td>
@@ -224,7 +236,7 @@ function List({ blockInfo }: { blockInfo: BlockDisplay | undefined }) {
               <Tooltip>
                 <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
                 <TooltipContent>
-                  <p>The merkle root hash of all transactions in the block</p>
+                  {'The merkle root hash of all transactions in the block'}
                 </TooltipContent>
               </Tooltip>
             </td>
@@ -248,7 +260,7 @@ function List({ blockInfo }: { blockInfo: BlockDisplay | undefined }) {
               <Tooltip>
                 <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
                 <TooltipContent>
-                  <p>The seed value, used as input in the RNG process</p>
+                  {'The seed value, used as input in the RNG process'}
                 </TooltipContent>
               </Tooltip>
             </td>
@@ -272,7 +284,7 @@ function List({ blockInfo }: { blockInfo: BlockDisplay | undefined }) {
               <Tooltip>
                 <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
                 <TooltipContent>
-                  <p>{"The witness value, used to quickly verify the RNG process's fairness"}</p>
+                  {"The witness value, used to quickly verify the RNG process's fairness"}
                 </TooltipContent>
               </Tooltip>
             </td>
@@ -296,7 +308,7 @@ function List({ blockInfo }: { blockInfo: BlockDisplay | undefined }) {
               <Tooltip>
                 <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
                 <TooltipContent>
-                  <p>The size in Bytes of a block</p>
+                  {'The size in Bytes of a block'}
                 </TooltipContent>
               </Tooltip>
             </td>
@@ -325,7 +337,7 @@ function List({ blockInfo }: { blockInfo: BlockDisplay | undefined }) {
               <Tooltip>
                 <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
                 <TooltipContent>
-                  <p>The version of the block</p>
+                  {'The version of the block'}
                 </TooltipContent>
               </Tooltip>
             </td>
@@ -338,6 +350,183 @@ function List({ blockInfo }: { blockInfo: BlockDisplay | undefined }) {
               {blockInfo != undefined ?
                 <Typography variant='paragraph' className={`w-fit text-gray-800 ${fira.className}`}>
                   {blockInfo.version}
+                </Typography>
+                :
+                <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </TooltipProvider>
+  )
+}
+
+// Needs cleanup, quick implementation
+function CoinbaseTx({ tx }: { tx: string | undefined }) {
+
+  const [coinbaseTx, setCoinbaseTx] = useState<CoinbaseDisplay | undefined>(undefined)
+
+  useEffect(() => {
+    if (tx != undefined) {
+      fetch(`/api/item/${tx}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }).then(async response => {
+        const data = await response.json()
+        if (data.content) {
+          const coinbaseDisplay: CoinbaseDisplay = formatToCoinbaseDisplay(data.content.Transaction as Coinbase)
+          console.log('display', coinbaseDisplay)
+          setCoinbaseTx(coinbaseDisplay)
+        }
+      })
+    }
+  }, [tx])
+
+  return (
+    <TooltipProvider delayDuration={100}>
+      <table className='w-full min-w-fit table-auto text-left rounded-sm'>
+        <tbody>
+          {/** Coinbase Hash */}
+          <tr className="border-b border-t">
+            <td className={`${col1}`}>
+              <Tooltip>
+                <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+                <TooltipContent>
+                  {'Coinbase transaction hash'}
+                </TooltipContent>
+              </Tooltip>
+            </td>
+            <td className={`${col2}`}>
+              <Typography variant='small' className={`font-body  text-gray-600`}>
+                {COINBASE_FIELDS[0]}
+              </Typography>
+            </td>
+            <td className={`${col3}`}>
+              {coinbaseTx != undefined ?
+                <Typography as={Link} href={`/block/${tx}`} target="_blank" variant='paragraph' className={`w-fit text-blue-900 ${fira.className} hover:underline`}>
+                  {tx}
+                </Typography>
+                :
+                <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
+            </td>
+          </tr>
+          {/** Token Reward */}
+          <tr className="border-b border-t">
+            <td className={`${col1}`}>
+              <Tooltip>
+                <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+                <TooltipContent>
+                  {'Miner reward'}
+                </TooltipContent>
+              </Tooltip>
+            </td>
+            <td className={`${col2}`}>
+              <Typography variant='small' className={`font-body  text-gray-600`}>
+                {COINBASE_FIELDS[1]}
+              </Typography>
+            </td>
+            <td className={`${col3}`}>
+              {coinbaseTx != undefined ?
+                <Typography variant='small' className={`w-fit text-gray-800 ${fira.className}`}>
+                  {coinbaseTx.tokens}
+                </Typography>
+                :
+                <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
+            </td>
+          </tr>
+          {/** Fractionnated Token Reward*/}
+          <tr className="border-b border-t">
+            <td className={`${col1}`}>
+              <Tooltip>
+                <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+                <TooltipContent>
+                  {'Miner reward in fracionated tokens'}
+                </TooltipContent>
+              </Tooltip>
+            </td>
+            <td className={`${col2}`}>
+              <Typography variant='small' className={`font-body  text-gray-600`}>
+                {COINBASE_FIELDS[2]}
+              </Typography>
+            </td>
+            <td className={`${col3}`}>
+              {coinbaseTx != undefined ?
+                <Typography variant='small' className={`w-fit text-gray-800 ${fira.className}`}>
+                  {coinbaseTx.fractionatedTokens}
+                </Typography>
+                :
+                <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
+            </td>
+          </tr>
+          {/** Version */}
+          <tr className="border-b border-t">
+            <td className={`${col1}`}>
+              <Tooltip>
+                <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+                <TooltipContent>
+                  {'The version of the transaction'}
+                </TooltipContent>
+              </Tooltip>
+            </td>
+            <td className={`${col2}`}>
+              <Typography variant='small' className={`font-body  text-gray-600`}>
+                {COINBASE_FIELDS[3]}
+              </Typography>
+            </td>
+            <td className={`${col3}`}>
+              {coinbaseTx != undefined ?
+                <Typography variant='small' className={`w-fit text-gray-800 ${fira.className}`}>
+                  {coinbaseTx.version}
+                </Typography>
+                :
+                <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
+            </td>
+          </tr>
+          {/** Script Public Key */}
+          <tr className="border-b border-t">
+            <td className={`${col1}`}>
+              <Tooltip>
+                <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+                <TooltipContent>
+                  {'Address of winning miner'}
+                </TooltipContent>
+              </Tooltip>
+            </td>
+            <td className={`${col2}`}>
+              <Typography variant='small' className={`font-body  text-gray-600`}>
+                {COINBASE_FIELDS[4]}
+              </Typography>
+            </td>
+            <td className={`${col3}`}>
+              {coinbaseTx != undefined ?
+                <Typography variant='small' className={`w-fit text-gray-800 ${fira.className}`}>
+                  {coinbaseTx.scriptPubKey}
+                </Typography>
+                :
+                <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
+            </td>
+          </tr>
+          {/** Locktime */}
+          <tr className="border-b border-t">
+            <td className={`${col1}`}>
+              <Tooltip>
+                <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+                <TooltipContent>
+                  {'The amount of time necessary for the transaction to be onspent'}
+                </TooltipContent>
+              </Tooltip>
+            </td>
+            <td className={`${col2}`}>
+              <Typography variant='small' className={`font-body  text-gray-600`}>
+                {COINBASE_FIELDS[5]}
+              </Typography>
+            </td>
+            <td className={`${col3}`}>
+              {coinbaseTx != undefined ?
+                <Typography variant='small' className={`w-fit text-gray-800 ${fira.className}`}>
+                  {coinbaseTx.locktime}
                 </Typography>
                 :
                 <div className="w-32 h-4 rounded bg-gray-200 animate-pulse"></div>}
