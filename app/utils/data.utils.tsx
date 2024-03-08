@@ -1,5 +1,5 @@
 /** ------------ DATA FORMAT ------------ */
-import { BlockDisplay, BlockRow, TxRow, TransactionDisplay, StackDisplay, TokenDisplay, ItemDisplay, OutputType, Block, Transaction, FetchedBlock, FetchedTransaction, In, Out, StackData, InputDisplay } from '@/app/interfaces'
+import { BlockDisplay, BlockRow, TxRow, TransactionDisplay, StackDisplay, TokenDisplay, ItemDisplay, OutputType, Block, Transaction, FetchedBlock, FetchedTransaction, In, Out, StackData, InputDisplay, CoinbaseDisplay, Coinbase } from '@/app/interfaces'
 import { getUnicornSeed, getUnicornWitness, tokenValue } from '@/app/utils'
 import { TOKEN_CURRENCY } from '../constants'
 
@@ -13,6 +13,8 @@ export const formatToBlockDisplay = (block: FetchedBlock): BlockDisplay => {
   const blockInfo: BlockDisplay = {
     bNum: block.num.toString(),
     hash: block.hash,
+    nonce: block.nonceAndMiningTxHash[0].toString() || undefined,
+    miningTxHash: block.nonceAndMiningTxHash[1] || undefined,
     merkleRootHash: block.merkleRootHash || "n/a",
     previousHash: block.previousHash || "n/a",
     version: block.version.toString(),
@@ -108,4 +110,16 @@ export const formatTxTableRow = (tx: Transaction): TxRow => {
     age: tx.timestamp,
   } as TxRow
   return txRow
+}
+
+export const formatToCoinbaseDisplay = (tx: Coinbase): CoinbaseDisplay => {
+  console.log('coinbase', tx)
+  const coinbase = {
+    tokens: tokenValue(tx.outputs[0].value.Token),
+    fractionatedTokens: tx.outputs[0].value.Token.toString(),
+    locktime: tx.outputs[0].locktime.toString(),
+    version: tx.version.toString(),
+    scriptPubKey: tx.outputs[0].script_public_key,
+  } as CoinbaseDisplay
+  return coinbase
 }

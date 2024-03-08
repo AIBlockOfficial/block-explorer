@@ -9,6 +9,12 @@ import { fira } from '@/app/styles/fonts'
 import { formatToTxDisplay, isGenesisTx, isHash } from "@/app/utils"
 import { TXS_FIELDS, TXS_IN_FIELDS, TXS_IT_OUT_FIELDS, TXS_TK_OUT_FIELDS } from "@/app/constants"
 import { CountBadge } from "@/app/ui/countBadge"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/app/ui/tooltip"
 
 const tabs = ['Overview', 'Inputs', 'Outputs', 'Raw']
 const col1 = 'pl-2 pr-1 w-5'
@@ -70,21 +76,23 @@ export default function Page({ params }: { params: { id: string } }) {
               )
             })}
           </div>
-          <div className={`${activeTab == tabs[0] ? 'block' : 'hidden'} w-full h-auto`}>
-            <Card className='min-h-fit w-full border-gray-300'>
-              <List txInfo={txDisplay} />
-            </Card>
-          </div>
-          <div className={`${activeTab == tabs[1] ? 'block' : 'hidden'} w-full h-auto`}>
-            <div className="px-4 pb-4">
-              <Inputs txInputs={txDisplay ? txDisplay.inputs : []} />
+          <TooltipProvider delayDuration={100}>
+            <div className={`${activeTab == tabs[0] ? 'block' : 'hidden'} w-full h-auto`}>
+              <Card className='min-h-fit w-full border-gray-300'>
+                <List txInfo={txDisplay} />
+              </Card>
             </div>
-          </div>
-          <div className={`${activeTab == tabs[2] ? 'block' : 'hidden'} w-full h-auto`}>
-            {txDisplay && txDisplay.outputs.length > 0 &&
-              <Outputs txOutputs={txDisplay ? txDisplay.outputs : []} />
-            }
-          </div>
+            <div className={`${activeTab == tabs[1] ? 'block' : 'hidden'} w-full h-auto`}>
+              <div className="px-4 pb-4">
+                <Inputs txInputs={txDisplay ? txDisplay.inputs : []} />
+              </div>
+            </div>
+            <div className={`${activeTab == tabs[2] ? 'block' : 'hidden'} w-full h-auto`}>
+              {txDisplay && txDisplay.outputs.length > 0 &&
+                <Outputs txOutputs={txDisplay ? txDisplay.outputs : []} />
+              }
+            </div>
+          </TooltipProvider>
           <div className={`${activeTab == tabs[3] ? 'block' : 'hidden'} w-full h-auto p-4`}>
             <div className="w-full whitespace-pre-wrap">
               {rawData != undefined ? JSON.stringify(rawData, null, '\t') : []}
@@ -113,7 +121,12 @@ function Inputs({ txInputs }: { txInputs: InputDisplay[] }) {
             <tbody>{/** Previous out */}
               <tr className="border">
                 <td className={`${col1}`}>
-                  <InformationCircleIcon className={helpIcon} />
+                  <Tooltip>
+                    <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+                    <TooltipContent>
+                      {'Previous out'}
+                    </TooltipContent>
+                  </Tooltip>
                 </td>
                 <td className={`${col2}`}>
                   <Typography variant='small' className={`font-body text-gray-600`}>
@@ -126,10 +139,15 @@ function Inputs({ txInputs }: { txInputs: InputDisplay[] }) {
                   </Typography>
                 </td>
               </tr>
-              {/** Block Hash */}
+              {/** Script signature */}
               <tr className="border">
                 <td className={`${col1}`}>
-                  <InformationCircleIcon className={helpIcon} />
+                  <Tooltip>
+                    <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+                    <TooltipContent>
+                      {'Script signature'}
+                    </TooltipContent>
+                  </Tooltip>
                 </td>
                 <td className={`${col2}`}>
                   <Typography variant='small' className={`font-body text-gray-600`}>
@@ -177,7 +195,12 @@ function Outputs({ txOutputs }: { txOutputs: TokenDisplay[] | ItemDisplay[] }) {
                   {/** Address */}
                   <tr className="border">
                     <td className={`${col1}`}>
-                      <InformationCircleIcon className={helpIcon} />
+                      <Tooltip>
+                        <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+                        <TooltipContent>
+                          {'Address where output was sent'}
+                        </TooltipContent>
+                      </Tooltip>
                     </td>
                     <td className={`${col2}`}>
                       <Typography variant='small' className={`font-body text-gray-600`}>
@@ -193,7 +216,12 @@ function Outputs({ txOutputs }: { txOutputs: TokenDisplay[] | ItemDisplay[] }) {
                   {/** Tokens */}
                   <tr className="border">
                     <td className={`${col1}`}>
-                      <InformationCircleIcon className={helpIcon} />
+                      <Tooltip>
+                        <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+                        <TooltipContent>
+                          {'The amount of tokens sent'}
+                        </TooltipContent>
+                      </Tooltip>
                     </td>
                     <td className={`${col2}`}>
                       <Typography variant='small' className={`font-body text-gray-600`}>
@@ -211,7 +239,12 @@ function Outputs({ txOutputs }: { txOutputs: TokenDisplay[] | ItemDisplay[] }) {
                   {/** Fractionated Tokens */}
                   <tr className="border">
                     <td className={`${col1}`}>
-                      <InformationCircleIcon className={helpIcon} />
+                      <Tooltip>
+                        <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+                        <TooltipContent>
+                          {'The fractionnated amount of tokens sent'}
+                        </TooltipContent>
+                      </Tooltip>
                     </td>
                     <td className={`${col2}`}>
                       <Typography variant='small' className={`font-body text-gray-600`}>
@@ -227,7 +260,12 @@ function Outputs({ txOutputs }: { txOutputs: TokenDisplay[] | ItemDisplay[] }) {
                   {/** LockTime */}
                   <tr className="border">
                     <td className={`${col1}`}>
-                      <InformationCircleIcon className={helpIcon} />
+                      <Tooltip>
+                        <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+                        <TooltipContent>
+                          {'The amount of time necessary for the transaction to be onspent'}
+                        </TooltipContent>
+                      </Tooltip>
                     </td>
                     <td className={`${col2}`}>
                       <Typography variant='small' className={`font-body text-gray-600`}>
@@ -254,7 +292,12 @@ function Outputs({ txOutputs }: { txOutputs: TokenDisplay[] | ItemDisplay[] }) {
                   {/** Address */}
                   <tr className="border">
                     <td className={`${col1}`}>
-                      <InformationCircleIcon className={helpIcon} />
+                      <Tooltip>
+                        <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+                        <TooltipContent>
+                          {'Address where output was sent'}
+                        </TooltipContent>
+                      </Tooltip>
                     </td>
                     <td className={`${col2}`}>
                       <Typography variant='small' className={`font-body text-gray-600`}>
@@ -273,7 +316,12 @@ function Outputs({ txOutputs }: { txOutputs: TokenDisplay[] | ItemDisplay[] }) {
                   {/** Items */}
                   <tr className="border">
                     <td className={`${col1}`}>
-                      <InformationCircleIcon className={helpIcon} />
+                      <Tooltip>
+                        <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+                        <TooltipContent>
+                          {'The amount of items sent'}
+                        </TooltipContent>
+                      </Tooltip>
                     </td>
                     <td className={`${col2}`}>
                       <Typography variant='small' className={`font-body text-gray-600`}>
@@ -291,7 +339,12 @@ function Outputs({ txOutputs }: { txOutputs: TokenDisplay[] | ItemDisplay[] }) {
                   {/** Metadata */}
                   <tr className="border">
                     <td className={`${col1}`}>
-                      <InformationCircleIcon className={helpIcon} />
+                      <Tooltip>
+                        <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+                        <TooltipContent>
+                          {'The metadata associated to the items'}
+                        </TooltipContent>
+                      </Tooltip>
                     </td>
                     <td className={`${col2}`}>
                       <Typography variant='small' className={`font-body text-gray-600`}>
@@ -307,7 +360,12 @@ function Outputs({ txOutputs }: { txOutputs: TokenDisplay[] | ItemDisplay[] }) {
                   {/** LockTime */}
                   <tr className="border">
                     <td className={`${col1}`}>
-                      <InformationCircleIcon className={helpIcon} />
+                      <Tooltip>
+                        <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+                        <TooltipContent>
+                          {'The amount of time necessary for the transaction to be onspent'}
+                        </TooltipContent>
+                      </Tooltip>
                     </td>
                     <td className={`${col2}`}>
                       <Typography variant='small' className={`font-body text-gray-600`}>
@@ -339,7 +397,12 @@ function List({ txInfo }: { txInfo: TransactionDisplay | undefined }) {
       <tbody>{/** Transaction Hash */}
         <tr className="border-b border-t">
           <td className={`${col1}`}>
-            <InformationCircleIcon className={helpIcon} />
+            <Tooltip>
+              <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+              <TooltipContent>
+                {'The hash that identifies a transaction'}
+              </TooltipContent>
+            </Tooltip>
           </td>
           <td className={`${col2}`}>
             <Typography variant='small' className={`font-body text-gray-600`}>
@@ -361,7 +424,12 @@ function List({ txInfo }: { txInfo: TransactionDisplay | undefined }) {
         {/** Block Hash */}
         <tr className="border-b border-t">
           <td className={`${col1}`}>
-            <InformationCircleIcon className={helpIcon} />
+            <Tooltip>
+              <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+              <TooltipContent>
+                {'The hash that identifies the block for this transaction'}
+              </TooltipContent>
+            </Tooltip>
           </td>
           <td className={`${col2}`}>
             <Typography variant='small' className={`font-body text-gray-600`}>
@@ -383,7 +451,12 @@ function List({ txInfo }: { txInfo: TransactionDisplay | undefined }) {
         {/** Transaction type */}
         <tr className="border-b border-t">
           <td className={`${col1}`}>
-            <InformationCircleIcon className={helpIcon} />
+            <Tooltip>
+              <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+              <TooltipContent>
+                {'The type of asset being sent (Token or Item)'}
+              </TooltipContent>
+            </Tooltip>
           </td>
           <td className={`${col2}`}>
             <Typography variant='small' className={`font-body text-gray-600`}>
@@ -411,7 +484,12 @@ function List({ txInfo }: { txInfo: TransactionDisplay | undefined }) {
         {/** Timestamp*/}
         <tr className="border-t">
           <td className={`${col1}`}>
-            <InformationCircleIcon className={helpIcon} />
+            <Tooltip>
+              <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+              <TooltipContent>
+                {'The time and date when a transaction was validated'}
+              </TooltipContent>
+            </Tooltip>
           </td>
           <td className={`${col2}`}>
             <Typography variant='small' className={`font-body text-gray-600`}>

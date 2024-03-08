@@ -8,13 +8,16 @@ import { ITEMS_PER_CHUNK } from "../constants"
 import { formatTxTableRow } from "../utils"
 
 export default function Page() {
+  const [loading, setLoading] = useState<boolean>(true) // Prevent fetching when loading
   const [expandCounter, setExpandCounter] = useState<number>(0) // Auto expand table as page is scrolled
   const [latestTxNum, setLatestTxNum] = useState<number>() // Serves as end value for blocks fetch scope
   const [txsData, setTxsData] = useState<TxRow[]>([]) // Txs data list
+  const [container, setContainer] = useState<HTMLElement | null>(null) // used to calculate scroll height
   const scroll = useScrollPosition() // Scroll position hook
 
   // List of transactions is being pulled here
   useEffect(() => {
+    setContainer(document.getElementById('html')) // Set scroll container
     fetch(`api/transactions?limit=${ITEMS_PER_CHUNK}&offset=0`, {
       method: 'GET',
       headers: {
@@ -26,16 +29,17 @@ export default function Page() {
         setLatestTxNum(data.content.pagination.total)
         const txRows: TxRow[] = data.content.transactions.map((tx: Transaction) => formatTxTableRow(tx))
         setTxsData(txRows)
+        setLoading(false)
       }
     })
   }, [])
 
-  // Auto expand feature
+  // Expand table items by ITEMS_PER_CHUNK (triggers when scroll is at a certain height on page)
   useEffect(() => {
-    // Expand table items by ITEMS_PER_CHUNK (triggers when scroll is at a certain height on page)
-    async function expand() {
-      if (latestTxNum) {
+    if (!loading && container && latestTxNum) {
+      if (scroll > (container.scrollHeight - container.clientHeight) - 200) {
         const offset = (ITEMS_PER_CHUNK * expandCounter) < (latestTxNum) ? (ITEMS_PER_CHUNK * expandCounter) : ((ITEMS_PER_CHUNK * expandCounter) - (latestTxNum - (ITEMS_PER_CHUNK * expandCounter)))
+        setLoading(true)
         fetch(`api/transactions?limit=${ITEMS_PER_CHUNK}&offset=${offset}`, {
           method: 'GET',
           headers: {
@@ -47,16 +51,14 @@ export default function Page() {
             let existing = txsData
             const txRows: TxRow[] = data.content.transactions.map((tx: Transaction) => formatTxTableRow(tx))
             setTxsData([...existing, ...txRows])
+            setExpandCounter(expandCounter + 1)
+            setLoading(false)
           }
         })
-        setExpandCounter(expandCounter + 1)
       }
     }
-    if (scroll > (window.innerHeight / 2) * expandCounter) {
-      expand()
-    }
-  }, [scroll, expandCounter, latestTxNum, txsData])
-
+    // eslint-disable-next-line 
+  }, [scroll]) // This is NOT a good implementation of useEffect. Must be changed /!\ (react-hooks/exhaustive-deps)
 
   return (
     <>
