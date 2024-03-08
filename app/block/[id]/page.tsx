@@ -377,7 +377,6 @@ function CoinbaseTx({ tx }: { tx: string | undefined }) {
         const data = await response.json()
         if (data.content) {
           const coinbaseDisplay: CoinbaseDisplay = formatToCoinbaseDisplay(data.content.Transaction as Coinbase)
-          console.log('display', coinbaseDisplay)
           setCoinbaseTx(coinbaseDisplay)
         }
       })
