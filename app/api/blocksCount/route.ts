@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server"
-
 const chain = require('../chainFetch')
 
 export async function GET(_req: NextRequest) {
