@@ -404,7 +404,7 @@ function CoinbaseTx({ tx }: { tx: string | undefined }) {
             </td>
             <td className={`${col3}`}>
               {coinbaseTx != undefined ?
-                <Typography as={Link} href={`/block/${tx}`} target="_blank" variant='paragraph' className={`w-fit text-blue-900 ${fira.className} hover:underline`}>
+                <Typography as={Link} href={`/transaction/${tx}`} target="_blank" variant='paragraph' className={`w-fit text-blue-900 ${fira.className} hover:underline`}>
                   {tx}
                 </Typography>
                 :
