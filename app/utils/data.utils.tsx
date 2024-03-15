@@ -113,7 +113,6 @@ export const formatTxTableRow = (tx: Transaction): TxRow => {
 }
 
 export const formatToCoinbaseDisplay = (tx: Coinbase): CoinbaseDisplay => {
-  console.log('coinbase', tx)
   const coinbase = {
     tokens: tokenValue(tx.outputs[0].value.Token),
     fractionatedTokens: tx.outputs[0].value.Token.toString(),

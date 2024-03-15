@@ -5,10 +5,18 @@ import Image from 'next/image'
 import Link from 'next/link'
 import Searchbar from '@/app/ui/nav/searchbar'
 import Dropdown from '@/app/ui/nav/dropdown'
-import SettingsDropdown from '@/app/ui/nav/settingsDropdown'
 import { Disclosure } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import Logo from '@/app/static/full_logo.svg'
+import { fira } from '@/app/styles/fonts'
+import { Typography } from '@material-tailwind/react'
+import { InformationCircleIcon } from "@heroicons/react/24/outline"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/app/ui/tooltip"
 
 interface NavItems {
   name: string,
@@ -20,14 +28,13 @@ interface NavItems {
 const navigation: NavItems[] = [
   { name: 'Home', href: '/' },
   { name: 'Blocks', href: '/blocks' },
-  { name: 'Transactions', href: '/transactions'},
-  {
-    name: 'Statistics', href: '/statistics', disabled: true ,items: [
-      { name: 'Rich List & Supply', href: '/stats' },
-      { name: 'Live Nodes', href: '/nodes' },
-      { name: 'Developer Docs', href: '/docs' },
-    ]
-  },
+  { name: 'Transactions', href: '/transactions' },
+  // {
+  //   name: 'Statistics', href: '/statistics', disabled: true, items: [
+  //     { name: 'Rich List & Supply', href: '/stats' },
+  //     { name: 'Live Nodes', href: '/nodes' },  
+  //   ]
+  // },
 ]
 
 function classNames(...classes: any) {
@@ -65,7 +72,7 @@ export default function Navbar() {
                 {/** Logo */}
                 <div className="flex flex-shrink-0 items-center">
                   <Image
-                    onClick={()=> router.push('/')}
+                    onClick={() => router.push('/')}
                     className="w-48 hover:cursor-pointer"
                     src={Logo}
                     alt="AIBlock Explorer"
@@ -114,9 +121,22 @@ export default function Navbar() {
                 <div className=" min-w-0 mr-4">
                   <Searchbar />
                 </div>
-                <div className='px-2'>
-                  <SettingsDropdown />
+                <div className='px-2 flex flex-row bg-green-200 rounded-sm'>
+                  <TooltipProvider delayDuration={100}>
+                    <Tooltip>
+                      <TooltipTrigger><InformationCircleIcon className={'h-4 w-4  text-green-900 hover:cursor-help'} /></TooltipTrigger>
+                      <TooltipContent>
+                        {'Currently on Testnet. Mainnet is not available at this time.'}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <Typography variant='small' className={`w-fit text-green-900 text-center ${fira.className} px-1`}>
+                    {"Testnet".toUpperCase()}
+                  </Typography>
                 </div>
+                {/* <div className='px-2'>
+                  <SettingsDropdown />
+                </div> */}
               </div>
             </div>
           </div>
