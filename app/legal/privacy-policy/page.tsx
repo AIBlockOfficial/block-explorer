@@ -105,10 +105,10 @@ export default function PrivacyPolicy() {
 
                 <ul>
                     <li>Information about the browser type and the version used</li>
-                    <li>The user's operating system</li>
+                    <li>The user&apos;s operating system</li>
                     <li>The IP address of the user</li>
                     <li>Date and time of access</li>
-                    <li>Websites from which the user's system accesses our website</li>
+                    <li>Websites from which the user&apos;s system accesses our website</li>
                     <li>Page viewed on the website</li>
                 </ul>
 
@@ -118,7 +118,7 @@ export default function PrivacyPolicy() {
 
                 <h4>2. PURPOSES OF DATA PROCESSING AND LEGAL BASIS</h4>
 
-                <p>The temporary storage of the IP address by the system is necessary to enable delivery of the website to the user's computer. For this purpose, the IP address must remain stored for the duration of the session.</p>
+                <p>The temporary storage of the IP address by the system is necessary to enable delivery of the website to the user&apos;s computer. For this purpose, the IP address must remain stored for the duration of the session.</p>
 
                 <p>The data is stored in log files to ensure the functionality of the website. The data is also used to optimise the website and to ensure the security of our information technology systems. An evaluation of the data for marketing purposes does not take place in this context.</p>
 
@@ -144,7 +144,7 @@ export default function PrivacyPolicy() {
 
                 <p>Technically necessary cookies increase the functionality of the website. Cookies that are not technically necessary increase the user-friendliness of the website.</p>
 
-                <p>Our cookies can be either session cookies (temporary cookies that identify you as a user and track your progress within our websites as long as your browser is open) or persistent cookies (cookies that allow our websites to "remember" who you are and what your preferences are within our websites and that remain on your computer or device even after you close your browser).</p>
+                <p>Our cookies can be either session cookies (temporary cookies that identify you as a user and track your progress within our websites as long as your browser is open) or persistent cookies (cookies that allow our websites to &quot;remember&quot; who you are and what your preferences are within our websites and that remain on your computer or device even after you close your browser).</p>
 
                 <p>The user data collected in this way is pseudonymised by technical precautions. It is therefore no longer possible to assign the data to the calling user. The data are not stored together with other personal data of the users.</p>
 
@@ -173,7 +173,7 @@ export default function PrivacyPolicy() {
 
                 <p>The session cookies are deleted after a short time, but at the latest when you close your browser. With persistent cookies, the website remembers your preferences and settings so that they are available the next time you visit the website. Permanent cookies are deleted after a certain period of time.</p>
 
-                <p>As a user, you have full control over the use of cookies. You can prevent the use of cookies by clicking on the "refuse" button in the cookie banner. Furthermore, you can deactivate or restrict the transmission of cookies by changing the settings in your Internet browser. Cookies that have already been saved can be deleted at any time. This can also be done automatically. If cookies are deactivated for our website, it is possible that all functions of the website can no longer be used to their full extent.</p>
+                <p>As a user, you have full control over the use of cookies. You can prevent the use of cookies by clicking on the &quot;refuse&quot; button in the cookie banner. Furthermore, you can deactivate or restrict the transmission of cookies by changing the settings in your Internet browser. Cookies that have already been saved can be deleted at any time. This can also be done automatically. If cookies are deactivated for our website, it is possible that all functions of the website can no longer be used to their full extent.</p>
 
                 <br />
 
@@ -199,7 +199,7 @@ export default function PrivacyPolicy() {
 
                 <h4>3. DURATION OF STORAGE</h4>
 
-                <p>The data is deleted as soon as it is no longer required for the purpose of its collection. The user's e-mail address will therefore be stored as long as the newsletter subscription is active. If a client/business relationship exists between you and us pursuant to Section II, the provisions set out in Section II.4 shall apply.</p>
+                <p>The data is deleted as soon as it is no longer required for the purpose of its collection. The user&apos;s e-mail address will therefore be stored as long as the newsletter subscription is active. If a client/business relationship exists between you and us pursuant to Section II, the provisions set out in Section II.4 shall apply.</p>
 
                 <p>The other personal data collected during the registration process will generally be deleted after a period of seven days.</p>
 
@@ -278,7 +278,7 @@ export default function PrivacyPolicy() {
 
                 <p>So-called web beacons are used and cookies are also set, which are stored on your computer and enable us to analyse your use of the website. The Marketing Service Providers evaluate the information collected (e.g. IP address, geographical location, type of browser, duration of visit and pages viewed) on our behalf in order to generate reports on the visit and pages viewed.</p>
 
-                <p>If newsletters are subscribed to as described in Section C and other documents are obtained, the Service Provider can also link a user's visits to our website to personal data (above all name/email address) on the basis of a consent given, thus recording personal data and informing users individually and purposefully about preferred subject areas.</p>
+                <p>If newsletters are subscribed to as described in Section C and other documents are obtained, the Service Provider can also link a user&apos;s visits to our website to personal data (above all name/email address) on the basis of a consent given, thus recording personal data and informing users individually and purposefully about preferred subject areas.</p>
 
                 <p>We use all information collected exclusively to optimise our branding. This is also our legitimate interest in data processing.</p>
 
@@ -292,7 +292,7 @@ export default function PrivacyPolicy() {
 
                 <h5>3.1 SCOPE OF THE PROCESSING OF PERSONAL DATA</h5>
 
-                <p>On our website we use Google Analytics. Google Ireland (based in Ireland) is our provider of “Google Analytics” and acts as our processor. Google Ireland relies on Google LLC (based in the US) as a processor for its services (both “Google”). Google uses performance cookies (see above) to track the behavior of visitors to our website (duration, frequency of pages viewed, geographic origin of access, etc.) and compiles reports for us on the use of our website on this basis. We have configured the service so that the IP addresses of visitors are shortened by Google in Europe before being forwarded to the US and thus cannot be traced. We have turned off the "Data Forwarding" and "Signals" settings. Although we can assume that the information we share with Google is not personal data for Google, it is possible that Google can draw conclusions about the identity of visitors from this data for its own purposes, create personal profiles and link this data to the Google accounts of these persons. If you consent to the use of Google Analytics, you explicitly agree to such processing, which also includes the transfer of personal data (in particular usage data for the website and app, device information and individual IDs) to the US and other countries not offering adequate data protection from a Swiss/EU perspective. Information on the data protection of Google Analytics can be found <a href="http://www.google.com/analytics/terms/de.html">here</a> and if you have a Google account, you can find further details on processing by Google <a href="http://www.google.com/intl/de/analytics/learn/privacy.html">here</a>.</p>
+                <p>On our website we use Google Analytics. Google Ireland (based in Ireland) is our provider of “Google Analytics” and acts as our processor. Google Ireland relies on Google LLC (based in the US) as a processor for its services (both “Google”). Google uses performance cookies (see above) to track the behavior of visitors to our website (duration, frequency of pages viewed, geographic origin of access, etc.) and compiles reports for us on the use of our website on this basis. We have configured the service so that the IP addresses of visitors are shortened by Google in Europe before being forwarded to the US and thus cannot be traced. We have turned off the &quot;Data Forwarding&quot; and &quot;Signals&quot; settings. Although we can assume that the information we share with Google is not personal data for Google, it is possible that Google can draw conclusions about the identity of visitors from this data for its own purposes, create personal profiles and link this data to the Google accounts of these persons. If you consent to the use of Google Analytics, you explicitly agree to such processing, which also includes the transfer of personal data (in particular usage data for the website and app, device information and individual IDs) to the US and other countries not offering adequate data protection from a Swiss/EU perspective. Information on the data protection of Google Analytics can be found <a href="http://www.google.com/analytics/terms/de.html">here</a> and if you have a Google account, you can find further details on processing by Google <a href="http://www.google.com/intl/de/analytics/learn/privacy.html">here</a>.</p>
 
                 <br />
 
@@ -390,7 +390,7 @@ export default function PrivacyPolicy() {
 
                 <p>You have the right to access, correction, limitation of data processing, deletion of personal data, objection, revocation of the declaration of consent under data protection law for the future and data transferability within the framework of the data protection law applicable to you and to the extent provided for therein.</p>
 
-                <p>In addition, you have the right to assert your claims in court or to file a complaint with the responsible data protection authority. Switzerland's competent data protection authority is the Federal Data Protection and Information Commissioner.</p>
+                <p>In addition, you have the right to assert your claims in court or to file a complaint with the responsible data protection authority. Switzerland&apos;s competent data protection authority is the Federal Data Protection and Information Commissioner.</p>
 
                 <h3>RIGHT TO WITHDRAW AND OBJECT</h3>
 
