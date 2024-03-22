@@ -29,7 +29,7 @@ export default function PrivacyPolicy() {
                     Gartenstrasse 6<br />
                     6300 Zug<br />
                     Switzerland<br />
-                    Email: <a href="mailto:info@a-block.net">info@a-block.net</a>
+                    Email: <a href="mailto:info@a-block.ch">info@a-block.ch</a>
                 </address>
 
                 <h2>II. Client relationship and contractual relationship with business partners</h2>
