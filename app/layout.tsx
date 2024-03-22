@@ -1,5 +1,6 @@
 "use client"
 import Navbar from '@/app/ui/nav/navbar'
+import Footer from './ui/nav/footer'
 import '@/app/styles/globals.css'
 import { inter } from '@/app/styles/fonts'
 
@@ -15,6 +16,7 @@ export default function RootLayout({
         <main className="flex h-auto min-h-[calc(100vh-64px)] overflow-y-hidden flex-col p-6 border overflow-x-auto">
           {children}
         </main>
+        <Footer />
       </body>
     </html>
   )

@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+h1 {
+  @apply text-3xl font-bold my-2;
+}
+h2 {
+  @apply text-2xl font-semibold my-2;
+}
+h3 {
+  @apply text-xl my-2;
+}
+h4 {
+  @apply text-lg my-2;
+}
+ul {
+  @apply list-disc ml-4 my-4
+}
+a {
+  @apply text-blue-400 hover:underline;
+}
+p {
+  @apply my-4
+}
+
