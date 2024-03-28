@@ -5,8 +5,8 @@ import { fira } from '@/app/styles/fonts'
 import Link from "next/link"
 import { InformationCircleIcon, Square2StackIcon } from "@heroicons/react/24/outline"
 import Table, { TableType } from "@/app/ui/table"
-import { isHash, isNum, timestampElapsedTime, formatToCoinbaseDisplay } from "@/app/utils"
-import { BlockDisplay, Coinbase, CoinbaseDisplay, IErrorInternal, TxRow } from "@/app/interfaces"
+import { isHash, isNum, timestampElapsedTime } from "@/app/utils"
+import { BlockDisplay, CoinbaseDisplay, IErrorInternal, TxRow } from "@/app/interfaces"
 import { BLOCK_FIELDS, COINBASE_FIELDS } from "@/app/constants"
 import ErrorBlock from "@/app/ui/errorBlock"
 import {
@@ -28,9 +28,16 @@ export default function Page({ params }: { params: { id: string } }) {
   const [activeTab, setActiveTab] = useState<string>(tabs[0]) // Active tab
   const [found, setFound] = useState<boolean | undefined>(undefined) // If block has been found
 
-  const id = isHash(params.id) || isNum(params.id) ? params.id : undefined
-  const blockDisplay: BlockDisplay | undefined = useBlock(id) // Block data
+  const id = isHash(params.id) || isNum(params.id) ? params.id : ''
+  const blockDisplay: BlockDisplay | undefined | null = useBlock(id) // Block data
   let txRows: TxRow[] | undefined = useBlockTxs(id) // Block transaction data
+
+  useEffect(() => {
+    if (id == undefined || blockDisplay === null)
+      setFound(false)
+    else if (blockDisplay != undefined)
+      setFound(true)
+  }, [blockDisplay])
 
   return (
     <>
@@ -59,7 +66,7 @@ export default function Page({ params }: { params: { id: string } }) {
           {/** Overview */}
           <div className={`${activeTab == tabs[0] ? 'block' : 'hidden'} w-full h-auto`}>
             <Card className='min-h-fit w-full border-gray-300'>
-              <List blockInfo={blockDisplay} />
+              <List blockInfo={blockDisplay ? blockDisplay : undefined} />
             </Card>
           </div >
           {/** Transactions */}
@@ -333,9 +340,8 @@ function List({ blockInfo }: { blockInfo: BlockDisplay | undefined }) {
 }
 
 // Needs cleanup, quick implementation
-function CoinbaseTx({ tx }: { tx: string | undefined }) {
-  const coinbaseResult = useCoinbaseTx(tx)
-  const coinbaseTx: CoinbaseDisplay | undefined = coinbaseResult
+function CoinbaseTx({ tx }: { tx: string }) {
+  const coinbaseTx: CoinbaseDisplay | undefined = useCoinbaseTx(tx)
 
   return (
     <TooltipProvider delayDuration={100}>
