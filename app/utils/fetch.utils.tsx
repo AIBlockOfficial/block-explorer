@@ -1,8 +1,8 @@
 import useSWR from "swr"
 import useSWRInfinite from 'swr/infinite'
 import { ITEMS_PER_CHUNK, ITEMS_PER_PAGE_SHORT } from "@/app/constants"
-import { Block, BlockDisplay, BlockRow, BlocksResult, Coinbase, CoinbaseDisplay, FetchedBlock, Transaction, TransactionsResult, TxRow } from "@/app/interfaces"
-import { formatBlockTableRow, formatToBlockDisplay, formatToCoinbaseDisplay, formatTxTableRow } from "./data.utils"
+import { Block, BlockDisplay, BlockRow, BlocksResult, Coinbase, CoinbaseDisplay, FetchedBlock, FetchedTransaction, Transaction, TransactionDisplay, TransactionsResult, TxRow } from "@/app/interfaces"
+import { formatBlockTableRow, formatToBlockDisplay, formatToCoinbaseDisplay, formatToTxDisplay, formatTxTableRow } from "./data.utils"
 
 const fetcher = (url: any) => fetch(url).then(r => r.json())
 
@@ -11,40 +11,58 @@ const config = {
     fetcher: fetcher
 }
 
-export const useBlock = (id: string | undefined): BlockDisplay | undefined => {
-    if (id != undefined) {
-        const { data } = useSWR(`/api/block/${id}`, config)
-        if (data != undefined) {
-            if (data.content) {
-                const blockDisplay: BlockDisplay = formatToBlockDisplay(data.content as FetchedBlock)
-                return blockDisplay
-            }
-        }
+export const useBlock = (id: string): BlockDisplay | undefined | null => {
+    const { data } = useSWR(`/api/block/${id}`, config)
+    if (data != undefined) {
+        if (data.content) {
+            const blockDisplay: BlockDisplay = formatToBlockDisplay(data.content as FetchedBlock)
+            return blockDisplay
+        } else
+            return null
     }
     return undefined
 }
 
-export const useBlockTxs = (id: string | undefined): TxRow[] => {
-    if (id != undefined) {
-        const { data } = useSWR(`/api/blockTxs/${id}`, config)
-        if (data != undefined) {
-            if (data.content) {
-                const txRows: TxRow[] = data.content.transactions.map((tx: Transaction) => formatTxTableRow(tx))
-                return txRows
-            }
+export const useBlockTxs = (id: string): TxRow[] => {
+    const { data } = useSWR(`/api/blockTxs/${id}`, config)
+    if (data != undefined) {
+        if (data.content) {
+            const txRows: TxRow[] = data.content.transactions.map((tx: Transaction) => formatTxTableRow(tx))
+            return txRows
         }
     }
     return []
 }
 
-export const useCoinbaseTx = (tx: string | undefined): CoinbaseDisplay | undefined => {
-    if (tx != undefined) {
-        const { data } = useSWR(`/api/item/${tx}`, config)
-        if (data != undefined) {
-            if (data.content[0][1]) {
-                const coinbaseDisplay: CoinbaseDisplay = formatToCoinbaseDisplay(data.content[0][1] as Coinbase)
-                return coinbaseDisplay
-            }
+export const useCoinbaseTx = (id: string): CoinbaseDisplay | undefined => {
+    const { data } = useSWR(`/api/item/${id}`, config)
+    if (data != undefined) {
+        if (data.content[0][1]) {
+            const coinbaseDisplay: CoinbaseDisplay = formatToCoinbaseDisplay(data.content[0][1] as Coinbase)
+            return coinbaseDisplay
+        }
+    }
+    return undefined
+}
+
+export const useTransaction = (id: string): TransactionDisplay | undefined | null => {
+    const { data } = useSWR(`/api/transaction/${id}`, config)
+    if (data != undefined) {
+        if (data.content) {
+            const txDisplay: TransactionDisplay = formatToTxDisplay(data.content as FetchedTransaction)
+            return txDisplay
+        } else
+            return null
+    }
+    return undefined
+}
+
+export const useRawTransaction = (id: string): any | undefined => {
+    const { data } = useSWR(`/api/item/${id}`, config)
+    if (data != undefined) {
+        if (data.content[0][1]) {
+            const rawTx: any = data.content[0][1] as Coinbase
+            return rawTx
         }
     }
     return undefined

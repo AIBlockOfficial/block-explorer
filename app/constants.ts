@@ -19,4 +19,3 @@ export const COINBASE_FIELDS = ['Coinbase Hash', 'Token Reward', 'Fractionated T
 /** TOKEN */
 export const TOKEN_FRACTION = 72072000 // Will change on network update
 export const TOKEN_CURRENCY = 'ABC'
-
