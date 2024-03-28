@@ -18,7 +18,7 @@ export const getRange = (start: number = 0, end: number = 9) => {
  * @returns hash string in shortened format
  */
 export function shortenHash(string: string): string {
-  return string.slice(0, 5) + '...' + string.slice(string.length - 4, string.length)
+    return string.slice(0, 5) + '...' + string.slice(string.length - 4, string.length)
 }
 
 /**
