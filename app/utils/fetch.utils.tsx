@@ -141,3 +141,13 @@ export const useInfiniteTxRows = (): { txRows: TxRow[], size: number, setSize: F
     }
     return { txRows: [], size, setSize }
 }
+
+export const useCirculatingSupply = (): number | undefined => {
+    const { data } = useSWR(`api/circulatingSupply`, config)
+    if (data != undefined) {
+        if (data.content) {
+            return data.content.circulatingSupply
+        }
+    }
+    return undefined
+}

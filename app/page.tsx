@@ -2,10 +2,9 @@
 import Link from 'next/link'
 import Table, { TableType } from '@/app/ui/table'
 import StatCard from '@/app/ui/statCard'
-import { CubeIcon } from "@heroicons/react/24/outline"
-import { ArrowsRightLeftIcon } from "@heroicons/react/24/outline"
+import { CubeIcon, ArrowsRightLeftIcon, ArrowPathIcon} from "@heroicons/react/24/outline"
 import { BlockRow, TxRow } from '@/app/interfaces'
-import { useShortBlockRows, useShortTxRows } from './utils/fetch.utils'
+import { useCirculatingSupply, useShortBlockRows, useShortTxRows } from './utils/fetch.utils'
 
 export default function Page() {
   const blocksResult = useShortBlockRows() 
@@ -16,11 +15,15 @@ export default function Page() {
   const txsData: TxRow[] = txsResult.txRows // Short table transaction row data
   const latestTxNum: number | undefined = txsResult.number // Total number of transactions to display in card
 
+  const circulatingSupply = useCirculatingSupply()
+  console.log(circulatingSupply)
+
   return (
     <>
       <div className="flex p-4 justify-evenly flex-wrap">
         <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Blocks'} value={latestBlockNum} icon={<CubeIcon className='card-icons' />} href={'/blocks'} /></div>
         <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Transactions'} value={latestTxNum} icon={<ArrowsRightLeftIcon className='card-icons' />} href={'/transactions'} /></div>
+        <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Circulating supply'} value={circulatingSupply} icon={<ArrowPathIcon className='card-icons' />} href={'#'} /></div>
       </div>
       <div className="flex p-4 justify-evenly flex-wrap">
         <div className='p-2 md:w-1/2 sm:w-full'>

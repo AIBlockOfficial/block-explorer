@@ -27,8 +27,8 @@ export function block(id: string) {
     return fetch(`${EXP_BACKEND}${IAPIRoute.Block}/${id}`, {
         method: 'GET',
         headers: {
-            'Content-Type': 'application/json', 
-        } 
+            'Content-Type': 'application/json',
+        }
     }).then((response) => {
         if (response.status == 200)
             return Promise.resolve(response.json())
@@ -139,6 +139,27 @@ export function fetchItem(hash: string) {
         else
             return Promise.reject({ reason: response.statusText, status: response.status, route: IAPIRoute.BlockchainEntry })
     });
+}
+
+/**
+ * Fetches a block or transaction from the blockchain via a POST request containing 
+ * the ID of the item to retrieve
+ * 
+ * @param id {string} - id of the block or transaction to fetch
+ * @returns 
+ */
+export function circulatingSupply() {
+    return fetch(`${EXP_BACKEND}${IAPIRoute.CirculatingSupply}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    }).then((response) => {
+        if (response.status == 200)
+            return Promise.resolve(response.json())
+        else
+            return Promise.reject({ reason: response.statusText, status: response.status, route: IAPIRoute.Transaction })
+    })
 }
 
 /**

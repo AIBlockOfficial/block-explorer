@@ -24,5 +24,6 @@ export enum IAPIRoute {
     Blocks= '/blocks',
     Transaction = '/transaction',
     Transactions = '/transactions',
-    BlockchainEntry = '/blockchain_entry'
+    BlockchainEntry = '/blockchain_entry',
+    CirculatingSupply = '/circulating-supply'
 }
