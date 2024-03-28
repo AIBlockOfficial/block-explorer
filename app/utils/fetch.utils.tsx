@@ -33,14 +33,14 @@ export const useShortTxRows = (): { txRows: TxRow[], number: number | undefined 
     return { txRows: [], number: undefined }
 }
 
-const getKey = (index: number, previousPageData: any) => {
-    if (previousPageData && ((ITEMS_PER_CHUNK * index) +48000) > previousPageData.content.pagination.total)
+const getKeyBlocks = (index: number, previousPageData: any) => {
+    if (previousPageData && ((ITEMS_PER_CHUNK * index)) > previousPageData.content.pagination.total)
         return null // reached the end
-    return `api/blocks?limit=${ITEMS_PER_CHUNK}&offset=${(ITEMS_PER_CHUNK * index)+48000}` // SWR key
+    return `api/blocks?limit=${ITEMS_PER_CHUNK}&offset=${(ITEMS_PER_CHUNK * index)}` // SWR key
 }
 
 export const useInfiniteBlockRows = (): { blockRows: BlockRow[], size: number, setSize: Function } => {
-    const { data, size, setSize } = useSWRInfinite(getKey, fetcher)
+    const { data, size, setSize } = useSWRInfinite(getKeyBlocks, fetcher)
     if (data != undefined) {
         if (data.length > 0) {
             let list = [];
@@ -57,4 +57,30 @@ export const useInfiniteBlockRows = (): { blockRows: BlockRow[], size: number, s
         }
     }
     return { blockRows: [], size, setSize }
+}
+
+const getKeyTxs = (index: number, previousPageData: any) => {
+    if (previousPageData && ((ITEMS_PER_CHUNK * index)) > previousPageData.content.pagination.total)
+        return null // reached the end
+    return `api/transactions?limit=${ITEMS_PER_CHUNK}&offset=${(ITEMS_PER_CHUNK * index)}` // SWR key
+}
+
+export const useInfiniteTxRows = (): { txRows: TxRow[], size: number, setSize: Function } => {
+    const { data, size, setSize } = useSWRInfinite(getKeyTxs, fetcher)
+    if (data != undefined) {
+        if (data.length > 0) {
+            let list = [];
+            let prev = undefined
+            for (let i = 0; i < data.length; i++) {
+                const chunk = data[i];
+                const txsRows: TxRow[] = chunk.content.transactions.map((tx: Transaction) => formatTxTableRow(tx)) // Currently used await because nb tx of each block is fetched
+                if (prev && prev?.txHash == txsRows[0].txHash)  // Handle duplicates if block number increases during scroll
+                    txsRows.shift()
+                prev = txsRows[txsRows.length - 1] // Set prev to check for duplicates
+                list.push(...txsRows) // Update main list
+            }
+            return { txRows: list, size, setSize }
+        }
+    }
+    return { txRows: [], size, setSize }
 }
