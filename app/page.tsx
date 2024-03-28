@@ -10,13 +10,10 @@ export default function Page() {
   const blocksResult = useShortBlockRows() 
   const blocksData: BlockRow[] = blocksResult.blockRows // Short table block row data
   const latestBlockNum: number | undefined = blocksResult.number // Total number of blocks to display in card
-
   const txsResult = useShortTxRows()
   const txsData: TxRow[] = txsResult.txRows // Short table transaction row data
   const latestTxNum: number | undefined = txsResult.number // Total number of transactions to display in card
-
   const circulatingSupply = useCirculatingSupply()
-  console.log(circulatingSupply)
 
   return (
     <>

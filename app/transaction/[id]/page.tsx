@@ -194,7 +194,7 @@ function Outputs({ txOutputs }: { txOutputs: TokenDisplay[] | ItemDisplay[] }) {
                       </Typography>
                     </td>
                     <td className={`${col3}`}>
-                      <Typography as={Link} href={`#`} variant='small' className={`w-fit text-blue-900 ${fira.className} hover:underline`}>
+                      <Typography as={Link} href={`/address/${output.address}`} variant='small' className={`w-fit text-blue-900 ${fira.className} hover:underline`}>
                         {output.address}
                       </Typography>
                     </td>
