@@ -1,5 +1,5 @@
 /** ------------ DISPLAY FORMAT ------------ */
-import { TOKEN_FRACTION } from "../constants"
+import { TOKEN_FRACTION } from "@/app/constants"
 
 /**
  * Gets all numbers from the start value to the end value, inclusive

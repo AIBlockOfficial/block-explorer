@@ -1,14 +1,53 @@
 import useSWR from "swr"
 import useSWRInfinite from 'swr/infinite'
-import { ITEMS_PER_CHUNK, ITEMS_PER_PAGE_SHORT } from "../constants"
-import { Block, BlockRow, Transaction, TxRow } from "../interfaces"
-import { formatBlockTableRow, formatTxTableRow } from "."
+import { ITEMS_PER_CHUNK, ITEMS_PER_PAGE_SHORT } from "@/app/constants"
+import { Block, BlockDisplay, BlockRow, BlocksResult, Coinbase, CoinbaseDisplay, FetchedBlock, Transaction, TransactionsResult, TxRow } from "@/app/interfaces"
+import { formatBlockTableRow, formatToBlockDisplay, formatToCoinbaseDisplay, formatTxTableRow } from "./data.utils"
 
 const fetcher = (url: any) => fetch(url).then(r => r.json())
 
 const config = {
-    refreshInterval: 5000,
+    refreshInterval: 30000,
     fetcher: fetcher
+}
+
+export const useBlock = (id: string | undefined): BlockDisplay | undefined => {
+    if (id != undefined) {
+        const { data } = useSWR(`/api/block/${id}`, config)
+        if (data != undefined) {
+            if (data.content) {
+                const blockDisplay: BlockDisplay = formatToBlockDisplay(data.content as FetchedBlock)
+                return blockDisplay
+            }
+        }
+    }
+    return undefined
+}
+
+export const useBlockTxs = (id: string | undefined): TxRow[] => {
+    if (id != undefined) {
+        const { data } = useSWR(`/api/blockTxs/${id}`, config)
+        if (data != undefined) {
+            if (data.content) {
+                const txRows: TxRow[] = data.content.transactions.map((tx: Transaction) => formatTxTableRow(tx))
+                return txRows
+            }
+        }
+    }
+    return []
+}
+
+export const useCoinbaseTx = (tx: string | undefined): CoinbaseDisplay | undefined => {
+    if (tx != undefined) {
+        const { data } = useSWR(`/api/item/${tx}`, config)
+        if (data != undefined) {
+            if (data.content[0][1]) {
+                const coinbaseDisplay: CoinbaseDisplay = formatToCoinbaseDisplay(data.content[0][1] as Coinbase)
+                return coinbaseDisplay
+            }
+        }
+    }
+    return undefined
 }
 
 export const useShortBlockRows = (): { blockRows: BlockRow[], number: number | undefined } => {
@@ -33,7 +72,7 @@ export const useShortTxRows = (): { txRows: TxRow[], number: number | undefined 
     return { txRows: [], number: undefined }
 }
 
-const getKeyBlocks = (index: number, previousPageData: any) => {
+const getKeyBlocks = (index: number, previousPageData: { content: BlocksResult } | null): string | null => {
     if (previousPageData && ((ITEMS_PER_CHUNK * index)) > previousPageData.content.pagination.total)
         return null // reached the end
     return `api/blocks?limit=${ITEMS_PER_CHUNK}&offset=${(ITEMS_PER_CHUNK * index)}` // SWR key
@@ -59,7 +98,7 @@ export const useInfiniteBlockRows = (): { blockRows: BlockRow[], size: number, s
     return { blockRows: [], size, setSize }
 }
 
-const getKeyTxs = (index: number, previousPageData: any) => {
+const getKeyTxs = (index: number, previousPageData: { content: TransactionsResult } | null): string | null => {
     if (previousPageData && ((ITEMS_PER_CHUNK * index)) > previousPageData.content.pagination.total)
         return null // reached the end
     return `api/transactions?limit=${ITEMS_PER_CHUNK}&offset=${(ITEMS_PER_CHUNK * index)}` // SWR key

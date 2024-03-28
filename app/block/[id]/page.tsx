@@ -5,8 +5,8 @@ import { fira } from '@/app/styles/fonts'
 import Link from "next/link"
 import { InformationCircleIcon, Square2StackIcon } from "@heroicons/react/24/outline"
 import Table, { TableType } from "@/app/ui/table"
-import { isHash, isNum, formatToBlockDisplay, timestampElapsedTime, formatTxTableRow, formatToCoinbaseDisplay } from "@/app/utils"
-import { BlockDisplay, Coinbase, CoinbaseDisplay, FetchedBlock, IErrorInternal, Transaction, TxRow } from "@/app/interfaces"
+import { isHash, isNum, timestampElapsedTime, formatToCoinbaseDisplay } from "@/app/utils"
+import { BlockDisplay, Coinbase, CoinbaseDisplay, IErrorInternal, TxRow } from "@/app/interfaces"
 import { BLOCK_FIELDS, COINBASE_FIELDS } from "@/app/constants"
 import ErrorBlock from "@/app/ui/errorBlock"
 import {
@@ -15,6 +15,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/app/ui/tooltip"
+import { useBlock, useBlockTxs, useCoinbaseTx } from "@/app/utils/fetch.utils"
 
 const tabs = ['Overview', 'Transactions', 'Coinbase Transaction']
 
@@ -25,43 +26,11 @@ const helpIcon = 'h-4 w-4 text-gray-600 hover:cursor-help'
 
 export default function Page({ params }: { params: { id: string } }) {
   const [activeTab, setActiveTab] = useState<string>(tabs[0]) // Active tab
-  const [blockDisplay, setBlockDisplay] = useState<BlockDisplay | undefined>(undefined) // Block data
-  const [txs, setTxs] = useState<TxRow[] | undefined>(undefined) // Block transaction data
   const [found, setFound] = useState<boolean | undefined>(undefined) // If block has been found
 
-  // The block information is being pulled here (and block txs)
-  useEffect(() => {
-    if (isHash(params.id) || isNum(params.id)) {
-      fetch(`/api/block/${params.id}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }).then(async response => {
-        const data = await response.json()
-        if (data.content) {
-          const blockDisplay: BlockDisplay = formatToBlockDisplay(data.content as FetchedBlock)
-          setBlockDisplay(blockDisplay)
-          setFound(true)
-        } else
-          setFound(false)
-      })
-
-      fetch(`/api/blockTxs/${params.id}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }).then(async response => {
-        const data = await response.json()
-        if (data.content) {
-          const txRows: TxRow[] = data.content.transactions.map((tx: Transaction) => formatTxTableRow(tx))
-          setTxs(txRows)
-        }
-      })
-    } else
-      setFound(false)
-  }, [params.id])
+  const id = isHash(params.id) || isNum(params.id) ? params.id : undefined
+  const blockDisplay: BlockDisplay | undefined = useBlock(id) // Block data
+  let txRows: TxRow[] | undefined = useBlockTxs(id) // Block transaction data
 
   return (
     <>
@@ -79,7 +48,7 @@ export default function Page({ params }: { params: { id: string } }) {
             </div>
             {/** Transactions */}
             <div onClick={() => { if (blockDisplay != undefined) setActiveTab(tabs[1]) }} className={`${activeTab == tabs[1] ? 'font-semibold border-b-2 border-gray-500' : ''} w-auto mx-2 px-2 pt-4 text-xs text-gray-600 border-gray-300 hover:border-b-2 hover:font-semibold hover:cursor-pointer flex flex-row align-middle justify-center`}>
-              {tabs[1]} {blockDisplay != undefined && txs != undefined && <div className="w-6 h-4 ml-2 bg-gray-300 rounded-t-xl rounded-b-xl"><p className={`w-fit ml-auto mr-auto font-semibold text-xs ${fira.className}`}>{txs.length}</p></div>}
+              {tabs[1]} {blockDisplay != undefined && txRows != undefined && <div className="w-6 h-4 ml-2 bg-gray-300 rounded-t-xl rounded-b-xl"><p className={`w-fit ml-auto mr-auto font-semibold text-xs ${fira.className}`}>{txRows.length}</p></div>}
             </div>
             {/** Coinbase Transactions */}
             <div onClick={() => { if (blockDisplay != undefined) setActiveTab(tabs[2]) }} className={`${activeTab == tabs[2] ? 'font-semibold border-b-2 border-gray-500' : ''} w-auto mx-2 px-2 pt-4 text-xs text-gray-600 border-gray-300 hover:border-b-2 hover:font-semibold hover:cursor-pointer flex flex-row align-middle justify-center`}>
@@ -95,9 +64,9 @@ export default function Page({ params }: { params: { id: string } }) {
           </div >
           {/** Transactions */}
           <div className={`${activeTab == tabs[1] ? 'block' : 'hidden'} w-full h-auto pb-2`}>
-            {blockDisplay != undefined && txs != undefined && txs?.length > 0 &&
-              <div className="px-2 pb-2"><Table type={TableType.tx} rows={txs} short={true} /></div>
-            }{txs != undefined && txs.length == 0 &&
+            {blockDisplay != undefined && txRows != undefined && txRows?.length > 0 &&
+              <div className="px-2 pb-2"><Table type={TableType.tx} rows={txRows} short={true} /></div>
+            }{txRows != undefined && txRows.length == 0 &&
               <div className="ml-auto mb-4 mr-auto p-4 font-thin border-t border-gray-200 shadow-sm bg-white">
                 <Typography variant='paragraph' className='font-thin text-gray-800 ml-auto mr-auto py-2 w-fit'>No transactions</Typography>
               </div>
@@ -106,7 +75,9 @@ export default function Page({ params }: { params: { id: string } }) {
           {/** Coinbase Transaction */}
           <div className={`${activeTab == tabs[2] ? 'block' : 'hidden'} w-full h-auto`}>
             <Card className='min-h-fit w-full border-gray-300'>
-              <CoinbaseTx tx={blockDisplay?.miningTxHash} />
+              {blockDisplay?.miningTxHash != undefined &&
+                <CoinbaseTx tx={blockDisplay.miningTxHash} />
+              }
             </Card>
           </div >
         </Card >
@@ -363,25 +334,8 @@ function List({ blockInfo }: { blockInfo: BlockDisplay | undefined }) {
 
 // Needs cleanup, quick implementation
 function CoinbaseTx({ tx }: { tx: string | undefined }) {
-
-  const [coinbaseTx, setCoinbaseTx] = useState<CoinbaseDisplay | undefined>(undefined)
-
-  useEffect(() => {
-    if (tx != undefined) {
-      fetch(`/api/item/${tx}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }).then(async response => {
-        const data = await response.json()
-        if (data.content) {
-          const coinbaseDisplay: CoinbaseDisplay = formatToCoinbaseDisplay(data.content.Transaction as Coinbase)
-          setCoinbaseTx(coinbaseDisplay)
-        }
-      })
-    }
-  }, [tx])
+  const coinbaseResult = useCoinbaseTx(tx)
+  const coinbaseTx: CoinbaseDisplay | undefined = coinbaseResult
 
   return (
     <TooltipProvider delayDuration={100}>

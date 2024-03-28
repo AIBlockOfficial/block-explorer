@@ -127,7 +127,7 @@ export function transaction(hash: string) {
 export function fetchItem(hash: string) {
     return fetch(`${STORAGE_URL}${IAPIRoute.BlockchainEntry}`, {
         method: 'POST',
-        body: JSON.stringify(hash),
+        body: JSON.stringify([hash]),
         headers: {
             'Content-Type': 'application/json',
             'x-cache-id': generateRandomString(),
