@@ -12,8 +12,10 @@ export function isHash(value: string): boolean {
     } else if (value[0] == 'g') {
         const hashRegex = /^[a-fgA-F0-9]{32}$/
         return hashRegex.test(value)
+    } else { // address hash
+        const hashRegex = /^[a-fgA-F0-9]{64}$/
+        return hashRegex.test(value)
     }
-    return false
 }
 
 /**

@@ -1,5 +1,5 @@
 /** ------------ DATA FORMAT ------------ */
-import { BlockDisplay, BlockRow, TxRow, TransactionDisplay, StackDisplay, TokenDisplay, ItemDisplay, OutputType, Block, Transaction, FetchedBlock, FetchedTransaction, In, Out, StackData, InputDisplay, CoinbaseDisplay, Coinbase } from '@/app/interfaces'
+import { BlockDisplay, BlockRow, TxRow, TransactionDisplay, StackDisplay, TokenDisplay, ItemDisplay, OutputType, Block, Transaction, FetchedBlock, FetchedTransaction, In, Out, StackData, InputDisplay, CoinbaseDisplay, Coinbase, AddressDisplay } from '@/app/interfaces'
 import { getUnicornSeed, getUnicornWitness, tokenValue } from './display.utils'
 import { TOKEN_CURRENCY } from '@/app/constants'
 
@@ -101,11 +101,14 @@ export const formatToTxDisplay = (transaction: FetchedTransaction): TransactionD
  * @param block
  * @returns Transaction row for table display
  */
-export const formatTxTableRow = (tx: Transaction): TxRow => {
+export const formatTxTableRow = (tx: Transaction | any): TxRow => {
+  let type = tx.txType 
+  if(!type) // Quick fix, needs to be changed on explorer-backend
+    type = tx.outs[0].valueType == 'token' ? OutputType.Token : OutputType.Item
   const txRow = {
     txHash: tx.hash,
     blockHash: tx.blockHash,
-    type: tx.txType ? tx.txType : 'n/a',
+    type: type ? type : 'n/a',
     address: '-',
     age: tx.timestamp,
   } as TxRow
@@ -114,11 +117,25 @@ export const formatTxTableRow = (tx: Transaction): TxRow => {
 
 export const formatToCoinbaseDisplay = (tx: Coinbase): CoinbaseDisplay => {
   const coinbase = {
-    tokens: tokenValue(tx.outputs[0].value.Token),
+    tokens: tokenValue(tx.outputs[0].value.Token) + ' ' + TOKEN_CURRENCY,
     fractionatedTokens: tx.outputs[0].value.Token.toString(),
     locktime: tx.outputs[0].locktime.toString(),
     version: tx.version.toString(),
     scriptPubKey: tx.outputs[0].script_public_key,
   } as CoinbaseDisplay
   return coinbase
+}
+
+/**
+ * Format address data for display
+ * @param address fetched address
+ * @returns formatted address for display
+ */
+export const formatToAddressDisplay = (id: string, address: {balance: string}): AddressDisplay => {
+  const blockInfo: AddressDisplay = {
+    hash: id,
+    balance: tokenValue(parseInt(address.balance)) + ' ' + TOKEN_CURRENCY,
+    fractionatedTokens: address.balance
+  }
+  return blockInfo
 }

@@ -1,8 +1,8 @@
 import useSWR from "swr"
 import useSWRInfinite from 'swr/infinite'
 import { ITEMS_PER_CHUNK, ITEMS_PER_PAGE_SHORT } from "@/app/constants"
-import { Block, BlockDisplay, BlockRow, BlocksResult, Coinbase, CoinbaseDisplay, FetchedBlock, FetchedTransaction, Transaction, TransactionDisplay, TransactionsResult, TxRow } from "@/app/interfaces"
-import { formatBlockTableRow, formatToBlockDisplay, formatToCoinbaseDisplay, formatToTxDisplay, formatTxTableRow } from "./data.utils"
+import { AddressDisplay, Block, BlockDisplay, BlockRow, BlocksResult, Coinbase, CoinbaseDisplay, FetchedBlock, FetchedTransaction, Transaction, TransactionDisplay, TransactionsResult, TxRow } from "@/app/interfaces"
+import { formatBlockTableRow, formatToAddressDisplay, formatToBlockDisplay, formatToCoinbaseDisplay, formatToTxDisplay, formatTxTableRow } from "./data.utils"
 
 const fetcher = (url: any) => fetch(url).then(r => r.json())
 
@@ -150,4 +150,27 @@ export const useCirculatingSupply = (): number | undefined => {
         }
     }
     return undefined
+}
+
+export const useAddress = (id: string): AddressDisplay | undefined | null => {
+    const { data } = useSWR(`/api/address/${id}`, config)
+    if (data != undefined) {
+        if (data.content) {
+            const addressDisplay: AddressDisplay = formatToAddressDisplay(id, data.content)
+            return addressDisplay
+        } else
+            return null
+    }
+    return undefined
+}
+
+export const useAddressTxs = (id: string): TxRow[] => {
+    const { data } = useSWR(`/api/addressTxs/${id}`, config)
+    if (data != undefined) {
+        if (data.content) {
+            const txRows: TxRow[] = data.content.transactions.map((tx: Transaction) => formatTxTableRow(tx))
+            return txRows
+        }
+    }
+    return []
 }

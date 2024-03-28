@@ -96,6 +96,12 @@ export interface ItemDisplay {
     metadata: string
 }
 
+export interface AddressDisplay {
+    hash: string,
+    balance: string,
+    fractionatedTokens: string,
+}
+
 /* -------------------------------------------------------------------------- */
 /*                     Data from explorer backend                             */
 /* -------------------------------------------------------------------------- */
