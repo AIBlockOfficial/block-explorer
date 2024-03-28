@@ -33,6 +33,7 @@ export default function Searchbar() {
                 router.push(`/block/${input}`)
             if (input[0] == 'g') // tx hash
                 router.push(`/transaction/${input}`)
+            router.push(`/address/${input}`)
         } else if (isNum(input))
             router.push(`/block/${input}`)
         else if (isGenesisTx(input))

@@ -1,5 +1,5 @@
 /** ------------ DISPLAY FORMAT ------------ */
-import { TOKEN_FRACTION } from "../constants"
+import { TOKEN_FRACTION } from "@/app/constants"
 
 /**
  * Gets all numbers from the start value to the end value, inclusive
@@ -18,7 +18,7 @@ export const getRange = (start: number = 0, end: number = 9) => {
  * @returns hash string in shortened format
  */
 export function shortenHash(string: string): string {
-  return string.slice(0, 5) + '...' + string.slice(string.length - 4, string.length)
+    return string.slice(0, 5) + '...' + string.slice(string.length - 4, string.length)
 }
 
 /**

@@ -6,7 +6,7 @@ import { IErrorInternal, InputDisplay, ItemDisplay, OutputType, TokenDisplay, Tr
 import { Card, Typography } from "@material-tailwind/react"
 import { InformationCircleIcon, Square2StackIcon } from "@heroicons/react/24/outline"
 import { fira } from '@/app/styles/fonts'
-import { formatToTxDisplay, isGenesisTx, isHash } from "@/app/utils"
+import { isGenesisTx, isHash, useRawTransaction, useTransaction } from "@/app/utils"
 import { TXS_FIELDS, TXS_IN_FIELDS, TXS_IT_OUT_FIELDS, TXS_TK_OUT_FIELDS } from "@/app/constants"
 import { CountBadge } from "@/app/ui/countBadge"
 import {
@@ -23,34 +23,20 @@ const col3 = 'pl-4 py-4 w-fit'
 const helpIcon = 'h-4 w-4 text-gray-600 hover:cursor-help'
 
 export default function Page({ params }: { params: { id: string } }) {
-  const [activeTab, setActiveTab] = useState(tabs[0]) // Active tab
-  const [rawData, setRawData] = useState<string | undefined>(undefined) // Transaction raw data
-  const [txDisplay, setTxDisplay] = useState<TransactionDisplay | undefined>(undefined) // Transaction data
-  const [found, setFound] = useState<boolean | undefined>(undefined) // If block has been found
 
-  // The transaction information is being pulled here
+  const [activeTab, setActiveTab] = useState(tabs[0]) // Active tab
+  const [found, setFound] = useState<boolean | undefined>(undefined) // If transaction has been found
+
+  const id = isHash(params.id) || isGenesisTx(params.id) ? params.id : ''
+  const txDisplay: TransactionDisplay | undefined | null = useTransaction(id) // Transaction data
+  const rawData: string | undefined = useRawTransaction(id) // Transaction raw data
+
   useEffect(() => {
-    if (isHash(params.id) || isGenesisTx(params.id)) { // is a hash
-      fetch(`/api/transaction/${params.id}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }).then(async response => {
-        const data = await response.json()
-        if (data.content) {
-          setRawData(data.content)
-          const transactionInfo: TransactionDisplay = formatToTxDisplay(data.content)
-          setTxDisplay(transactionInfo)
-          setFound(true)
-        } else {
-          setFound(false)
-        }
-      })
-    } else {
+    if (id == undefined || txDisplay === null)
       setFound(false)
-    }
-  }, [params.id])
+    else if (txDisplay != undefined)
+      setFound(true)
+  }, [txDisplay])
 
   return (
     <>
@@ -79,7 +65,7 @@ export default function Page({ params }: { params: { id: string } }) {
           <TooltipProvider delayDuration={100}>
             <div className={`${activeTab == tabs[0] ? 'block' : 'hidden'} w-full h-auto`}>
               <Card className='min-h-fit w-full border-gray-300'>
-                <List txInfo={txDisplay} />
+                <List txInfo={txDisplay ? txDisplay : undefined} />
               </Card>
             </div>
             <div className={`${activeTab == tabs[1] ? 'block' : 'hidden'} w-full h-auto`}>
@@ -208,7 +194,7 @@ function Outputs({ txOutputs }: { txOutputs: TokenDisplay[] | ItemDisplay[] }) {
                       </Typography>
                     </td>
                     <td className={`${col3}`}>
-                      <Typography as={Link} href={`#`} variant='small' className={`w-fit text-blue-900 ${fira.className} hover:underline`}>
+                      <Typography as={Link} href={`/address/${output.address}`} variant='small' className={`w-fit text-blue-900 ${fira.className} hover:underline`}>
                         {output.address}
                       </Typography>
                     </td>

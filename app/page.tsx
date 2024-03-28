@@ -1,56 +1,26 @@
 "use client"
-import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Table, { TableType } from '@/app/ui/table'
 import StatCard from '@/app/ui/statCard'
-import { CubeIcon } from "@heroicons/react/24/outline"
-import { ArrowsRightLeftIcon } from "@heroicons/react/24/outline"
-import { Block, BlockRow, Transaction, TxRow } from '@/app/interfaces'
-import { formatBlockTableRow, formatTxTableRow } from "@/app/utils"
-import { ITEMS_PER_PAGE_SHORT } from '@/app/constants'
+import { CubeIcon, ArrowsRightLeftIcon, ArrowPathIcon} from "@heroicons/react/24/outline"
+import { BlockRow, TxRow } from '@/app/interfaces'
+import { useCirculatingSupply, useShortBlockRows, useShortTxRows } from './utils/fetch.utils'
 
 export default function Page() {
-  const [latestBlockNum, setLatestBlockNum] = useState<number>() // Total number of blocks to display in card
-  const [latestTxNum, setLatestTxNum] = useState<number>() // Total number of transactions to display in card
-  const [blocksData, setBlocksData] = useState<BlockRow[]>([]) // Short table block row data
-  const [txsData, setTxsData] = useState<TxRow[]>([]) // Short table transaction row data
-
-  useEffect(() => {
-    // Fetch blocks
-    fetch(`api/blocks?limit=${ITEMS_PER_PAGE_SHORT}&offset=0`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }).then(async response => {
-      const data = await response.json()
-      if (data.content) {
-        setLatestBlockNum(data.content.pagination.total)
-        const blocksRows: BlockRow[] = data.content.blocks.map((block: Block) => formatBlockTableRow(block)) // Currently used await because nb tx of each block is fetched
-        setBlocksData(blocksRows)
-      }
-    })
-    // Fetch transactions
-    fetch(`api/transactions?limit=${ITEMS_PER_PAGE_SHORT}&offset=0`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }).then(async response => {
-      const data = await response.json()
-      if (data.content) {
-        setLatestTxNum(data.content.pagination.total)
-        const txRows: TxRow[] = data.content.transactions.map((tx: Transaction) => formatTxTableRow(tx))
-        setTxsData(txRows)
-      }
-    })
-  }, [])
+  const blocksResult = useShortBlockRows() 
+  const blocksData: BlockRow[] = blocksResult.blockRows // Short table block row data
+  const latestBlockNum: number | undefined = blocksResult.number // Total number of blocks to display in card
+  const txsResult = useShortTxRows()
+  const txsData: TxRow[] = txsResult.txRows // Short table transaction row data
+  const latestTxNum: number | undefined = txsResult.number // Total number of transactions to display in card
+  const circulatingSupply = useCirculatingSupply()
 
   return (
     <>
       <div className="flex p-4 justify-evenly flex-wrap">
-        <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Blocks'} value={latestBlockNum ? latestBlockNum : undefined} icon={<CubeIcon className='card-icons' />} href={'/blocks'} /></div>
-        <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Transactions'} value={latestTxNum ? latestTxNum : undefined} icon={<ArrowsRightLeftIcon className='card-icons' />} href={'/transactions'} /></div>
+        <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Blocks'} value={latestBlockNum} icon={<CubeIcon className='card-icons' />} href={'/blocks'} /></div>
+        <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Transactions'} value={latestTxNum} icon={<ArrowsRightLeftIcon className='card-icons' />} href={'/transactions'} /></div>
+        <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Circulating supply'} value={circulatingSupply} icon={<ArrowPathIcon className='card-icons' />} href={'#'} /></div>
       </div>
       <div className="flex p-4 justify-evenly flex-wrap">
         <div className='p-2 md:w-1/2 sm:w-full'>

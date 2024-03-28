@@ -96,12 +96,23 @@ export interface ItemDisplay {
     metadata: string
 }
 
+export interface AddressDisplay {
+    hash: string,
+    balance: string,
+    fractionatedTokens: string,
+}
+
 /* -------------------------------------------------------------------------- */
 /*                     Data from explorer backend                             */
 /* -------------------------------------------------------------------------- */
 
 export interface BlocksResult {
     blocks: Block[]
+    pagination: Pagination
+}
+
+export interface TransactionsResult {
+    transactions: Transaction[]
     pagination: Pagination
 }
 

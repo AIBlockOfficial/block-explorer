@@ -27,8 +27,8 @@ export function block(id: string) {
     return fetch(`${EXP_BACKEND}${IAPIRoute.Block}/${id}`, {
         method: 'GET',
         headers: {
-            'Content-Type': 'application/json', 
-        } 
+            'Content-Type': 'application/json',
+        }
     }).then((response) => {
         if (response.status == 200)
             return Promise.resolve(response.json())
@@ -64,7 +64,7 @@ export function blocks(limit: string, offset: string) {
  * @param id {string} - hash or number of the block to fetch
  */
 export function blockTxs(id: string) {
-    return fetch(`${EXP_BACKEND}${IAPIRoute.Block}/${id}/transactions`, {
+    return fetch(`${EXP_BACKEND}${IAPIRoute.Block}/${id}${IAPIRoute.Transactions}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -73,7 +73,7 @@ export function blockTxs(id: string) {
         if (response.status == 200)
             return Promise.resolve(response.json())
         else
-            return Promise.reject({ reason: response.statusText, status: response.status, route: IAPIRoute.Block })
+            return Promise.reject({ reason: response.statusText, status: response.status, route: IAPIRoute.Block + IAPIRoute.Transactions })
     })
 }
 
@@ -127,7 +127,7 @@ export function transaction(hash: string) {
 export function fetchItem(hash: string) {
     return fetch(`${STORAGE_URL}${IAPIRoute.BlockchainEntry}`, {
         method: 'POST',
-        body: JSON.stringify(hash),
+        body: JSON.stringify([hash]),
         headers: {
             'Content-Type': 'application/json',
             'x-cache-id': generateRandomString(),
@@ -139,6 +139,61 @@ export function fetchItem(hash: string) {
         else
             return Promise.reject({ reason: response.statusText, status: response.status, route: IAPIRoute.BlockchainEntry })
     });
+}
+
+/**
+ * Fetches address balance with a hash
+ * 
+ * @param id {string} - hash of the address to fetch
+ */
+export function address(id: string) {
+    return fetch(`${EXP_BACKEND}${IAPIRoute.Address}/${id}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    }).then((response) => {
+        if (response.status == 200)
+            return Promise.resolve(response.json())
+        else
+            return Promise.reject({ reason: response.statusText, status: response.status, route: IAPIRoute.Address })
+    })
+}
+
+/**
+ * Fetches address transactions with a hash
+ * 
+ * @param id {string} - hash of the address to fetch
+ */
+export function addressTxs(id: string) {
+    return fetch(`${EXP_BACKEND}${IAPIRoute.Address}/${id}${IAPIRoute.Transactions}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    }).then((response) => {
+        if (response.status == 200)
+            return Promise.resolve(response.json())
+        else
+            return Promise.reject({ reason: response.statusText, status: response.status, route: IAPIRoute.Block + IAPIRoute.Transactions })
+    })
+}
+
+/**
+ * Fetches chain circulating supply
+ */
+export function circulatingSupply() {
+    return fetch(`${EXP_BACKEND}${IAPIRoute.CirculatingSupply}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    }).then((response) => {
+        if (response.status == 200)
+            return Promise.resolve(response.json())
+        else
+            return Promise.reject({ reason: response.statusText, status: response.status, route: IAPIRoute.CirculatingSupply })
+    })
 }
 
 /**
