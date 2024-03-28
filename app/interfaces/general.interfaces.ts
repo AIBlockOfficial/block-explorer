@@ -105,6 +105,11 @@ export interface BlocksResult {
     pagination: Pagination
 }
 
+export interface TransactionsResult {
+    transactions: Transaction[]
+    pagination: Pagination
+}
+
 export interface Block {
     hash: string
     num: number

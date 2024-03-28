@@ -1,7 +1,7 @@
 /** ------------ DATA FORMAT ------------ */
 import { BlockDisplay, BlockRow, TxRow, TransactionDisplay, StackDisplay, TokenDisplay, ItemDisplay, OutputType, Block, Transaction, FetchedBlock, FetchedTransaction, In, Out, StackData, InputDisplay, CoinbaseDisplay, Coinbase } from '@/app/interfaces'
-import { getUnicornSeed, getUnicornWitness, tokenValue } from '@/app/utils'
-import { TOKEN_CURRENCY } from '../constants'
+import { getUnicornSeed, getUnicornWitness, tokenValue } from './display.utils'
+import { TOKEN_CURRENCY } from '@/app/constants'
 
 /** ------------ BLOCKS ------------ */
 /**
@@ -71,7 +71,7 @@ export const formatToTxDisplay = (transaction: FetchedTransaction): TransactionD
             } as StackDisplay
           })
         }
-      }as InputDisplay
+      } as InputDisplay
     }),
     outputs: type == OutputType.Token ? transaction.outs.map((output: Out) => {
       return { // Token
