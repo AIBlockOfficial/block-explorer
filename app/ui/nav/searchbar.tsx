@@ -4,6 +4,12 @@ import { useRouter, usePathname } from 'next/navigation'
 import { Input } from "@material-tailwind/react"
 import { MagnifyingGlassCircleIcon } from '@heroicons/react/24/outline'
 import { isGenesisTx, isHash, isNum } from "@/app/utils"
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/app/ui/tooltip"
 
 export default function Searchbar() {
     const router = useRouter()
@@ -64,18 +70,39 @@ export default function Searchbar() {
             {displayAlert &&
                 <Alert />
             }
-            <Input
-                label="Search"
-                icon={<MagnifyingGlassCircleIcon onClick={() => search()} className="hidden lg:block text-gray-500 hover:text-gray-900 hover:cursor-pointer active:w-4 active:h-4 active:rounded-lg active:text-gray-500" />}
-                placeholder="Search"
-                value={input}
-                className="hidden lg:block max-w-sm !border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:text-gray-500 focus:!border-gray-200 focus:!border-t-gray-200 focus:ring-gray-900/10"
-                labelProps={{
-                    className: "hidden",
-                }}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                containerProps={{ className: "min-w-0" }} />
+            <TooltipProvider delayDuration={100}>
+                <Tooltip>
+                    <TooltipTrigger>
+                        <Input
+                            label="Search"
+                            icon={<MagnifyingGlassCircleIcon onClick={() => search()} className="hidden lg:block text-gray-500 hover:text-gray-900 hover:cursor-pointer active:w-4 active:h-4 active:rounded-lg active:text-gray-500" />}
+                            placeholder="Search"
+                            value={input}
+                            className="hidden lg:block max-w-sm !border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:text-gray-500 focus:!border-gray-200 focus:!border-t-gray-200 focus:ring-gray-900/10"
+                            labelProps={{
+                                className: "hidden",
+                            }}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            containerProps={{ className: "min-w-0" }} />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        {'Search Blocks, Transactions or Addresses.'}
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider >
         </>
     )
 }
+
+{/* <TooltipProvider delayDuration={100}>
+<Tooltip>
+  <TooltipTrigger><InformationCircleIcon className={'h-4 w-4  text-green-900 hover:cursor-help'} /></TooltipTrigger>
+  <TooltipContent>
+    {'Currently on Testnet. Mainnet is not available at this time.'}
+  </TooltipContent>
+</Tooltip>
+</TooltipProvider>
+<Typography variant='small' className={`w-fit text-green-900 text-center ${fira.className} px-1`}>
+{"Testnet".toUpperCase()}
+</Typography> */}
