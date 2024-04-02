@@ -20,7 +20,7 @@ export default function Page() {
       <div className="flex p-4 justify-evenly flex-wrap">
         <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Blocks'} value={latestBlockNum} icon={<CubeIcon className='card-icons' />} href={'/blocks'} /></div>
         <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Transactions'} value={latestTxNum} icon={<ArrowsRightLeftIcon className='card-icons' />} href={'/transactions'} /></div>
-        <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Circulating supply'} value={circulatingSupply} icon={<ArrowPathIcon className='card-icons' />} href={'#'} /></div>
+        <div className='p-2 md:w-1/3 sm:w-full'><StatCard title={'Circulating supply'} value={circulatingSupply} icon={<ArrowPathIcon className='card-icons' />} /></div>
       </div>
       <div className="flex p-4 justify-evenly flex-wrap">
         <div className='p-2 md:w-1/2 sm:w-full'>
