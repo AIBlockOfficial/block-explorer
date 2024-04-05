@@ -43,8 +43,8 @@ export function block(id: string) {
  * @param limit {string}  - amount to fetch from latest block
  * @param offset {string} - offset from latest block 
  */
-export function blocks(limit: string, offset: string) {
-    return fetch(`${EXP_BACKEND}${IAPIRoute.Blocks}?limit=${limit}&offset=${offset}`,
+export function blocks(limit: string, offset: string, order: string) {
+    return fetch(`${EXP_BACKEND}${IAPIRoute.Blocks}?limit=${limit}&offset=${offset}&order=${order}`,
         {
             method: 'GET',
             headers: {
