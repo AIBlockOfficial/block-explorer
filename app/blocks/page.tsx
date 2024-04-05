@@ -1,12 +1,15 @@
 'use client'
-import React, { useEffect } from "react"
+import React, { useEffect, useState, useContext } from "react"
 import Table, { TableType } from '@/app/ui/table'
 import { Typography } from "@material-tailwind/react"
 import { BlockRow } from "@/app/interfaces"
 import usePageBottom from "../hooks/usePageBottom";
 import { useInfiniteBlockRows } from "../utils/fetch.utils"
+import { ReverseFilterContext } from "../context/tableFiltersContext"
 
 export default function Page() {
+  const { reverse, setReverse } = useContext(ReverseFilterContext);
+
   const { blockRows, size, setSize } = useInfiniteBlockRows();
   const blocksList: BlockRow[] = blockRows
   const reachedBottom = usePageBottom()
