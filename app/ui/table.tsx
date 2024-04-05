@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import Link from 'next/link'
 import { shortenHash, timestampElapsedTime } from '@/app/utils'
 import { BlockRow, TxRow } from '@/app/interfaces'
@@ -6,6 +6,7 @@ import { Card, Typography } from '@material-tailwind/react'
 import { ChevronDownIcon, ChevronUpIcon, Square2StackIcon } from '@heroicons/react/24/outline'
 import { fira } from '@/app/styles/fonts'
 import { BLOCK_TABLE_HEADERS, ITEMS_PER_CHUNK, ITEMS_PER_PAGE_SHORT, TXS_TABLE_HEADERS } from '@/app/constants'
+import { ReverseFilterContext } from '../context/tableFiltersContext'
 
 export enum TableType {
     block = 'block',
@@ -17,7 +18,7 @@ const row_spacing = `px-4 py-3`
  * Table header
  */
 function Headers({ headers, short }: { headers: string[], short?: boolean }) {
-    const [reversed, setReversed] = useState(short)
+    const { reversed, setReversed } = useContext(ReverseFilterContext);
     
     let result: JSX.Element[] = []
     headers.map((head, i) => {
@@ -38,10 +39,10 @@ function Headers({ headers, short }: { headers: string[], short?: boolean }) {
                 {!short && i == headers.length - 1 &&
                     <div className='ml-4'>
                         {!reversed &&
-                            <ChevronDownIcon onClick={() => setReversed(!reversed)} className="h-4 w-4 text-gray-500 bg-gray-300 rounded-sm hover:cursor-pointer" />
+                            <ChevronUpIcon onClick={() => setReversed(!reversed)} className="h-4 w-4 text-gray-500 bg-gray-300 rounded-sm hover:cursor-pointer" />
                         }
                         {reversed &&
-                            <ChevronUpIcon onClick={() => setReversed(!reversed)} className="h-4 w-4 text-gray-500 bg-gray-300 rounded-sm hover:cursor-pointer" />
+                            <ChevronDownIcon onClick={() => setReversed(!reversed)} className="h-4 w-4 text-gray-500 bg-gray-300 rounded-sm hover:cursor-pointer" />
                         }
                     </div>
                 }

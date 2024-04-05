@@ -1,11 +1,11 @@
 import React, { Dispatch, SetStateAction } from "react";
 
 interface IReverseFilterContext {
-  reverse: boolean;
-  setReverse: Dispatch<SetStateAction<boolean>>;
+  reversed: boolean;
+  setReversed: Dispatch<SetStateAction<boolean>>;
 }
 
 export const ReverseFilterContext = React.createContext<IReverseFilterContext>({
-  reverse: false,
-  setReverse: () => { }
+  reversed: false,
+  setReversed: () => { }
 });
