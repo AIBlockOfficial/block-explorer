@@ -83,8 +83,8 @@ export function blockTxs(id: string) {
  * @param limit {string}  - amount to fetch from latest transaction
  * @param offset {string} - offset from latest transaction 
  */
-export function transactions(limit: string, offset: string) {
-    return fetch(`${EXP_BACKEND}${IAPIRoute.Transactions}?limit=${limit}&offset=${offset}`,
+export function transactions(limit: string, offset: string, order: string) {
+    return fetch(`${EXP_BACKEND}${IAPIRoute.Transactions}?limit=${limit}&offset=${offset}&order=${order}`,
         {
             method: 'GET',
             headers: {
