@@ -69,7 +69,7 @@ export const useRawTransaction = (id: string): any | undefined => {
 }
 
 export const useShortBlockRows = (): { blockRows: BlockRow[], number: number | undefined } => {
-    const { data } = useSWR(`api/blocks?limit=${ITEMS_PER_PAGE_SHORT}&offset=0`, config)
+    const { data } = useSWR(`api/blocks?limit=${ITEMS_PER_PAGE_SHORT}&offset=0&order=desc`, config)
     if (data != undefined) {
         if (data.content) {
             const blocksRows: BlockRow[] = data.content.blocks.map((block: Block) => formatBlockTableRow(block)) // Currently used await because nb tx of each block is fetched
@@ -80,7 +80,7 @@ export const useShortBlockRows = (): { blockRows: BlockRow[], number: number | u
 }
 
 export const useShortTxRows = (): { txRows: TxRow[], number: number | undefined } => {
-    const { data } = useSWR(`api/transactions?limit=${ITEMS_PER_PAGE_SHORT}&offset=0`, config)
+    const { data } = useSWR(`api/transactions?limit=${ITEMS_PER_PAGE_SHORT}&offset=0&order=desc`, config)
     if (data != undefined) {
         if (data.content) {
             const txRows: TxRow[] = data.content.transactions.map((tx: Transaction) => formatTxTableRow(tx))
