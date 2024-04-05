@@ -4,7 +4,7 @@ import Table, { TableType } from '@/app/ui/table'
 import { Typography } from "@material-tailwind/react"
 import { BlockRow } from "@/app/interfaces"
 import usePageBottom from "../hooks/usePageBottom";
-import { useInfBlockRows, useReversedInfBlockRows } from "../utils/fetch.utils"
+import { useInfBlockRows } from "../utils/fetch.utils"
 import { ReverseFilterContext } from "../context/tableFiltersContext"
 
 export default function Page() {
