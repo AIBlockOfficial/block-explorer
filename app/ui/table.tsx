@@ -1,11 +1,12 @@
-import React from 'react'
+import React, { useContext, useState } from 'react'
 import Link from 'next/link'
 import { shortenHash, timestampElapsedTime } from '@/app/utils'
 import { BlockRow, TxRow } from '@/app/interfaces'
 import { Card, Typography } from '@material-tailwind/react'
-import { Square2StackIcon } from '@heroicons/react/24/outline'
+import { ChevronDownIcon, ChevronUpIcon, Square2StackIcon } from '@heroicons/react/24/outline'
 import { fira } from '@/app/styles/fonts'
 import { BLOCK_TABLE_HEADERS, ITEMS_PER_CHUNK, ITEMS_PER_PAGE_SHORT, TXS_TABLE_HEADERS } from '@/app/constants'
+import { ReverseFilterContext } from '../context/tableFiltersContext'
 
 export enum TableType {
     block = 'block',
@@ -16,7 +17,9 @@ const row_spacing = `px-4 py-3`
 /**
  * Table header
  */
-function Headers({ headers }: { headers: string[] }) {
+function Headers({ headers, short }: { headers: string[], short?: boolean }) {
+    const { reversed, setReversed } = useContext(ReverseFilterContext);
+    
     let result: JSX.Element[] = []
     headers.map((head, i) => {
         result.push(
@@ -24,7 +27,7 @@ function Headers({ headers }: { headers: string[] }) {
                 className={
                     `border-b border-gray-200 bg-gray-100 p-4
             ${i == 0 ? 'rounded-tl-sm' : ''} 
-            ${i == headers.length - 1 ? 'rounded-tr-sm' : ''}`
+            ${i == headers.length - 1 ? 'rounded-tr-sm flex flex-row' : ''}`
                 }>
                 <Typography
                     variant='small'
@@ -32,6 +35,17 @@ function Headers({ headers }: { headers: string[] }) {
                 >
                     {head}
                 </Typography>
+
+                {!short && i == headers.length - 1 &&
+                    <div className='ml-4'>
+                        {!reversed &&
+                            <ChevronUpIcon onClick={() => setReversed(!reversed)} className="h-4 w-4 text-gray-500 bg-gray-300 rounded-sm hover:cursor-pointer" />
+                        }
+                        {reversed &&
+                            <ChevronDownIcon onClick={() => setReversed(!reversed)} className="h-4 w-4 text-gray-500 bg-gray-300 rounded-sm hover:cursor-pointer" />
+                        }
+                    </div>
+                }
             </th>
         )
     })
@@ -158,10 +172,10 @@ export default function Table({ rows, type, short }: { rows: BlockRow[] | TxRow[
                 <thead>
                     <tr>
                         {type == TableType.block &&
-                            <Headers headers={BLOCK_TABLE_HEADERS} />
+                            <Headers headers={BLOCK_TABLE_HEADERS} short={short} />
                         }
                         {type == TableType.tx &&
-                            <Headers headers={TXS_TABLE_HEADERS} />
+                            <Headers headers={TXS_TABLE_HEADERS} short={short} />
                         }
                     </tr>
                 </thead>

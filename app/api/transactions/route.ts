@@ -7,7 +7,8 @@ export async function GET(_req: NextRequest) {
     const url = new URL(_req.url)
     const limit = url.searchParams.get("limit")
     const offset = url.searchParams.get("offset")
-    const transactions = await chain.transactions(limit, offset)
+    const order = url.searchParams.get("order")
+    const transactions = await chain.transactions(limit, offset, order)
     return NextResponse.json({ content: transactions })
   } catch (error: any) {
     return NextResponse.json(

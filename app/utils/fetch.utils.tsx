@@ -69,7 +69,7 @@ export const useRawTransaction = (id: string): any | undefined => {
 }
 
 export const useShortBlockRows = (): { blockRows: BlockRow[], number: number | undefined } => {
-    const { data } = useSWR(`api/blocks?limit=${ITEMS_PER_PAGE_SHORT}&offset=0`, config)
+    const { data } = useSWR(`api/blocks?limit=${ITEMS_PER_PAGE_SHORT}&offset=0&order=desc`, config)
     if (data != undefined) {
         if (data.content) {
             const blocksRows: BlockRow[] = data.content.blocks.map((block: Block) => formatBlockTableRow(block)) // Currently used await because nb tx of each block is fetched
@@ -80,7 +80,7 @@ export const useShortBlockRows = (): { blockRows: BlockRow[], number: number | u
 }
 
 export const useShortTxRows = (): { txRows: TxRow[], number: number | undefined } => {
-    const { data } = useSWR(`api/transactions?limit=${ITEMS_PER_PAGE_SHORT}&offset=0`, config)
+    const { data } = useSWR(`api/transactions?limit=${ITEMS_PER_PAGE_SHORT}&offset=0&order=desc`, config)
     if (data != undefined) {
         if (data.content) {
             const txRows: TxRow[] = data.content.transactions.map((tx: Transaction) => formatTxTableRow(tx))
@@ -90,14 +90,20 @@ export const useShortTxRows = (): { txRows: TxRow[], number: number | undefined 
     return { txRows: [], number: undefined }
 }
 
-const getKeyBlocks = (index: number, previousPageData: { content: BlocksResult } | null): string | null => {
+const getDescKeyBlocks = (index: number, previousPageData: { content: BlocksResult } | null): string | null => {
     if (previousPageData && ((ITEMS_PER_CHUNK * index)) > previousPageData.content.pagination.total)
         return null // reached the end
-    return `api/blocks?limit=${ITEMS_PER_CHUNK}&offset=${(ITEMS_PER_CHUNK * index)}` // SWR key
+    return `api/blocks?limit=${ITEMS_PER_CHUNK}&offset=${(ITEMS_PER_CHUNK * index)}&order=desc` // SWR key
 }
 
-export const useInfiniteBlockRows = (): { blockRows: BlockRow[], size: number, setSize: Function } => {
-    const { data, size, setSize } = useSWRInfinite(getKeyBlocks, fetcher)
+const getAscKeyBlocks = (index: number, previousPageData: { content: BlocksResult } | null): string | null => {
+    if (previousPageData && ((ITEMS_PER_CHUNK * index)) > previousPageData.content.pagination.total)
+        return null // reached the end
+    return `api/blocks?limit=${ITEMS_PER_CHUNK}&offset=${(ITEMS_PER_CHUNK * index)}&order=asc` // SWR key
+}
+
+export const useInfBlockRows = (reversed: boolean): { blockRows: BlockRow[], size: number, setSize: Function } => {
+    const { data, size, setSize } = useSWRInfinite(!reversed ? getDescKeyBlocks : getAscKeyBlocks, fetcher)
     if (data != undefined) {
         if (data.length > 0) {
             let list = [];
@@ -116,14 +122,20 @@ export const useInfiniteBlockRows = (): { blockRows: BlockRow[], size: number, s
     return { blockRows: [], size, setSize }
 }
 
-const getKeyTxs = (index: number, previousPageData: { content: TransactionsResult } | null): string | null => {
+const getDescKeyTxs = (index: number, previousPageData: { content: TransactionsResult } | null): string | null => {
     if (previousPageData && ((ITEMS_PER_CHUNK * index)) > previousPageData.content.pagination.total)
         return null // reached the end
-    return `api/transactions?limit=${ITEMS_PER_CHUNK}&offset=${(ITEMS_PER_CHUNK * index)}` // SWR key
+    return `api/transactions?limit=${ITEMS_PER_CHUNK}&offset=${(ITEMS_PER_CHUNK * index)}&order=desc` // SWR key
 }
 
-export const useInfiniteTxRows = (): { txRows: TxRow[], size: number, setSize: Function } => {
-    const { data, size, setSize } = useSWRInfinite(getKeyTxs, fetcher)
+const getAscKeyTxs = (index: number, previousPageData: { content: TransactionsResult } | null): string | null => {
+    if (previousPageData && ((ITEMS_PER_CHUNK * index)) > previousPageData.content.pagination.total)
+        return null // reached the end
+    return `api/transactions?limit=${ITEMS_PER_CHUNK}&offset=${(ITEMS_PER_CHUNK * index)}&order=asc` // SWR key
+}
+
+export const useInfiniteTxRows = (reversed: boolean): { txRows: TxRow[], size: number, setSize: Function } => {
+    const { data, size, setSize } = useSWRInfinite(!reversed ? getDescKeyTxs : getAscKeyTxs, fetcher)
     if (data != undefined) {
         if (data.length > 0) {
             let list = [];
