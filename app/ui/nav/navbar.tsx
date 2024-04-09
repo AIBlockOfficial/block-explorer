@@ -10,7 +10,6 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import Logo from '@/app/static/full_logo.svg'
 import { fira } from '@/app/styles/fonts'
 import { Typography } from '@material-tailwind/react'
-import { InformationCircleIcon } from "@heroicons/react/24/outline"
 import {
   Tooltip,
   TooltipContent,
@@ -121,22 +120,22 @@ export default function Navbar() {
                 <div className=" min-w-0 mr-4">
                   <Searchbar />
                 </div>
-                <div className='px-2 flex flex-row bg-green-200 rounded-sm'>
-                  <TooltipProvider delayDuration={100}>
-                    <Tooltip>
-                      <TooltipTrigger><InformationCircleIcon className={'h-4 w-4  text-green-900 hover:cursor-help'} /></TooltipTrigger>
-                      <TooltipContent>
-                        {'Currently on Testnet. Mainnet is not available at this time.'}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                  <Typography variant='small' className={`w-fit text-green-900 text-center ${fira.className} px-1`}>
-                    {"Testnet".toUpperCase()}
-                  </Typography>
-                </div>
-                {/* <div className='px-2'>
-                  <SettingsDropdown />
-                </div> */}
+                <TooltipProvider delayDuration={100}>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <div className='px-2 flex flex-row bg-green-200 rounded-sm'>
+                        <a href='https://explorer.aiblock.dev/'>
+                          <TooltipContent>
+                            {'Click here to change to Testnet'}
+                          </TooltipContent>
+                          <Typography variant='small' className={`w-fit text-green-900 text-center ${fira.className} px-1`}>
+                            {"Mainnet".toUpperCase()}
+                          </Typography>
+                        </a>
+                      </div>
+                    </TooltipTrigger>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
             </div>
           </div>
@@ -162,7 +161,8 @@ export default function Navbar() {
             </div>
           </Disclosure.Panel>
         </>
-      )}
-    </Disclosure>
+      )
+      }
+    </Disclosure >
   )
 }
