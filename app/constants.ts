@@ -1,6 +1,8 @@
 /** NETWORK */
 export const STORAGE_URL = process.env.STORAGE_URL
 export const EXP_BACKEND = process.env.EXP_BACKEND_TESTNET
+export const NETWORK = process.env.NEXT_PUBLIC_NETWORK
+export const WEBSITE = process.env.NEXT_PUBLIC_WEBSITE
 
 /** BLOCKS */
 export const BLOCK_TABLE_HEADERS = ["Number", "Block Hash", "Previous Hash", "Nb of Tx", "Age"]
