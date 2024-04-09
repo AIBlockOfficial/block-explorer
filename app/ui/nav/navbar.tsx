@@ -16,6 +16,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/app/ui/tooltip"
+import { NETWORK, WEBSITE } from '@/app/constants'
 
 interface NavItems {
   name: string,
@@ -124,12 +125,12 @@ export default function Navbar() {
                   <Tooltip>
                     <TooltipTrigger>
                       <div className='px-2 flex flex-row bg-green-200 rounded-sm'>
-                        <a href='https://explorer.aiblock.dev/'>
+                        <a href={WEBSITE}>
                           <TooltipContent>
-                            {'Click here to change to Testnet'}
+                            {`Click here to change to ${WEBSITE == 'Mainnet' ? 'Mainnet' : 'Testnet'}`}
                           </TooltipContent>
                           <Typography variant='small' className={`w-fit text-green-900 text-center ${fira.className} px-1`}>
-                            {"Mainnet".toUpperCase()}
+                           {NETWORK ? NETWORK.toUpperCase() : ''}
                           </Typography>
                         </a>
                       </div>
