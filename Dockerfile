@@ -22,7 +22,7 @@ RUN \
   fi
 
 # Use distroless
-FROM cgr.dev/chainguard/node@sha256:39d19ad5086ede8bc9412e23ec80417c12bf39dfdd175e06eedd82b16527cbeb
+FROM cgr.dev/chainguard/node@latest
 
 ENV NODE_ENV production
 ENV PORT 3000
