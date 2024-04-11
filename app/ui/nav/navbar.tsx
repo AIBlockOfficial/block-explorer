@@ -16,7 +16,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/app/ui/tooltip"
-import { NETWORK, WEBSITE } from '@/app/constants'
+import env from '@beam-australia/react-env'
 
 interface NavItems {
   name: string,
@@ -45,9 +45,13 @@ export default function Navbar() {
   let router = useRouter()
   const pathname = usePathname()
   const [current, setCurrent] = useState(pathname)
-
+  const [NETWORK, setNetwork] = useState('')
+  const [WEBSITE, setWebsite] = useState('')
+  
   useEffect(() => {
     setCurrent(pathname)
+    setNetwork(env("NETWORK"))
+    setWebsite(env("WEBSITE"))
   }, [pathname])
 
   return (
