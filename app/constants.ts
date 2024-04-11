@@ -1,8 +1,10 @@
+import env from "@beam-australia/react-env";
+
 /** NETWORK */
-export const STORAGE_URL = process.env.STORAGE_URL
-export const EXP_BACKEND = process.env.EXP_BACKEND
-export const NETWORK = process.env.NEXT_PUBLIC_NETWORK
-export const WEBSITE = process.env.NEXT_PUBLIC_WEBSITE
+export const STORAGE_URL = env("STORAGE_URL")
+export const EXP_BACKEND = env("EXP_BACKEND")
+export const NETWORK = env("NETWORK")
+export const WEBSITE = env("WEBSITE")
 
 /** BLOCKS */
 export const BLOCK_TABLE_HEADERS = ["Number", "Block Hash", "Previous Hash", "Nb of Tx", "Age"]
