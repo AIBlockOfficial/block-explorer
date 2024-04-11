@@ -37,8 +37,9 @@ export default function Searchbar() {
         if (isHash(input)) {
             if (input[0] == 'b') // block hash
                 router.push(`/block/${input}`)
-            if (input[0] == 'g') // tx hash
+            else if (input[0] == 'g') // tx hash
                 router.push(`/transaction/${input}`)
+            else
             router.push(`/address/${input}`)
         } else if (isNum(input))
             router.push(`/block/${input}`)
