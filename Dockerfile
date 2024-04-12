@@ -14,11 +14,10 @@ RUN \
 # Copy and build for release
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED 1
-ARG BUILD_ENV
 RUN \
-  if [ -f yarn.lock ]; then yarn run build:${BUILD_ENV}; \
-  elif [ -f package-lock.json ]; then npm run build:${BUILD_ENV}; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build:${BUILD_ENV}; \
+  if [ -f yarn.lock ]; then yarn run build; \
+  elif [ -f package-lock.json ]; then npm run build; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
   else echo "Lockfile not found." && exit 1; \
   fi
 

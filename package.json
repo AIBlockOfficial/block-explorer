@@ -5,7 +5,7 @@
   "author": "AIBlock",
   "scripts": {
     "dev": "APP_ENV=development react-env --prefix NEXT_APP --env APP_ENV -- next",
-    "build:production": "next build",
+    "build": "next build",
     "start": "react-env --prefix NEXT_APP --env APP_ENV -- next start",
     "lint": "next lint",
     "prep": "react-env --prefix NEXT_APP --env APP_ENV"
