@@ -30,8 +30,13 @@ ENV HOSTNAME "0.0.0.0"
 
 USER node
 
-COPY --from=build /app/.next/standalone ./
-COPY --from=build /app/.next/static ./.next/static
+COPY --from=build /app/.next ./.next
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/package.json ./package.json
+COPY --from=build /app/.env.development ./.env.development
+COPY --from=build /app/.env.staging ./.env.staging
+COPY --from=build /app/.env.production ./.env.production
+COPY --from=build --chown=node:node /app/public ./public
 
-ENTRYPOINT ["node"]
-CMD ["server.js"]
+ENTRYPOINT ["/bin/sh", "-c"]
+CMD ["npm run prep && npm start"]

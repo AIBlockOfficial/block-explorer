@@ -8,7 +8,7 @@ The AIBlock explorer, for auditing and viewing the blockchain.
 
 ```
 npm install
-npm start dev
+npm run dev
 ```
 
 This will install all required dependencies for the project and start it up in development mode at  [http://localhost:3000](http://localhost:3000). 
