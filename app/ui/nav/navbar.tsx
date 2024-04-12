@@ -46,12 +46,12 @@ export default function Navbar() {
   const pathname = usePathname()
   const [current, setCurrent] = useState(pathname)
   const [NETWORK, setNetwork] = useState('')
-  const [WEBSITE, setWebsite] = useState('')
+  const [LINK, setLink] = useState('')
   
   useEffect(() => {
     setCurrent(pathname)
     setNetwork(env("NETWORK"))
-    setWebsite(env("WEBSITE"))
+    setLink(env("OUTLINK"))
   }, [pathname])
 
   return (
@@ -128,12 +128,12 @@ export default function Navbar() {
                 <TooltipProvider delayDuration={100}>
                   <Tooltip>
                     <TooltipTrigger>
-                      <div className='px-2 flex flex-row bg-green-200 rounded-sm'>
-                        <a href={WEBSITE}>
+                      <div className={`px-2 flex flex-row ${NETWORK == 'Mainnet' ? 'bg-green-200 ' : 'bg-orange-200'} rounded-sm`}>
+                        <a href={LINK}>
                           <TooltipContent>
-                            {`Click here to change to ${WEBSITE == 'Mainnet' ? 'Mainnet' : 'Testnet'}`}
+                            {`Click here to change to `} <b>{NETWORK == 'Mainnet' ? 'Testnet' : 'Mainnet'}</b>
                           </TooltipContent>
-                          <Typography variant='small' className={`w-fit text-green-900 text-center ${fira.className} px-1`}>
+                          <Typography variant='small' className={`w-fit ${NETWORK == 'Mainnet' ? 'text-green-900' : 'text-orange-900'} text-center ${fira.className} px-1`}>
                            {NETWORK ? NETWORK.toUpperCase() : ''}
                           </Typography>
                         </a>
