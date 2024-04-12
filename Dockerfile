@@ -28,6 +28,8 @@ ENV NODE_ENV production
 ENV PORT 8080
 ENV HOSTNAME "0.0.0.0"
 
+EXPOSE 8080
+
 USER node
 
 COPY --from=build /app/.next ./.next
