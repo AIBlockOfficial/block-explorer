@@ -35,10 +35,10 @@ export const useBlockTxs = (id: string): TxRow[] => {
 }
 
 export const useCoinbaseTx = (id: string): CoinbaseDisplay | undefined => {
-    const { data } = useSWR(`/api/item/${id}`, config)
+    const { data } = useSWR(`/api/transaction/${id}`, config)
     if (data != undefined) {
-        if (data.content[0][1]) {
-            const coinbaseDisplay: CoinbaseDisplay = formatToCoinbaseDisplay(data.content[0][1] as Coinbase)
+        if (data.content) {
+            const coinbaseDisplay: CoinbaseDisplay = formatToCoinbaseDisplay(data.content as Coinbase)
             return coinbaseDisplay
         }
     }

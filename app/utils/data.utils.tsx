@@ -117,11 +117,11 @@ export const formatTxTableRow = (tx: Transaction | any): TxRow => {
 
 export const formatToCoinbaseDisplay = (tx: Coinbase): CoinbaseDisplay => {
   const coinbase = {
-    tokens: tokenValue(tx.outputs[0].value.Token) + ' ' + TOKEN_CURRENCY,
-    fractionatedTokens: tx.outputs[0].value.Token.toString(),
-    locktime: tx.outputs[0].locktime.toString(),
+    tokens: tokenValue(tx.outs[0].amount) + ' ' + TOKEN_CURRENCY,
+    fractionatedTokens: tx.outs[0].amount.toString(),
+    locktime: tx.outs[0].locktime.toString(),
     version: tx.version.toString(),
-    scriptPubKey: tx.outputs[0].script_public_key,
+    scriptPubKey: tx.outs[0].scriptPublicKey,
   } as CoinbaseDisplay
   return coinbase
 }
