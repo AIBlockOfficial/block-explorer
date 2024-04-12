@@ -25,7 +25,7 @@ RUN \
 FROM cgr.dev/chainguard/node:latest
 
 ENV NODE_ENV production
-ENV PORT 3000
+ENV PORT 8080
 ENV HOSTNAME "0.0.0.0"
 
 USER node

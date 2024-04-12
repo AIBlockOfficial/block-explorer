@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "APP_ENV=development react-env --prefix NEXT_APP --env APP_ENV -- next",
     "build": "next build",
-    "start": "react-env --prefix NEXT_APP --env APP_ENV -- next start",
+    "start": "react-env --prefix NEXT_APP --env APP_ENV -- next start -p 8080",
     "lint": "next lint",
     "prep": "react-env --prefix NEXT_APP --env APP_ENV"
   },
