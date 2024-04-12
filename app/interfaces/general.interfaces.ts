@@ -135,8 +135,8 @@ export interface FetchedBlock extends Block {
 export interface Coinbase {
     druid_info: null
     fees: any[]
-    inputs: any[]
-    outputs: any[]
+    ins: any[]
+    outs: any[]
     version: number
 }
 
