@@ -49,6 +49,7 @@ export const useTransaction = (id: string): TransactionDisplay | undefined | nul
     const { data } = useSWR(`/api/transaction/${id}`, config)
     if (data != undefined) {
         if (data.content) {
+            console.log(data.content)
             const txDisplay: TransactionDisplay = formatToTxDisplay(data.content as FetchedTransaction)
             return txDisplay
         } else
