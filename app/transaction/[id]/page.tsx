@@ -338,9 +338,18 @@ function Outputs({ txOutputs }: { txOutputs: TokenDisplay[] | ItemDisplay[] }) {
                       </Typography>
                     </td>
                     <td className={`${col3}`}>
-                      <Typography variant='small' className={`w-fit text-gray-800  ${fira.className}`}>
-                        {(output as ItemDisplay).genesisHash}
-                      </Typography>
+                      {isHash((output as ItemDisplay).genesisHash) &&
+                        <div className="flex flex-row">
+                          <Typography as={Link} href={`/transaction/${(output as ItemDisplay).genesisHash}`} variant='small' className={`w-fit text-blue-900 ${fira.className} hover:underline`}>
+                            {(output as ItemDisplay).genesisHash}
+                          </Typography>
+                          <Square2StackIcon className='h-4 w-4 ml-1 text-blue-900 hover:cursor-pointer active:border border-gray-50' onClick={() => navigator.clipboard.writeText((output as ItemDisplay).genesisHash)} />
+                        </div>}
+                      {!isHash((output as ItemDisplay).genesisHash) &&
+                        <Typography variant='small' className={`w-fit text-gray-800  ${fira.className}`}>
+                          {(output as ItemDisplay).genesisHash}
+                        </Typography>
+                      }
                     </td>
                   </tr>
                   {/** Metadata */}
