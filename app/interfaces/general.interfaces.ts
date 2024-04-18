@@ -90,9 +90,8 @@ export interface ItemDisplay {
     valueType: OutputType
     address: string
     items: string
-    drsBlockHash: string 
+    genesisHash: string 
     lockTime: string
-    genesisTransactionHash: string
     metadata: string
 }
 
@@ -167,7 +166,7 @@ export interface Out {
     valueType: string
     amount: string
     locktime: number
-    drsBlockHash: string | null
+    genesisHash: string | null
     scriptPublicKey: string
     itemMetadata: string | null
     n: number
