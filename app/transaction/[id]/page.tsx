@@ -322,6 +322,36 @@ function Outputs({ txOutputs }: { txOutputs: TokenDisplay[] | ItemDisplay[] }) {
                       </div>
                     </td>
                   </tr>
+                  {/** Genesis Hash */}
+                  <tr className="border">
+                    <td className={`${col1}`}>
+                      <Tooltip>
+                        <TooltipTrigger><InformationCircleIcon className={helpIcon} /></TooltipTrigger>
+                        <TooltipContent>
+                          {'The genesis transaction hash associated to the items'}
+                        </TooltipContent>
+                      </Tooltip>
+                    </td>
+                    <td className={`${col2}`}>
+                      <Typography variant='small' className={`font-body text-gray-600`}>
+                        {TXS_IT_OUT_FIELDS[2]}
+                      </Typography>
+                    </td>
+                    <td className={`${col3}`}>
+                      {isHash((output as ItemDisplay).genesisHash) &&
+                        <div className="flex flex-row">
+                          <Typography as={Link} href={`/transaction/${(output as ItemDisplay).genesisHash}`} variant='small' className={`w-fit text-blue-900 ${fira.className} hover:underline`}>
+                            {(output as ItemDisplay).genesisHash}
+                          </Typography>
+                          <Square2StackIcon className='h-4 w-4 ml-1 text-blue-900 hover:cursor-pointer active:border border-gray-50' onClick={() => navigator.clipboard.writeText((output as ItemDisplay).genesisHash)} />
+                        </div>}
+                      {!isHash((output as ItemDisplay).genesisHash) &&
+                        <Typography variant='small' className={`w-fit text-gray-800  ${fira.className}`}>
+                          {(output as ItemDisplay).genesisHash}
+                        </Typography>
+                      }
+                    </td>
+                  </tr>
                   {/** Metadata */}
                   <tr className="border">
                     <td className={`${col1}`}>
@@ -334,7 +364,7 @@ function Outputs({ txOutputs }: { txOutputs: TokenDisplay[] | ItemDisplay[] }) {
                     </td>
                     <td className={`${col2}`}>
                       <Typography variant='small' className={`font-body text-gray-600`}>
-                        {TXS_IT_OUT_FIELDS[2]}
+                        {TXS_IT_OUT_FIELDS[3]}
                       </Typography>
                     </td>
                     <td className={`${col3}`}>
@@ -355,7 +385,7 @@ function Outputs({ txOutputs }: { txOutputs: TokenDisplay[] | ItemDisplay[] }) {
                     </td>
                     <td className={`${col2}`}>
                       <Typography variant='small' className={`font-body text-gray-600`}>
-                        {TXS_IT_OUT_FIELDS[3]}
+                        {TXS_IT_OUT_FIELDS[4]}
                       </Typography>
                     </td>
                     <td className={`${col3}`}>

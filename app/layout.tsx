@@ -18,7 +18,7 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
-        <Script src="__ENV.js" strategy="beforeInteractive" />
+        <Script src="/__ENV.js" strategy="beforeInteractive" />
       </body>
     </html>
   )

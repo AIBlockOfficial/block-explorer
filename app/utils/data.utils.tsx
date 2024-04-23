@@ -87,10 +87,9 @@ export const formatToTxDisplay = (transaction: FetchedTransaction): TransactionD
           valueType: output.valueType,
           address: output.scriptPublicKey,
           items: output.amount,
-          drsBlockHash: output.drsBlockHash ? output.drsBlockHash : 'null',
+          genesisHash: output.genesisHash ? output.genesisHash : 'null',
           lockTime: output.locktime.toString(),
-          genesisTransactionHash: 'n/a',
-          metadata: output.itemMetadata
+          metadata: output.itemMetadata ? output.itemMetadata : 'null',
         } as ItemDisplay
       })
   }
