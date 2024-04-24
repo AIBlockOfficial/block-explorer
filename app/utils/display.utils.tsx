@@ -1,5 +1,5 @@
 /** ------------ DISPLAY FORMAT ------------ */
-import { TOKEN_FRACTION } from "@/app/constants"
+import { HARDCODED_SUPPLY, TOKEN_FRACTION, TOKEN_SUPPLY } from "@/app/constants"
 
 /**
  * Gets all numbers from the start value to the end value, inclusive
@@ -63,6 +63,10 @@ export const formatAddressForDisplay = (address: string, nbChar: number) => {
  */
 export const tokenValue = (amount: number) => {
   return (amount / TOKEN_FRACTION).toString()
+}
+
+export const circulatingSupplyValue = (amount: number) => {
+  return Math.round((amount / TOKEN_FRACTION) - (TOKEN_SUPPLY - HARDCODED_SUPPLY))
 }
 
 /**

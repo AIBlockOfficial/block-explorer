@@ -3,6 +3,7 @@ import useSWRInfinite from 'swr/infinite'
 import { ITEMS_PER_CHUNK, ITEMS_PER_PAGE_SHORT } from "@/app/constants"
 import { AddressDisplay, Block, BlockDisplay, BlockRow, BlocksResult, Coinbase, CoinbaseDisplay, FetchedBlock, FetchedTransaction, Transaction, TransactionDisplay, TransactionsResult, TxRow } from "@/app/interfaces"
 import { formatBlockTableRow, formatToAddressDisplay, formatToBlockDisplay, formatToCoinbaseDisplay, formatToTxDisplay, formatTxTableRow } from "./data.utils"
+import { circulatingSupplyValue } from "./display.utils"
 
 const fetcher = (url: any) => fetch(url).then(r => r.json())
 
@@ -158,7 +159,7 @@ export const useCirculatingSupply = (): number | undefined => {
     const { data } = useSWR(`api/circulatingSupply`, config)
     if (data != undefined) {
         if (data.content) {
-            return data.content.circulatingSupply
+            return circulatingSupplyValue(parseInt(data.content.circulatingSupply))
         }
     }
     return undefined
