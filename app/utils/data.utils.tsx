@@ -1,7 +1,7 @@
 /** ------------ DATA FORMAT ------------ */
 import { BlockDisplay, BlockRow, TxRow, TransactionDisplay, StackDisplay, TokenDisplay, ItemDisplay, OutputType, Block, Transaction, FetchedBlock, FetchedTransaction, In, Out, StackData, InputDisplay, CoinbaseDisplay, Coinbase, AddressDisplay } from '@/app/interfaces'
 import { getUnicornSeed, getUnicornWitness, tokenValue } from './display.utils'
-import { TOKEN_CURRENCY } from '@/app/constants'
+import { TOKEN_TICKER } from '@/app/constants'
 
 /** ------------ BLOCKS ------------ */
 /**
@@ -77,7 +77,7 @@ export const formatToTxDisplay = (transaction: FetchedTransaction): TransactionD
       return { // Token
         valueType: output.valueType,
         address: output.scriptPublicKey,
-        tokens: tokenValue(parseInt(output.amount)) + ' ' + TOKEN_CURRENCY,
+        tokens: tokenValue(parseInt(output.amount)) + ' ' + TOKEN_TICKER,
         fractionatedTokens: output.amount,
         lockTime: output.locktime.toString(),
       } as TokenDisplay
@@ -116,7 +116,7 @@ export const formatTxTableRow = (tx: Transaction | any): TxRow => {
 
 export const formatToCoinbaseDisplay = (tx: Coinbase): CoinbaseDisplay => {
   const coinbase = {
-    tokens: tokenValue(tx.outs[0].amount) + ' ' + TOKEN_CURRENCY,
+    tokens: tokenValue(tx.outs[0].amount) + ' ' + TOKEN_TICKER,
     fractionatedTokens: tx.outs[0].amount.toString(),
     locktime: tx.outs[0].locktime.toString(),
     version: tx.version.toString(),
@@ -133,7 +133,7 @@ export const formatToCoinbaseDisplay = (tx: Coinbase): CoinbaseDisplay => {
 export const formatToAddressDisplay = (id: string, address: {balance: string}): AddressDisplay => {
   const blockInfo: AddressDisplay = {
     hash: id,
-    balance: tokenValue(parseInt(address.balance)) + ' ' + TOKEN_CURRENCY,
+    balance: tokenValue(parseInt(address.balance)) + ' ' + TOKEN_TICKER,
     fractionatedTokens: address.balance
   }
   return blockInfo

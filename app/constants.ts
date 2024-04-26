@@ -22,7 +22,7 @@ export const COINBASE_FIELDS = ['Coinbase Hash', 'Token Reward', 'Fractionated T
 
 /** TOKEN */
 export const TOKEN_FRACTION = 72072000 // Will change on network update
-export const TOKEN_CURRENCY = 'ABC$'
+export const TOKEN_TICKER = 'AIBCOIN'
 export const TOKEN_SUPPLY = 1250000000
 export const HARDCODED_SUPPLY = 94444444
 
