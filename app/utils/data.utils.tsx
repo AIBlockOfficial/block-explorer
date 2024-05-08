@@ -50,7 +50,7 @@ export const formatBlockTableRow = (block: Block): BlockRow => {
  * @returns formatted transaction for display
  */
 export const formatToTxDisplay = (transaction: FetchedTransaction): TransactionDisplay => {
-  const type = transaction.outs[0].valueType == 'token' ? OutputType.Token : OutputType.Item
+  const type = transaction.outs.length > 0 ? (transaction.outs[0].valueType == 'token' ? OutputType.Token : OutputType.Item) : 'n/a'
   return {
     hash: transaction.hash,
     bHash: transaction.blockHash,
@@ -101,14 +101,14 @@ export const formatToTxDisplay = (transaction: FetchedTransaction): TransactionD
  * @returns Transaction row for table display
  */
 export const formatTxTableRow = (tx: Transaction | any): TxRow => {
-  let type = tx.txType 
-  if(!type) // Quick fix, needs to be changed on explorer-backend
+  let type = tx.txType ? tx.txType : 'n/a'
+  if (type == 'n/a' && tx.outs) // Quick fix, needs to be changed on explorer-backend
     type = tx.outs[0].valueType == 'token' ? OutputType.Token : OutputType.Item
   const txRow = {
     txHash: tx.hash,
     blockHash: tx.blockHash,
-    type: type ? type : 'n/a',
     address: '-',
+    type: type,
     age: tx.timestamp,
   } as TxRow
   return txRow
@@ -130,7 +130,7 @@ export const formatToCoinbaseDisplay = (tx: Coinbase): CoinbaseDisplay => {
  * @param address fetched address
  * @returns formatted address for display
  */
-export const formatToAddressDisplay = (id: string, address: {balance: string}): AddressDisplay => {
+export const formatToAddressDisplay = (id: string, address: { balance: string }): AddressDisplay => {
   const blockInfo: AddressDisplay = {
     hash: id,
     balance: tokenValue(parseInt(address.balance)) + ' ' + TOKEN_TICKER,
