@@ -60,13 +60,13 @@ function BlockTable({ rows }: { rows: BlockRow[] }) {
     rows.map(({ number, blockHash, previousHash, nbTx, age }: BlockRow, index) => {
         result.push(
             <tr key={index} className={`${index == rows.length - 1 ? '' : 'border-b border-b-gray-200'}`}>
-                <td className={row_spacing}>
+                <td className={`${row_spacing} ${fira.className}`}>
                     <Typography as={Link} href={`/block/${number}`} variant='small' className={`text-blue-900 text-xs ${fira.className}`}>
                         {number}
                     </Typography>
                 </td>
                 <td className={`${row_spacing}`}>
-                    <div className='flex flex-row'>
+                    <div className={`flex flex-row ${fira.className}`}>
                         <Typography as={Link} href={`/block/${blockHash}`} variant='small' className={`text-blue-900 text-xs ${fira.className} hover:underline`}>
                             {shortenHash(blockHash)}
                         </Typography>
@@ -75,7 +75,7 @@ function BlockTable({ rows }: { rows: BlockRow[] }) {
                 </td>
                 <td className={`${row_spacing}`}>
                     {previousHash && // First block has no previous hash
-                        <div className='flex flex-row'>
+                        <div className={`flex flex-row ${fira.className}`}>
                             <Typography as={Link} href={`/block/${previousHash}`} variant='small' className={`text-blue-900 text-xs ${fira.className} hover:underline`}>
                                 {shortenHash(previousHash)}
                             </Typography>
@@ -83,7 +83,7 @@ function BlockTable({ rows }: { rows: BlockRow[] }) {
                         </div>
                     }
                 </td>
-                <td className={row_spacing}>
+                <td className={`${row_spacing} ${fira.className}`}>
                     <Typography variant='small' className={`w-1/2 text-center ${nbTx == '0' ? 'text-red-900 bg-red-200' : 'text-purple-900 bg-purple-200'} rounded-sm ${fira.className} px-1 w-[40px]`}>
                         {nbTx == '0' ? 'NONE' : nbTx}
                     </Typography>
@@ -107,23 +107,23 @@ function TxTable({ rows }: { rows: TxRow[] }) {
     rows.map(({ txHash, blockHash, type, age }: TxRow, index) => {
         result.push(
             <tr key={index} className={`${index == rows.length - 1 ? '' : 'border-b border-b-gray-200'}`}>
-                <td className={`${row_spacing}`}>
-                    <div className='flex flex-row'>
+                <td className={`${row_spacing} ${fira.className}`}>
+                    <div className={`flex flex-row ${fira.className}`}>
                         <Typography as={Link} href={`/transaction/${txHash}`} variant='small' className={`text-blue-900 text-xs ${fira.className} hover:underline`}>
                             {txHash != undefined && txHash.length > 6 ? shortenHash(txHash) : txHash}
                         </Typography>
                         <Square2StackIcon className='h-4 w-4 text-blue-900 hover:cursor-pointer active:border border-gray-50' onClick={() => navigator.clipboard.writeText(txHash)} />
                     </div>
                 </td>
-                <td className={`${row_spacing}`}>
-                    <div className='flex flex-row'>
+                <td className={`${row_spacing} ${fira.className}`}>
+                    <div className={`flex flex-row ${fira.className}`}>
                         <Typography as={Link} href={`/block/${blockHash}`} variant='small' className={`text-blue-900 text-xs ${fira.className} hover:underline`}>
                             {shortenHash(blockHash)}
                         </Typography>
                         <Square2StackIcon className='h-4 w-4 text-blue-900 hover:cursor-pointer active:border border-gray-50' onClick={() => navigator.clipboard.writeText(blockHash)} />
                     </div>
                 </td>
-                <td className={row_spacing}>
+                <td className={`${row_spacing} ${fira.className}`}>
                     <Typography variant='small' className={`w-fit ${type == 'token' ? 'bg-green-200 text-green-900' : ''} ${type == 'item' ? ' bg-blue-200 text-blue-900' : ''} text-center rounded-sm ${fira.className} px-1`}>
                         {type.toUpperCase()}
                     </Typography>

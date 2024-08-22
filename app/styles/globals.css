@@ -9,6 +9,12 @@
   }
 }
 
+@layer base {
+  .font-sans {
+    font-family: var(--fira-code-font);
+  }
+}
+
 :root {
   --h-navbar: '64px';
   background-color: #ffffff;

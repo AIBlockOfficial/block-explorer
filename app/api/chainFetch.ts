@@ -44,6 +44,8 @@ export function block(id: string) {
  * @param offset {string} - offset from latest block 
  */
 export function blocks(limit: string, offset: string, order: string) {
+    console.log(`${EXP_BACKEND}${IAPIRoute.Blocks}?limit=${limit}&offset=${offset}&order=${order}`);
+
     return fetch(`${EXP_BACKEND}${IAPIRoute.Blocks}?limit=${limit}&offset=${offset}&order=${order}`,
         {
             method: 'GET',
@@ -51,10 +53,11 @@ export function blocks(limit: string, offset: string, order: string) {
                 'Content-Type': 'application/json',
             }
         }).then((response) => {
-            if (response.status == 200)
+            if (response.status == 200) {
                 return Promise.resolve(response.json())
-            else
+            } else {
                 return Promise.reject({ reason: response.statusText, status: response.status, route: IAPIRoute.Blocks })
+            }
         })
 }
 

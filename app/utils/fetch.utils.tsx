@@ -70,7 +70,9 @@ export const useRawTransaction = (id: string): any | undefined => {
 }
 
 export const useShortBlockRows = (): { blockRows: BlockRow[], number: number | undefined } => {
+    console.log(`api/blocks?limit=${ITEMS_PER_PAGE_SHORT}&offset=0&order=desc`);
     const { data } = useSWR(`api/blocks?limit=${ITEMS_PER_PAGE_SHORT}&offset=0&order=desc`, config)
+
     if (data != undefined) {
         if (data.content) {
             const blocksRows: BlockRow[] = data.content.blocks.map((block: Block) => formatBlockTableRow(block)) // Currently used await because nb tx of each block is fetched
@@ -94,12 +96,14 @@ export const useShortTxRows = (): { txRows: TxRow[], number: number | undefined 
 const getDescKeyBlocks = (index: number, previousPageData: { content: BlocksResult } | null): string | null => {
     if (previousPageData && ((ITEMS_PER_CHUNK * index)) > previousPageData.content.pagination.total)
         return null // reached the end
+    console.log(`api/blocks?limit=${ITEMS_PER_CHUNK}&offset=${(ITEMS_PER_CHUNK * index)}&order=desc`);
     return `api/blocks?limit=${ITEMS_PER_CHUNK}&offset=${(ITEMS_PER_CHUNK * index)}&order=desc` // SWR key
 }
 
 const getAscKeyBlocks = (index: number, previousPageData: { content: BlocksResult } | null): string | null => {
     if (previousPageData && ((ITEMS_PER_CHUNK * index)) > previousPageData.content.pagination.total)
         return null // reached the end
+    console.log(`api/blocks?limit=${ITEMS_PER_CHUNK}&offset=${(ITEMS_PER_CHUNK * index)}&order=asc`);
     return `api/blocks?limit=${ITEMS_PER_CHUNK}&offset=${(ITEMS_PER_CHUNK * index)}&order=asc` // SWR key
 }
 
