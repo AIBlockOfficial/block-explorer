@@ -10,8 +10,6 @@ permissions:
   packages: write
   security-events: write
 
-continue-on-error: true
-
 jobs:
   build:
     uses: aiblockofficial/workflows/.github/workflows/build.yml@main
