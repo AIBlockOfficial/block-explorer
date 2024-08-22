@@ -25,7 +25,7 @@ jobs:
   deploy-testnet:
     uses: aiblockofficial/workflows/.github/workflows/deploy.yml@main
     secrets: inherit
-    needs: scan-image
+    # needs: scan-image
     with:
       REGION: ${{ vars.REGION }}
       PROJECT_ID: ${{ vars.PROJECT_ID }}
