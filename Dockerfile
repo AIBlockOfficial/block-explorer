@@ -39,6 +39,7 @@ COPY --from=build /app/.env.development ./.env.development
 COPY --from=build /app/.env.staging ./.env.staging
 COPY --from=build /app/.env.production ./.env.production
 COPY --from=build --chown=node:node /app/public ./public
+COPY --from=build /app/.trivyignore ./.trivyignore
 
 ENTRYPOINT ["/bin/sh", "-c"]
 CMD ["npm run prep && npm start"]
