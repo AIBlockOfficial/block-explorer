@@ -26,6 +26,7 @@ jobs:
     uses: aiblockofficial/workflows/.github/workflows/deploy.yml@main
     secrets: inherit
     needs: scan-image
+    if: always()
     with:
       REGION: ${{ vars.REGION }}
       PROJECT_ID: ${{ vars.PROJECT_ID }}
@@ -35,6 +36,7 @@ jobs:
     uses: aiblockofficial/workflows/.github/workflows/deploy.yml@main
     secrets: inherit
     needs: scan-image
+    if: always()
     with:
       REGION: ${{ vars.REGION }}
       PROJECT_ID: ${{ vars.PROJECT_ID }}
