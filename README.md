@@ -1,3 +1,5 @@
+> **Repository moved:** Active development continues at **[lineage-foundation/block-explorer](https://github.com/lineage-foundation/block-explorer)**. Please open issues and pull requests there. This AIBlockOfficial repository is retained for history.
+
 # AIBlock Explorer
 
 The AIBlock explorer, for auditing and viewing the blockchain.
